@@ -7,4 +7,13 @@
     <string name="client_id">Идентификатор клиента</string>
     <string name="user">Пользователь</string>
     <string name="password">Пароль</string>
+    <string name="logout">Выход</string>
+    <string name="before_reconnection">До переподключения</string>
+    <string name="reconnect_now">Переподключиться сейчас</string>
+    <string name="connecting">Подключение</string>
+    <string name="connection_error">Ошибка подключения</string>
+    <string name="seconds_short">с</string>
+    <string name="minutes_short">м</string>
+    <string name="hours_short">ч</string>
+    <string name="days_short">д</string>
 </resources>

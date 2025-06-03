@@ -10,20 +10,31 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import hnau.common.model.ThemeBrightness
 import hnau.common.model.app.DesktopApp
+import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.awaitCancellation
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.slf4j.simple.SimpleLogger
 
+private val logger = KotlinLogging.logger { }
+
 @OptIn(InternalComposeApi::class)
-fun main() = runBlocking {
+fun main()  {
     System.setProperty(SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "TRACE")
+
+    val appScope = CoroutineScope( SupervisorJob())
     val app = DesktopApp(
-        scope = this,
+        scope = appScope,
         seed = createPinFinAppSeed(
             defaultBrightness = ThemeBrightness.Dark,
         ),
     )
     val projector = createAppProjector(
-        scope = this,
+        scope = appScope,
         model = app,
     )
     application {

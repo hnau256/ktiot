@@ -1,16 +1,15 @@
-package hnau.ktiot.client.projector.utils
+package hnau.ktiot.client.projector
 
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import hnau.ktiot.client.model.ConnectedModel
 import hnau.ktiot.client.model.utils.TemplateModel
 import hnau.pipe.annotations.Pipe
-import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
 
-private val logger = KotlinLogging.logger {  }
-
-class TemplateProjector(
+class ConnectedProjector(
     scope: CoroutineScope,
-    model: TemplateModel,
+    model: ConnectedModel,
     dependencies: Dependencies,
 ) {
 
@@ -21,6 +20,6 @@ class TemplateProjector(
 
     @Composable
     fun Content() {
-
+        Text("Connected")
     }
 }

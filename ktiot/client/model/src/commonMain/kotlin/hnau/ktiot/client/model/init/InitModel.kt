@@ -22,10 +22,13 @@ import hnau.common.model.preferences.withDefault
 import hnau.ktiot.client.model.LoggedModel
 import hnau.ktiot.client.model.LoginModel
 import hnau.pipe.annotations.Pipe
+import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+
+private val logger = KotlinLogging.logger {  }
 
 class InitModel(
     scope: CoroutineScope,
@@ -43,7 +46,7 @@ class InitModel(
         ): LoginModel.Dependencies
 
         fun logged(
-            preferences: Preferences,
+            doLogout: DoLogout,
         ): LoggedModel.Dependencies
 
         companion object
@@ -120,7 +123,13 @@ class InitModel(
                         model = LoggedModel(
                             scope = stateScope,
                             dependencies = dependencies.logged(
-                                preferences = preferences,
+                                doLogout = {
+                                    loginStatePreference.update(
+                                        LoginState.Logouted(
+                                            cachedLoginInfo = loginState.loginInfo,
+                                        )
+                                    )
+                                }
                             ),
                             skeleton = skeleton::state
                                 .toAccessor()

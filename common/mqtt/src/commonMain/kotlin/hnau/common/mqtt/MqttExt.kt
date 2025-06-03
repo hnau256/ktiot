@@ -84,11 +84,13 @@ private suspend inline fun loop(
     )
     failedConnectionsCount.value = newFailedConnectionsCount
     val pauseBeforeReconnection = 5.seconds * (1 shl (newFailedConnectionsCount - 1))
+    val delayJob = scope.launch { delay(pauseBeforeReconnection) }
     onStateChanged(
         MqttState.WaitingForReconnection(
             cause = disconnectedCause,
-            reconnectionAt = Clock.System.now() + pauseBeforeReconnection
+            reconnectionAt = Clock.System.now() + pauseBeforeReconnection,
+            reconnectNow = { delayJob.cancel() }
         )
     )
-    delay(pauseBeforeReconnection)
+    delayJob.join()
 }

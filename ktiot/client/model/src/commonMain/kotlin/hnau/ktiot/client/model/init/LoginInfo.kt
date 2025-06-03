@@ -4,10 +4,10 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class LoginInfo(
-    val address: String? = null,
-    val clientId: String? = null,
-    val auth: Auth? = null,
-    val port: Int? = null,
+    val address: String,
+    val clientId: String,
+    val port: Int,
+    val auth: Auth?,
 ) {
 
     @Serializable

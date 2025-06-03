@@ -9,6 +9,7 @@ sealed interface MqttState {
     data class WaitingForReconnection(
         val cause: Throwable,
         val reconnectionAt: Instant,
+        val reconnectNow: () -> Unit,
     ) : MqttState
 
     data class Connected(

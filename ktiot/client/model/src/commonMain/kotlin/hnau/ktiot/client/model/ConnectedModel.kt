@@ -2,20 +2,19 @@
     MutableStateFlowSerializer::class,
 )
 
-package hnau.ktiot.client.model.utils
+package hnau.ktiot.client.model
 
 import hnau.common.model.goback.GoBackHandler
 import hnau.common.model.goback.GoBackHandlerProvider
 import hnau.common.kotlin.serialization.MutableStateFlowSerializer
+import hnau.common.model.goback.NeverGoBackHandler
+import hnau.common.mqtt.utils.MqttClient
 import hnau.pipe.annotations.Pipe
-import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
 
-private val logger = KotlinLogging.logger {  }
-
-class TemplateModel(
+class ConnectedModel(
     scope: CoroutineScope,
     dependencies: Dependencies,
     skeleton: Skeleton,
@@ -24,10 +23,11 @@ class TemplateModel(
     @Pipe
     interface Dependencies {
 
+        val mqttClient: MqttClient
     }
 
     @Serializable
     /*data*/ class Skeleton
 
-    val goBackHandler: GoBackHandler = TODO()
+    val goBackHandler: GoBackHandler = NeverGoBackHandler
 }

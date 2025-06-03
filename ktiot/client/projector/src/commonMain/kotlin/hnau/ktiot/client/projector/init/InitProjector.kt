@@ -8,14 +8,21 @@ import hnau.common.kotlin.Loadable
 import hnau.common.kotlin.coroutines.mapWithScope
 import hnau.common.kotlin.map
 import hnau.common.projector.uikit.state.LoadableContent
+import hnau.common.projector.uikit.state.StateContent
 import hnau.common.projector.uikit.state.TransitionSpec
 import hnau.ktiot.client.model.init.InitModel
 import hnau.ktiot.client.model.init.InitStateModel
 import hnau.ktiot.client.projector.LoggedProjector
 import hnau.ktiot.client.projector.LoginProjector
 import hnau.pipe.annotations.Pipe
+import io.github.oshai.kotlinlogging.KotlinLogging
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+
+private val logger = KotlinLogging.logger {  }
 
 class InitProjector(
     scope: CoroutineScope,
@@ -66,7 +73,15 @@ class InitProjector(
                 modifier = Modifier.fillMaxSize(),
                 transitionSpec = TransitionSpec.crossfade(),
             ) { stateProjector ->
-                stateProjector.Content()
+                stateProjector
+                    .StateContent(
+                        modifier = Modifier.fillMaxSize(),
+                        label = "LoginOrLogged",
+                        contentKey = InitStateProjector::key,
+                        transitionSpec = TransitionSpec.crossfade(),
+                    ) { stateProjectorLocal ->
+                        stateProjectorLocal.Content()
+                    }
             }
     }
 }
