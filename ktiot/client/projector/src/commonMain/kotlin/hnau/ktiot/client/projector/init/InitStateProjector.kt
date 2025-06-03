@@ -1,0 +1,39 @@
+package hnau.ktiot.client.projector.init
+
+import androidx.compose.runtime.Composable
+import hnau.ktiot.client.projector.LoggedProjector
+import hnau.ktiot.client.projector.LoginProjector
+
+sealed interface InitStateProjector {
+
+    @Composable
+    fun Content()
+
+    val key: Int
+
+    data class Login(
+        private val projector: LoginProjector,
+    ) : InitStateProjector {
+
+        @Composable
+        override fun Content() {
+            projector.Content()
+        }
+
+        override val key: Int
+            get() = 0
+    }
+
+    data class Logged(
+        private val projector: LoggedProjector,
+    ) : InitStateProjector {
+
+        @Composable
+        override fun Content() {
+            projector.Content()
+        }
+
+        override val key: Int
+            get() = 1
+    }
+}

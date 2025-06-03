@@ -1,0 +1,17 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <group
+        android:scaleX="4.5"
+        android:scaleY="4.5"
+        android:translateX="54"
+        android:translateY="54"
+        android:rotation="45">
+        <path
+            android:pathData="m -2.5,-5.5a 1,1 0 0 0 -1,1v 0.75h 1V -4.5h 1v 3h -0.75v 1h 0.75a 1,1 0 0 0 1,-1v -3a 1,1 0 0 0 -1,-1zm 4,0a 1,1 0 0 0 -1,1v 0.75h 1V -4.5h 1v 2.75h 1V -4.5a 1,1 0 0 0 -1,-1zm -6,2a 1,1 0 0 0 -1,1v 1a 1,1 0 0 0 1,1h 0.75v -1H -4.5v -1h 2.75v -1zm 4.25,0v 1h 2.5v -1zm 4,0v 1H 4.5v 1h -3v -0.75h -1v 0.75a 1,1 0 0 0 1,1h 3a 1,1 0 0 0 1,-1v -1a 1,1 0 0 0 -1,-1zm -7.25,1.25v 2.5h 1v -2.5zm 6,2v 2.5h 1v -2.5zm -7,0.75a 1,1 0 0 0 -1,1v 1a 1,1 0 0 0 1,1h 0.75v -1H -4.5v -1h 3v 0.75h 1V 1.5a 1,1 0 0 0 -1,-1zm 6,0a 1,1 0 0 0 -1,1v 3a 1,1 0 0 0 1,1h 1a 1,1 0 0 0 1,-1V 3.75h -1V 4.5h -1v -3h 0.75v -1zm 2.25,0v 1H 4.5v 1H 1.75v 1H 4.5a 1,1 0 0 0 1,-1v -1a 1,1 0 0 0 -1,-1zM -3.5,1.75V 4.5a 1,1 0 0 0 1,1h 1a 1,1 0 0 0 1,-1V 3.75h -1V 4.5h -1V 1.75Zm 1.25,0.75v 1h 2.5v -1z"
+            android:fillColor="#ffffff"
+            android:strokeLineJoin="round" />
+    </group>
+</vector>
