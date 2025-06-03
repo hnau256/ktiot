@@ -15,10 +15,13 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -35,6 +38,7 @@ import hnau.common.projector.uikit.utils.Dimens
 import hnau.common.projector.utils.horizontalDisplayPadding
 import hnau.common.projector.utils.verticalDisplayPadding
 import hnau.ktiot.client.model.LoginModel
+import hnau.ktiot.client.projector.utils.Button
 import hnau.pipe.annotations.Pipe
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -54,20 +58,20 @@ class LoginProjector(
 
     }
 
-    private val visibleItems: StateFlow<ImmutableList<Item>> = model.credentials.mapState(
+    private val visibleItems: StateFlow<ImmutableList<Item>> = model.useCredentials.mapState(
         scope = scope,
-    ) { authOrNull ->
+    ) { useCredentials ->
         buildList {
             add(Item.AddressWithPort)
             add(
                 Item.ClientId(
-                    isLast = authOrNull == null,
+                    isLast = !useCredentials,
                 )
             )
             add(Item.AuthSwitcher)
-            authOrNull?.let { auth ->
-                add(Item.User(auth.user))
-                add(Item.Password(auth.password))
+            useCredentials.ifTrue {
+                add(Item.User)
+                add(Item.Password)
             }
         }.toImmutableList()
     }
@@ -97,10 +101,15 @@ class LoginProjector(
                     Item.AddressWithPort -> AddressWithPort()
                     is Item.ClientId -> ClientId(isLast = item.isLast)
                     Item.AuthSwitcher -> AuthSwitcher()
-                    is Item.User -> User(item.input)
-                    is Item.Password -> Password(item.input)
+                    is Item.User -> User(model.user)
+                    is Item.Password -> Password(model.password)
                 }
             }
+            model
+                .loginOrLogginingOrDisabled
+                .collectAsState()
+                .value
+                .Button { Text(stringResource(Res.string.login)) }
         }
     }
 
@@ -110,13 +119,19 @@ class LoginProjector(
             items = remember { persistentListOf(false, true) }
         ) { item ->
             when (item) {
-                false -> Input(
-                    label = stringResource(Res.string.address),
-                    input = model.address,
-                    shape = shape,
-                    keyboardType = KeyboardType.Uri,
-                    modifier = Modifier.weight(3f),
-                )
+                false -> {
+                    val focusRequester = remember { FocusRequester() }
+                    Input(
+                        label = stringResource(Res.string.address),
+                        input = model.address,
+                        shape = shape,
+                        keyboardType = KeyboardType.Uri,
+                        modifier = Modifier
+                            .weight(3f)
+                            .focusRequester(focusRequester),
+                    )
+                    LaunchedEffect(focusRequester) { focusRequester.requestFocus() }
+                }
 
                 true -> Input(
                     label = stringResource(Res.string.port),
@@ -163,8 +178,8 @@ class LoginProjector(
                 style = MaterialTheme.typography.titleMedium,
             )
             Switch(
-                checked = model.isCredentialsOpened.collectAsState().value,
-                onCheckedChange = { model.switchCredentialsIsOpened() },
+                checked = model.useCredentials.collectAsState().value,
+                onCheckedChange = { model.useCredentials.value = it },
             )
         }
     }
@@ -208,7 +223,6 @@ class LoginProjector(
             modifier = modifier,
             shape = shape,
             value = input.editingString,
-            placeholder = { Text(input.placeholder) },
             isError = input.correct.collectAsState().value.not(),
             keyboardActions = KeyboardActions(
                 onDone = isLast.ifTrue {
@@ -242,13 +256,9 @@ class LoginProjector(
         data object AuthSwitcher : Item
 
         @Immutable
-        data class User(
-            val input: LoginModel.Input,
-        ) : Item
+        data object User : Item
 
         @Immutable
-        data class Password(
-            val input: LoginModel.Input,
-        ) : Item
+        data object Password : Item
     }
 }

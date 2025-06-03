@@ -7,6 +7,7 @@ package hnau.ktiot.client.model
 import hnau.common.model.goback.GoBackHandler
 import hnau.common.model.goback.GoBackHandlerProvider
 import hnau.common.kotlin.serialization.MutableStateFlowSerializer
+import hnau.common.model.goback.NeverGoBackHandler
 import hnau.common.model.preferences.Preferences
 import hnau.ktiot.client.model.init.LoginInfo
 import hnau.pipe.annotations.Pipe
@@ -35,5 +36,5 @@ class LoggedModel(
         )
     }
 
-    val goBackHandler: GoBackHandler = TODO()
+    val goBackHandler: GoBackHandler = NeverGoBackHandler //TODO
 }
