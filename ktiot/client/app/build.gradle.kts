@@ -86,6 +86,9 @@ kotlin {
 
         desktopMain {
             kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
+            dependencies {
+                implementation(libs.slf4j.simple)
+            }
         }
     }
 }

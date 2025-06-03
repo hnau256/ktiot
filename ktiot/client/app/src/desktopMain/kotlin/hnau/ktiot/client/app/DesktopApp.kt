@@ -11,9 +11,11 @@ import androidx.compose.ui.window.rememberWindowState
 import hnau.common.model.ThemeBrightness
 import hnau.common.model.app.DesktopApp
 import kotlinx.coroutines.runBlocking
+import org.slf4j.simple.SimpleLogger
 
 @OptIn(InternalComposeApi::class)
 fun main() = runBlocking {
+    System.setProperty(SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "TRACE")
     val app = DesktopApp(
         scope = this,
         seed = createPinFinAppSeed(
