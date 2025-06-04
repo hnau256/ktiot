@@ -18,11 +18,11 @@ class ScreenProjector(
 
     }
 
-    private val items = model
+    /*private val items = model
         .items
         .flatMapState(scope) {itemsScope, itemsOrLoading ->
 
-        }
+        }*/
 
     @Composable
     fun Content() {
