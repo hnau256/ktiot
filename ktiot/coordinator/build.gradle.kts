@@ -9,6 +9,7 @@ dependencies {
     implementation(libs.coroutines)
     implementation(libs.kotlin.datetime)
     implementation(libs.kotlin.serialization.json)
+    implementation(libs.hnau.kotlin)
     implementation(libs.hnau.model)
     implementation(project(":common:logging"))
     implementation(project(":common:mqtt"))

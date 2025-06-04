@@ -14,8 +14,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import kotlinx.serialization.builtins.ListSerializer
-import kotlinx.serialization.json.Json
 
 
 internal fun buildScreen(
@@ -35,10 +33,7 @@ internal fun buildScreen(
             client.publish(
                 topic = topic.ktiotElements.raw,
                 retained = true,
-                value = Json.encodeToJsonElement(
-                    serializer = ListSerializer(Element.serializer()),
-                    value = builder.elements,
-                ),
+                value = Element.listJsonMapper.reverse(builder.elements),
             )
         }
     }
@@ -61,7 +56,7 @@ private class ScreenBuilderImpl(
         publishMode: PropertyMode?,
     ): PropertyAccessor<T> {
 
-        publishMode?.let {mode ->
+        publishMode?.let { mode ->
             _elements.add(
                 Element.Property(
                     topic = topic,

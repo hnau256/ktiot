@@ -227,7 +227,11 @@ class LoginProjector(
             keyboardActions = KeyboardActions(
                 onDone = isLast.ifTrue {
                     {
-                        TODO("try login")
+                        model
+                            .loginOrLogginingOrDisabled
+                            .value
+                            ?.value
+                            ?.invoke()
                     }
                 }
             ),

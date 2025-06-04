@@ -83,7 +83,7 @@ class LoggedProjector(
                     logout = state.logout,
                     reconnectNow = state.reconnectNow,
                     beforeReconnection = run {
-                        val calc = { Clock.System.now() - state.reconnectionAt }
+                        val calc = { state.reconnectionAt - Clock.System.now() }
                         ticker(
                             delayMillis = 1.seconds.inWholeMilliseconds,
                         )
