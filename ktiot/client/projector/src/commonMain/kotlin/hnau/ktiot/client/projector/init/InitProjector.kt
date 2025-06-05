@@ -2,6 +2,7 @@ package hnau.ktiot.client.projector.init
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import hnau.common.kotlin.Loadable
@@ -24,12 +25,14 @@ import kotlinx.coroutines.launch
 
 private val logger = KotlinLogging.logger {  }
 
+@Immutable
 class InitProjector(
     scope: CoroutineScope,
     model: InitModel,
     dependencies: Dependencies,
 ) {
 
+    @Immutable
     @Pipe
     interface Dependencies {
 

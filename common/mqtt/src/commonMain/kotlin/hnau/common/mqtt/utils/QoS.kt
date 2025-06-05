@@ -10,6 +10,6 @@ enum class QoS(
 
     companion object {
 
-        val default = AtLeastOnce
+        val default = ExactlyOnce
     }
 }

@@ -59,7 +59,12 @@ class ScreenModel(
         val items: MutableMap<MqttTopic, ScreenItemModel.Skeleton> = HashMap(),
     )
 
-    val items: StateFlow<Loadable<List<ScreenItemModel>>> = dependencies
+    data class Item(
+        val model: ScreenItemModel,
+        val topic: MqttTopic,
+    )
+
+    val items: StateFlow<Loadable<List<Item>>> = dependencies
         .topic
         .ktiotElements
         .raw
@@ -87,12 +92,17 @@ class ScreenModel(
                 .mapReusable(scope) { elementsOrLoading ->
                     elementsOrLoading.map { elements ->
                         elements.map { element ->
+                            val itemTopic = element.topic
                             getOrPutItem(
-                                key = element.topic,
+                                key = itemTopic,
                             ) { elementScope ->
-                                createItem(
+                                val itemModel = createItem(
                                     scope = elementScope,
                                     element = element,
+                                )
+                                Item(
+                                    model = itemModel,
+                                    topic = itemTopic,
                                 )
                             }
                         }
@@ -148,7 +158,7 @@ class ScreenModel(
         .flatMapState(scope) { (itemsScope, itemsOrLoading) ->
             itemsOrLoading.fold(
                 ifLoading = { NeverGoBackHandler },
-                ifReady = { items: List<ScreenItemModel> ->
+                ifReady = { items ->
                     items
                         .asReversed()
                         .createGoBackHandler(itemsScope)
@@ -156,13 +166,14 @@ class ScreenModel(
             )
         }
 
-    private fun List<ScreenItemModel>.createGoBackHandler(
+    private fun List<Item>.createGoBackHandler(
         scope: CoroutineScope,
     ): GoBackHandler = toNonEmptyListOrNull().foldNullable(
         ifNull = { NeverGoBackHandler },
         ifNotNull = { nonEmptyItems ->
             nonEmptyItems
                 .head
+                .model
                 .goBackHandler
                 .scopedInState(scope)
                 .flatMapState(scope) { (headScope, headGoBackHandler) ->

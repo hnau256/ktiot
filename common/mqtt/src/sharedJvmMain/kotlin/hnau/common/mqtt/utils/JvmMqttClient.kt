@@ -1,6 +1,8 @@
 package hnau.common.mqtt.utils
 
 import arrow.core.Option
+import hnau.common.kotlin.coroutines.mapState
+import hnau.common.kotlin.ifTrue
 import hnau.common.logging.tryOrLog
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CancellationException
@@ -14,7 +16,14 @@ import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onSubscription
+import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
@@ -34,6 +43,7 @@ class JvmMqttClient(
     private data class Message(
         val topic: Topic,
         val message: JsonElement,
+        val retained: Boolean,
     )
 
     private val messages: MutableSharedFlow<Message> = MutableSharedFlow(
@@ -140,7 +150,8 @@ class JvmMqttClient(
                     messages.tryEmit(
                         value = Message(
                             topic = Topic(topic),
-                            message = messageJson
+                            message = messageJson,
+                            retained = message.isRetained,
                         ),
                     )
                 }
@@ -204,17 +215,30 @@ class JvmMqttClient(
         qoS: QoS,
     ): Flow<JsonElement> = synchronized(subscriptions) {
         subscriptions.getOrPut(topic) {
-            callbackFlow {
-                doSubscribe(
-                    topic = topic,
-                    qoS = qoS,
-                )
-                awaitClose {
-                    doUnsubscribe(
-                        topic = topic,
-                    )
+            var lastRetainedMessage: JsonElement? = null
+            flow {
+                try {
+                    doSubscribe(topic, qoS)
+                    messages
+                        .filter { it.topic == topic }
+                        .collect{message ->
+                            message
+                                .retained
+                                .ifTrue { lastRetainedMessage = message.message }
+                            emit(message.message)
+                        }
+                } finally {
+                    lastRetainedMessage = null
+                    doUnsubscribe(topic)
                 }
             }
+                .shareIn(
+                    scope = scope,
+                    started = SharingStarted.WhileSubscribed(),
+                )
+                .onSubscription {
+                    lastRetainedMessage?.let { last -> emit(last) }
+                }
         }
     }
 

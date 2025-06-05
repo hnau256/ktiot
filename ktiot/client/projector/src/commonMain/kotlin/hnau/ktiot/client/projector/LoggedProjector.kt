@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,24 +33,29 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 import androidx.compose.material3.Button as MaterialButton
 
+@Immutable
 class LoggedProjector(
     scope: CoroutineScope,
     model: LoggedModel,
     dependencies: Dependencies,
 ) {
 
+    @Immutable
     @Pipe
     interface Dependencies {
 
         fun connected(): ConnectedProjector.Dependencies
     }
 
+    @Immutable
     sealed interface State {
 
+        @Immutable
         data class Connecting(
             val logout: StateFlow<(() -> Unit)?>,
         ) : State
 
+        @Immutable
         data class WaitingForReconnection(
             val errorMessage: String?,
             val beforeReconnection: StateFlow<Duration>,
@@ -57,6 +63,7 @@ class LoggedProjector(
             val reconnectNow: () -> Unit,
         ) : State
 
+        @Immutable
         data class Connected(
             val projector: ConnectedProjector,
         ) : State

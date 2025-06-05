@@ -7,12 +7,12 @@ interface MqttClient {
 
     fun subscribe(
         topic: Topic,
-        qoS: QoS = QoS.ExactlyOnce,
+        qoS: QoS = QoS.default,
     ): Flow<JsonElement>
 
     suspend fun publish(
         topic: Topic,
-        qoS: QoS = QoS.ExactlyOnce,
+        qoS: QoS = QoS.default,
         value: JsonElement,
         retained: Boolean,
     ): Boolean

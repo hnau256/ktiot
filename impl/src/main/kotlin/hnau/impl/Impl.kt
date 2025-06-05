@@ -19,7 +19,7 @@ fun main() = runBlocking {
     System.setProperty(SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "TRACE")
     coordinator(
         config = MqttConfig(
-            address = "192.168.0.11",
+            address = "127.0.0.1",
             clientId = "coordinator",
             auth = MqttConfig.Auth(
                 user = "hnau",

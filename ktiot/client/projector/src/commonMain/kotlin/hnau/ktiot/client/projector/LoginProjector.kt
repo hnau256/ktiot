@@ -47,12 +47,14 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
 import org.jetbrains.compose.resources.stringResource
 
+@Immutable
 class LoginProjector(
     scope: CoroutineScope,
     private val model: LoginModel,
     dependencies: Dependencies,
 ) {
 
+    @Immutable
     @Pipe
     interface Dependencies {
 

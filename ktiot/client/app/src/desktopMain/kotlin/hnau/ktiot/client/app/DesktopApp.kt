@@ -42,10 +42,10 @@ fun main()  {
         Window(
             onCloseRequest = { exitApplication() },
             title = "KtIoT",
-            state = rememberWindowState(
+            /*state = rememberWindowState(
                 width = 480.dp * scale,
                 height = 640.dp * scale,
-            ),
+            ),*/
             //icon = rememberVectorPainter(pinfinIcon.s256),
         ) {
             CompositionLocalProvider(

@@ -17,7 +17,9 @@ fun createAppProjector(
         InitProjector(
                 scope = scope,
                 model = model,
-                dependencies = InitProjector.Dependencies.impl(),
+                dependencies = InitProjector.Dependencies.impl(
+                    globalGoBackHandler = globalGoBackHandler,
+                ),
             )
     },
     content = { rootProjector ->
