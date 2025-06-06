@@ -18,10 +18,11 @@ import hnau.common.mqtt.utils.MqttClient
 import hnau.ktiot.client.model.property.PropertyModel
 import hnau.ktiot.client.model.utils.MutableMapSerializer
 import hnau.ktiot.scheme.Element
+import hnau.ktiot.scheme.topic.ChildTopic
 import hnau.ktiot.scheme.topic.MqttTopic
+import hnau.ktiot.scheme.topic.asChild
 import hnau.ktiot.scheme.topic.ktiotElements
 import hnau.ktiot.scheme.topic.raw
-import hnau.ktiot.scheme.topic.toAbsolute
 import hnau.pipe.annotations.Pipe
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
@@ -38,6 +39,7 @@ class ScreenModel(
     scope: CoroutineScope,
     private val dependencies: Dependencies,
     private val skeleton: Skeleton,
+    private val topic: MqttTopic.Absolute
 ) {
 
     @Pipe
@@ -45,10 +47,7 @@ class ScreenModel(
 
         val mqttClient: MqttClient
 
-        val topic: MqttTopic.Absolute
-
         fun property(
-            topic: MqttTopic.Absolute,
             property: Element.Property<*>,
         ): PropertyModel.Dependencies
     }
@@ -61,23 +60,22 @@ class ScreenModel(
 
     data class Item(
         val model: ScreenItemModel,
-        val topic: MqttTopic,
+        val topic: ChildTopic,
     )
 
-    val items: StateFlow<Loadable<List<Item>>> = dependencies
-        .topic
+    val items: StateFlow<Loadable<List<Item>>> = topic
         .ktiotElements
         .raw
-        .let { topic ->
+        .let { ktIoTTopic ->
             dependencies
                 .mqttClient
                 .subscribe(
-                    topic = topic,
+                    topic = ktIoTTopic,
                 )
                 .mapNotNull { elementsJson ->
                     logger
                         .tryOrLog(
-                            log = "parsing ktiot elements from '$topic' from $elementsJson"
+                            log = "parsing ktiot elements from '$ktIoTTopic' from $elementsJson"
                         ) {
                             Element.Companion.listJsonMapper.direct(elementsJson)
                         }
@@ -92,7 +90,7 @@ class ScreenModel(
                 .mapReusable(scope) { elementsOrLoading ->
                     elementsOrLoading.map { elements ->
                         elements.map { element ->
-                            val itemTopic = element.topic
+                            val itemTopic = element.topic.asChild(topic)
                             getOrPutItem(
                                 key = itemTopic,
                             ) { elementScope ->
@@ -147,9 +145,9 @@ class ScreenModel(
                 }
             ).skeleton,
             dependencies = dependencies.property(
-                topic = element.topic.toAbsolute(dependencies.topic),
                 property = element,
             ),
+            topic = element.topic.asChild(topic),
         )
     )
 

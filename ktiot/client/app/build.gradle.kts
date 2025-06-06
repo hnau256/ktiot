@@ -81,11 +81,11 @@ kotlin {
             dependencies {
                 implementation(libs.android.activity.compose)
                 implementation(libs.android.appcompat)
+                implementation(libs.slf4j.android)
             }
         }
 
         desktopMain {
-            kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
             dependencies {
                 implementation(libs.slf4j.simple)
             }

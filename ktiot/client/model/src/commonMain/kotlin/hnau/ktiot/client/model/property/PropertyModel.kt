@@ -4,6 +4,8 @@ import hnau.common.model.goback.GoBackHandler
 import hnau.common.model.goback.NeverGoBackHandler
 import hnau.common.mqtt.utils.MqttClient
 import hnau.ktiot.scheme.Element
+import hnau.ktiot.scheme.PropertyMode
+import hnau.ktiot.scheme.topic.ChildTopic
 import hnau.ktiot.scheme.topic.MqttTopic
 import hnau.pipe.annotations.Pipe
 import kotlinx.coroutines.CoroutineScope
@@ -13,12 +15,11 @@ class PropertyModel(
     scope: CoroutineScope,
     private val dependencies: Dependencies,
     skeleton: Skeleton,
+    val topic: ChildTopic,
 ) {
 
     @Pipe
     interface Dependencies {
-
-        val topic: MqttTopic.Absolute
 
         val mqttClient: MqttClient
 
@@ -28,8 +29,8 @@ class PropertyModel(
     @Serializable
     /*data*/ class Skeleton
 
-    val topic: MqttTopic.Absolute
-        get() = dependencies.topic
+    val mode: PropertyMode
+        get() = dependencies.property.mode
 
     val goBackHandler: GoBackHandler = NeverGoBackHandler
 }

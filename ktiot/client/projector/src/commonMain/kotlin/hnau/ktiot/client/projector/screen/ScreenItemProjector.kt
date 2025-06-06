@@ -2,13 +2,16 @@ package hnau.ktiot.client.projector.screen
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.ui.Modifier
 import hnau.ktiot.client.projector.property.PropertyProjector
 
 @Immutable
 sealed interface ScreenItemProjector {
 
     @Composable
-    fun Content()
+    fun Content(
+        modifier: Modifier,
+    )
 
     val key: Int
 
@@ -18,8 +21,12 @@ sealed interface ScreenItemProjector {
     ) : ScreenItemProjector {
 
         @Composable
-        override fun Content() {
-            projector.Content()
+        override fun Content(
+            modifier: Modifier,
+        ) {
+            projector.Content(
+                modifier = modifier,
+            )
         }
 
         override val key: Int

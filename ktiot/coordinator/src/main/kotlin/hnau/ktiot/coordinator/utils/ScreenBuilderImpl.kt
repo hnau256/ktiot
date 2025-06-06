@@ -6,6 +6,7 @@ import hnau.ktiot.scheme.Element
 import hnau.ktiot.scheme.PropertyMode
 import hnau.ktiot.scheme.PropertyType
 import hnau.ktiot.scheme.topic.MqttTopic
+import hnau.ktiot.scheme.topic.asChild
 import hnau.ktiot.scheme.topic.ktiotElements
 import hnau.ktiot.scheme.topic.raw
 import hnau.ktiot.scheme.topic.toAbsolute
@@ -69,9 +70,7 @@ private class ScreenBuilderImpl(
         return PropertyAccessor(
             type = type,
             client = client,
-            topic = topic.toAbsolute(
-                relativePrefix = this@ScreenBuilderImpl.topic,
-            )
+            topic = topic.asChild(this@ScreenBuilderImpl.topic).topic
         )
     }
 }

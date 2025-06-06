@@ -27,9 +27,7 @@ class ConnectedModel(
     @Pipe
     interface Dependencies {
 
-        fun screen(
-            topic: MqttTopic.Absolute,
-        ): ScreenModel.Dependencies
+        fun screen(): ScreenModel.Dependencies
     }
 
     @Serializable
@@ -39,8 +37,8 @@ class ConnectedModel(
 
     val rootScreen = ScreenModel(
         scope = scope,
+        topic = MqttTopic.Absolute.root,
         dependencies = dependencies.screen(
-            topic = MqttTopic.Absolute.root,
         ),
         skeleton = skeleton::rootScreen
             .toAccessor()

@@ -22,8 +22,8 @@ fun main() = runBlocking {
             address = "127.0.0.1",
             clientId = "coordinator",
             auth = MqttConfig.Auth(
-                user = "hnau",
-                password = "gotazike",
+                user = "coordinator",
+                password = "qwerty",
             )
         ),
         builds = MutableStateFlow { scope ->
