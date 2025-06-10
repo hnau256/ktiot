@@ -27,24 +27,24 @@ fun main() = runBlocking {
             )
         ),
         builds = MutableStateFlow { scope ->
-            val value = property(
-                topic = MqttTopic.Relative("value"),
-                type = PropertyType.State.Number(
-                    suffix = "kg",
+            val master = property(
+                topic = MqttTopic.Relative("master"),
+                type = PropertyType.State.Fraction(
+                    range = 0f..10f,
+                ),
+                publishMode = PropertyMode.Manual,
+            )
+            val slave = property(
+                topic = MqttTopic.Relative("slave"),
+                type = PropertyType.State.Fraction(
+                    range = 0f..10f,
                 ),
                 publishMode = PropertyMode.Calculated,
             )
             scope.launch {
-                ticker(
-                    delayMillis = 1000,
-                    initialDelayMillis = 100,
-                ).consumeEach {
-                    value.publish(
-                        value = Clock.System
-                            .now()
-                            .toLocalDateTime(TimeZone.currentSystemDefault()).time.toSecondOfDay() / 1000f,
-                        retained = true,
-                    )
+                master.publish(5f, true)
+                master.subscribe().collect {
+                    slave.publish(it, true)
                 }
             }
         }

@@ -9,7 +9,6 @@ import hnau.ktiot.scheme.topic.MqttTopic
 import hnau.ktiot.scheme.topic.asChild
 import hnau.ktiot.scheme.topic.ktiotElements
 import hnau.ktiot.scheme.topic.raw
-import hnau.ktiot.scheme.topic.toAbsolute
 import hnau.ktiot.scheme.utils.PropertyAccessor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow

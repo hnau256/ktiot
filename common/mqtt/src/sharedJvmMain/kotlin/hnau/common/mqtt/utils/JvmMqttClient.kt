@@ -1,7 +1,5 @@
 package hnau.common.mqtt.utils
 
-import arrow.core.Option
-import hnau.common.kotlin.coroutines.mapState
 import hnau.common.kotlin.ifTrue
 import hnau.common.logging.tryOrLog
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -9,19 +7,14 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.NonCancellable
-import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onSubscription
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
@@ -90,18 +83,6 @@ class JvmMqttClient(
         }
         return deferred.await()
     }
-
-    private suspend inline fun <R> tryOrLogInScope(
-        log: String,
-        crossinline block: suspend () -> R,
-    ): Option<R> = scope
-        .async {
-            logger.tryOrLog(
-                log = log,
-                block = { block() },
-            )
-        }
-        .await()
 
     init {
         scope.launch {
@@ -276,6 +257,6 @@ class JvmMqttClient(
                     /* retained = */ retained
                 )
             }
-        }.isSome()
+        }.isSuccess
     }
 }

@@ -21,13 +21,12 @@ import hnau.ktiot.client.model.screen.ScreenItemModel
 import hnau.ktiot.client.model.screen.ScreenModel
 import hnau.ktiot.client.projector.property.PropertyProjector
 import hnau.ktiot.scheme.topic.ChildTopic
-import hnau.ktiot.scheme.topic.MqttTopic
+import hnau.ktiot.scheme.topic.raw
 import hnau.pipe.annotations.Pipe
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
-import hnau.ktiot.scheme.topic.raw
 
 @Immutable
 class ScreenProjector(
@@ -101,7 +100,7 @@ class ScreenProjector(
         LazyColumn(
             contentPadding = contentPadding + PaddingValues(Dimens.separation),
             modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(Dimens.smallSeparation),
+            verticalArrangement = Arrangement.spacedBy(Dimens.separation),
         ) {
             items(
                 items = items,

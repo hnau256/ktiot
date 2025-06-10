@@ -2,6 +2,7 @@ package hnau.ktiot.scheme
 
 import arrow.core.NonEmptyList
 import arrow.core.serialization.NonEmptyListSerializer
+import hnau.common.kotlin.serialization.ClosedFloatingPointRangeSerializer
 import hnau.common.model.color.RGBABytes
 import hnau.common.model.color.gradient.Gradient
 import hnau.common.model.color.gradient.create
@@ -97,8 +98,8 @@ sealed interface PropertyType<T> {
         @Serializable
         @SerialName("fraction")
         data class Fraction(
-            val min: Float = 0f,
-            val max: Float = 1f,
+            @Serializable(ClosedFloatingPointRangeSerializer.Float::class)
+            val range: ClosedFloatingPointRange<Float> = 0f..1f,
             val display: Display = Display.Percent,
             val gradient: Gradient<RGBABytes> =
                 Gradient.create(RGBABytes.Black, RGBABytes.White),

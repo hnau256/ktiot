@@ -36,7 +36,7 @@ class PropertyAccessor<T>(
                         element = element
                     )
                 }
-                .onSome { parsed -> emit(parsed) }
+                .onSuccess { parsed -> emit(parsed) }
         }
 
     suspend fun publish(

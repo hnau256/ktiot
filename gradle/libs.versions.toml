@@ -59,7 +59,7 @@ arrow-serialization = { module = "io.arrow-kt:arrow-core-serialization", version
 pipe-annotations = { module = "com.github.hnau256.common-gen-pipe:annotations", version.ref = "pipe" }
 pipe-processor = { module = "com.github.hnau256.common-gen-pipe:processor", version.ref = "pipe" }
 #hnau
-hnau-kotlin = { module = "com.github.hnau256.common-kotlin:common-kotlin", version = "1.0.2" }
+hnau-kotlin = { module = "com.github.hnau256.common-kotlin:common-kotlin", version = "1.0.5" }
 hnau-gen-kt = { module = "com.github.hnau256:common-gen-kt", version = "1.0.0" }
 hnau-model = { module = "com.github.hnau256.common-model:common-model", version = "1.0.14" }
 hnau-projector = { module = "com.github.hnau256.common-projector:common-projector", version = "1.0.17" }

@@ -47,9 +47,7 @@ class ScreenModel(
 
         val mqttClient: MqttClient
 
-        fun property(
-            property: Element.Property<*>,
-        ): PropertyModel.Dependencies
+        fun property(): PropertyModel.Dependencies
     }
 
     @Serializable
@@ -144,10 +142,9 @@ class ScreenModel(
                     )
                 }
             ).skeleton,
-            dependencies = dependencies.property(
-                property = element,
-            ),
+            dependencies = dependencies.property(),
             topic = element.topic.asChild(topic),
+            property = element,
         )
     )
 
