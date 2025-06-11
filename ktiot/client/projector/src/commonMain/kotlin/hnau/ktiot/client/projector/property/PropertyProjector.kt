@@ -1,5 +1,7 @@
 package hnau.ktiot.client.projector.property
 
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.ContentTransform
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,13 +20,14 @@ import hnau.common.kotlin.fold
 import hnau.common.kotlin.map
 import hnau.common.projector.uikit.ErrorPanel
 import hnau.common.projector.uikit.progressindicator.ProgressIndicatorInBox
-import hnau.common.projector.uikit.state.LoadableContent
 import hnau.common.projector.uikit.state.StateContent
 import hnau.common.projector.uikit.state.TransitionSpec
 import hnau.common.projector.uikit.utils.Dimens
 import hnau.common.projector.utils.Icon
-import hnau.ktiot.client.model.property.FractionModel
+import hnau.ktiot.client.model.property.value.FractionModel
 import hnau.ktiot.client.model.property.PropertyModel
+import hnau.ktiot.client.model.property.value.EditableModel
+import hnau.ktiot.client.projector.property.value.EditableProjector
 import hnau.ktiot.client.projector.property.value.FractionProjector
 import hnau.ktiot.client.projector.property.value.ValueProjector
 import hnau.ktiot.client.projector.utils.icon
@@ -45,6 +48,8 @@ class PropertyProjector(
     interface Dependencies {
 
         fun fraction(): FractionProjector.Dependencies
+
+        fun editable(): EditableProjector.Dependencies
     }
 
     private val value: StateFlow<Loadable<Result<ValueProjector>>> = model.value.mapWithScope(
@@ -57,6 +62,12 @@ class PropertyProjector(
                         scope = valueScope,
                         model = value,
                         dependencies = dependencies.fraction(),
+                    )
+
+                    is EditableModel<*, *, *, *, *, *, *, *> -> EditableProjector(
+                        scope = valueScope,
+                        model = value,
+                        dependencies = dependencies.editable(),
                     )
                 }
             }
@@ -89,7 +100,7 @@ class PropertyProjector(
                         text = model.topic.toTitle(),
                         style = MaterialTheme.typography.titleMedium,
                     )
-
+                    TopActions()
                 }
                 Value()
             }
@@ -97,14 +108,20 @@ class PropertyProjector(
     }
 
     @Composable
-    private fun Value() {
+    private fun Content(
+        label: String,
+        transitionSpec: AnimatedContentTransitionScope<Loadable<Result<ValueProjector>>>.() -> ContentTransform,
+        Loading: @Composable () -> Unit = {},
+        Error: @Composable (Throwable) -> Unit = {},
+        Value: @Composable (ValueProjector) -> Unit,
+    ) {
         value
             .collectAsState()
             .value
             .StateContent(
-                label = "propertyValueOrErrorOrLoading",
-                transitionSpec = TransitionSpec.crossfade(),
-                contentKey = { valueOrErrorOrLoading ->
+                label = label,
+                transitionSpec = transitionSpec,
+                contentKey = { valueOrErrorOrLoading: Loadable<Result<ValueProjector>> ->
                     valueOrErrorOrLoading.fold(
                         ifLoading = { 0 },
                         ifReady = { valueOrError ->
@@ -117,24 +134,48 @@ class PropertyProjector(
                 },
             ) { valueOrErrorOrLoading ->
                 valueOrErrorOrLoading.fold(
-                    ifLoading = { ProgressIndicatorInBox() },
+                    ifLoading = { Loading() },
                     ifReady = { valueOrError ->
                         valueOrError.fold(
                             onFailure = { error ->
-                                ErrorPanel(
-                                    title = {
-                                        Text(
-                                            text = error.message.toString(),
-                                        )
-                                    }
-                                )
+                                Error(error)
                             },
                             onSuccess = { valueProjector ->
-                                valueProjector.Content()
+                                Value(valueProjector)
                             },
                         )
                     }
                 )
             }
+    }
+
+    @Composable
+    private fun Value() {
+        Content(
+            label = "propertyValueOrErrorOrLoadingMain",
+            transitionSpec = TransitionSpec.vertical(),
+            Loading = { ProgressIndicatorInBox() },
+            Error = { error ->
+                ErrorPanel(
+                    title = {
+                        Text(
+                            text = error.message.toString(),
+                        )
+                    }
+                )
+            },
+        ) { valueProjector ->
+            valueProjector.MainContent()
+        }
+    }
+
+    @Composable
+    private fun TopActions() {
+        Content(
+            label = "propertyValueOrErrorOrLoadingTop",
+            transitionSpec = TransitionSpec.horizontal(),
+        ) { valueProjector ->
+            valueProjector.TopContent()
+        }
     }
 }

@@ -5,5 +5,8 @@ import androidx.compose.runtime.Composable
 sealed interface ValueProjector {
 
     @Composable
-    fun Content()
+    fun TopContent() {}
+
+    @Composable
+    fun MainContent()
 }

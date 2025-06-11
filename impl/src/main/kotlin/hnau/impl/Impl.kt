@@ -19,7 +19,7 @@ fun main() = runBlocking {
     System.setProperty(SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "TRACE")
     coordinator(
         config = MqttConfig(
-            address = "127.0.0.1",
+            address = "192.168.0.11",
             clientId = "coordinator",
             auth = MqttConfig.Auth(
                 user = "coordinator",
@@ -29,20 +29,16 @@ fun main() = runBlocking {
         builds = MutableStateFlow { scope ->
             val master = property(
                 topic = MqttTopic.Relative("master"),
-                type = PropertyType.State.Fraction(
-                    range = 0f..10f,
-                ),
+                type = PropertyType.State.Text,
                 publishMode = PropertyMode.Manual,
             )
             val slave = property(
                 topic = MqttTopic.Relative("slave"),
-                type = PropertyType.State.Fraction(
-                    range = 0f..10f,
-                ),
+                type = PropertyType.State.Text,
                 publishMode = PropertyMode.Calculated,
             )
             scope.launch {
-                master.publish(5f, true)
+                master.publish("QWERTY", true)
                 master.subscribe().collect {
                     slave.publish(it, true)
                 }

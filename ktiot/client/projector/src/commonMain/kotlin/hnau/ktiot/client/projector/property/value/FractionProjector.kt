@@ -9,10 +9,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.util.fastCoerceIn
-import androidx.compose.ui.util.lerp
-import arrow.core.nonEmptySetOf
 import hnau.common.kotlin.foldBoolean
-import hnau.ktiot.client.model.property.FractionModel
+import hnau.ktiot.client.model.property.value.FractionModel
 import hnau.pipe.annotations.Pipe
 import kotlinx.coroutines.CoroutineScope
 
@@ -30,7 +28,7 @@ class FractionProjector(
     }
 
     @Composable
-    override fun Content() {
+    override fun MainContent() {
         val modifier = Modifier.fillMaxWidth()
         val range = model.type.range
         val value = model

@@ -1,4 +1,4 @@
-package hnau.ktiot.client.model.property
+package hnau.ktiot.client.model.property.value
 
 import hnau.common.kotlin.coroutines.flatMapState
 import hnau.common.kotlin.coroutines.mapState
@@ -13,7 +13,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.yield
 import kotlinx.serialization.Serializable
 
 class FractionModel(
@@ -25,6 +24,12 @@ class FractionModel(
     val type: PropertyType.State.Fraction,
     val mutable: Boolean,
 ) : ValueModel {
+
+    companion object {
+
+        val factory: ValueModel.Factory<Float, PropertyType.State.Fraction, Dependencies, Skeleton, FractionModel> =
+            ValueModel.Factory(::FractionModel)
+    }
 
     @Pipe
     interface Dependencies
@@ -60,5 +65,6 @@ class FractionModel(
         }
     }
 
-    override val goBackHandler: GoBackHandler = NeverGoBackHandler
+    override val goBackHandler: GoBackHandler
+        get() = NeverGoBackHandler
 }

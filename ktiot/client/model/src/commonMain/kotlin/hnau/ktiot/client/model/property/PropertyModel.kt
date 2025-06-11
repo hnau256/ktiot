@@ -1,54 +1,37 @@
 package hnau.ktiot.client.model.property
 
-import arrow.core.None
-import arrow.core.toOption
 import hnau.common.kotlin.Loadable
-import hnau.common.kotlin.Loading
-import hnau.common.kotlin.Ready
-import hnau.common.kotlin.coroutines.Stickable
-import hnau.common.kotlin.coroutines.combineState
 import hnau.common.kotlin.coroutines.flatMapState
-import hnau.common.kotlin.coroutines.mapState
-import hnau.common.kotlin.coroutines.operationOrNullIfExecuting
-import hnau.common.kotlin.coroutines.predeterminated
-import hnau.common.kotlin.coroutines.stateFlow
-import hnau.common.kotlin.coroutines.stick
 import hnau.common.kotlin.fold
-import hnau.common.kotlin.getOrInit
-import hnau.common.kotlin.shrinkType
-import hnau.common.kotlin.toAccessor
-import hnau.common.logging.tryOrLog
 import hnau.common.model.goback.GoBackHandler
 import hnau.common.model.goback.NeverGoBackHandler
 import hnau.common.mqtt.utils.MqttClient
-import hnau.ktiot.client.model.utils.Timestamped
+import hnau.ktiot.client.model.property.value.EditableModel
+import hnau.ktiot.client.model.property.value.FractionModel
+import hnau.ktiot.client.model.property.value.ValueModel
+import hnau.ktiot.client.model.property.value.createValueModel
+import hnau.ktiot.client.model.property.value.editable.EditModel
+import hnau.ktiot.client.model.property.value.editable.TextEditModel
+import hnau.ktiot.client.model.property.value.editable.TextViewModel
+import hnau.ktiot.client.model.property.value.editable.ViewModel
 import hnau.ktiot.scheme.Element
 import hnau.ktiot.scheme.PropertyMode
 import hnau.ktiot.scheme.PropertyType
 import hnau.ktiot.scheme.topic.ChildTopic
-import hnau.ktiot.scheme.topic.raw
 import hnau.pipe.annotations.Pipe
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.datetime.Clock
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
-import kotlin.time.Duration.Companion.seconds
 
-private val logger = KotlinLogging.logger {  }
+private val logger = KotlinLogging.logger { }
 
 class PropertyModel(
-    scope: CoroutineScope,
+    private val scope: CoroutineScope,
     private val dependencies: Dependencies,
-    skeleton: Skeleton,
+    private val skeleton: Skeleton,
     val topic: ChildTopic,
-    private val property: Element.Property<*>
+    private val property: Element.Property<*>,
 ) {
 
     @Pipe
@@ -57,6 +40,8 @@ class PropertyModel(
         val mqttClient: MqttClient
 
         fun fraction(): FractionModel.Dependencies
+
+        fun editable(): EditableModel.Dependencies
     }
 
     @Serializable
@@ -70,146 +55,78 @@ class PropertyModel(
     val value: StateFlow<Loadable<Result<ValueModel>>> = when (val type = property.type) {
         is PropertyType.Events -> TODO()
         is PropertyType.State -> when (type) {
-            is PropertyType.State.Fraction -> dependencies
-                .mqttClient
-                .let { client ->
-                    client
-                        .subscribe(
-                            topic = topic.topic.raw,
-                        )
-                        .map { element ->
-                            logger.tryOrLog(
-                                log = "parsing '$element' from $topic",
-                                block = {
-                                    Json.decodeFromJsonElement(
-                                        deserializer = type.serializer,
-                                        element = element
-                                    )
-                                    //TODO(error bubble) if exception
-                                }
-                            ).let(::Ready)
-                        }
-                        .stateIn(
-                            scope = scope,
-                            started = SharingStarted.Eagerly,
-                            initialValue = Loading,
-                        )
-                        .stick(scope) { stickableScope, valueOrErrorOrLoading ->
-                            valueOrErrorOrLoading.fold(
-                                ifLoading = { Stickable.predeterminated(Loading) },
-                                ifReady = { valueOrError ->
-                                    valueOrError.fold(
-                                        onSuccess = { initialValue ->
-                                            Stickable.stateFlow<_, Float, _>(
-                                                initial = initialValue,
-                                                tryUseNext = { valueOrErrorOrLoading ->
-                                                    valueOrErrorOrLoading.fold(
-                                                        ifLoading = { None },
-                                                        ifReady = { valueOrError ->
-                                                            valueOrError.getOrNull()
-                                                                .toOption()
-                                                        }
-                                                    )
-                                                },
-                                                createResult = { values ->
-
-                                                    val overwriteValue =
-                                                        MutableStateFlow<Timestamped<Float>?>(
-                                                            null
-                                                        )
-
-                                                    val valuesOrOverwritten = combineState(
-                                                        scope = scope,
-                                                        a = overwriteValue.mapState(
-                                                            scope = stickableScope
-                                                        ) { overwrittenOrNull ->
-                                                            overwrittenOrNull?.takeIf { overwritten ->
-                                                                Clock.System.now() - overwritten.timestamp < 3.seconds
-                                                            }
-                                                        },
-                                                        b = values.mapState(
-                                                            scope = stickableScope,
-                                                            transform = Timestamped.Companion::now,
-                                                        ),
-                                                    ) { overwritten, received ->
-                                                        when {
-                                                            overwritten == null -> received.value to false
-                                                            overwritten.timestamp > received.timestamp -> overwritten.value to true
-                                                            else -> received.value to false
-                                                        }
-                                                    }
-
-                                                    FractionModel(
-                                                        scope = stickableScope,
-                                                        dependencies = dependencies.fraction(),
-                                                        skeleton = skeleton::value
-                                                            .toAccessor()
-                                                            .shrinkType<_, FractionModel.Skeleton>()
-                                                            .getOrInit { FractionModel.Skeleton() },
-                                                        value = valuesOrOverwritten.mapState(
-                                                            stickableScope
-                                                        ) { it.first },
-                                                        type = type,
-                                                        mutable = when (property.mode) {
-                                                            PropertyMode.Manual -> true
-                                                            PropertyMode.Hardware, PropertyMode.Calculated -> false
-                                                        },
-                                                        publish = operationOrNullIfExecuting(
-                                                            stickableScope
-                                                        ) { valueToSend ->
-                                                            val encoded = logger
-                                                                .tryOrLog(
-                                                                    log = "encoding '$valueToSend' for $topic"
-                                                                ) {
-                                                                    Json.Default.encodeToJsonElement(
-                                                                        serializer = type.serializer,
-                                                                        value = valueToSend
-                                                                    )
-                                                                }
-                                                                .getOrNull()
-                                                                ?: return@operationOrNullIfExecuting //TODO(error bubble)
-
-                                                            overwriteValue.value =
-                                                                Timestamped.now(valueToSend)
-
-                                                            client.publish(
-                                                                topic = topic.topic.raw,
-                                                                value = encoded,
-                                                                retained = true,
-                                                            ) //TODO(error bubble) if false
-
-                                                            valuesOrOverwritten.first {
-                                                                val overwritten = it.second
-                                                                !overwritten
-                                                            }
-                                                        }
-
-                                                    )
-                                                        .let(Result.Companion::success)
-                                                        .let(::Ready)
-                                                }
-                                            )
-                                        },
-                                        onFailure = { error ->
-                                            Stickable.predeterminated(
-                                                Ready(Result.failure(error))
-                                            )
-                                        }
-                                    )
-                                }
-                            )
-                        }
-
-                }
+            is PropertyType.State.Fraction -> createValueModel(
+                valueModelFactory = FractionModel.factory,
+                createInitialSkeleton = { FractionModel.Skeleton() },
+                extractDependencies = Dependencies::fraction,
+                type = type,
+            )
 
             is PropertyType.State.Enum -> TODO()
+
             PropertyType.State.Flag -> TODO()
+
             is PropertyType.State.Number -> TODO()
+
             PropertyType.State.RGB -> TODO()
-            PropertyType.State.Text -> TODO()
+
+            is PropertyType.State.Text -> createEditableModel(
+                createViewModelSkeleton = { TextViewModel.Skeleton() },
+                extractViewDependencies = { textView() },
+                viewFactory = TextViewModel.factory,
+                createEditModelSkeleton = { initial -> TextEditModel.Skeleton(initial) },
+                extractEditDependencies = { textEdit() },
+                editFactory = TextEditModel.factory,
+                type = type,
+            )
+
             PropertyType.State.Timestamp -> TODO()
         }
     }
+
+    private inline fun <reified T, P : PropertyType.State<T>, D, reified S : ValueModel.Skeleton, M : ValueModel> createValueModel(
+        valueModelFactory: ValueModel.Factory<T, P, D, S, M>,
+        crossinline createInitialSkeleton: () -> S,
+        crossinline extractDependencies: Dependencies.() -> D,
+        type: P,
+    ): StateFlow<Loadable<Result<M>>> = createValueModel(
+        scope = scope,
+        dependencies = dependencies,
+        skeleton = skeleton,
+        topic = topic,
+        createInitialSkeleton = createInitialSkeleton,
+        extractDependencies = extractDependencies,
+        valueModelFactory = valueModelFactory,
+        type = type,
+        mode = property.mode,
+    )
+
+    private inline fun <
+            reified T, P : PropertyType.State<T>,
+            V : ViewModel, VS : ViewModel.Skeleton, VD,
+            E : EditModel<T>, ES : EditModel.Skeleton, ED,
+            > createEditableModel(
+        noinline createViewModelSkeleton: () -> VS,
+        noinline extractViewDependencies: EditableModel.Dependencies.() -> VD,
+        viewFactory: ViewModel.Factory<T, P, VD, VS, V>,
+        noinline createEditModelSkeleton: (initialValue: T) -> ES,
+        noinline extractEditDependencies: EditableModel.Dependencies.() -> ED,
+        editFactory: EditModel.Factory<T, P, ED, ES, E>,
+        type: P,
+    ): StateFlow<Loadable<Result<EditableModel<T, P, V, VS, VD, E, ES, ED>>>> = hnau.ktiot.client.model.property.value.createEditableModel(
+        scope = scope,
+        dependencies = dependencies,
+        skeleton = skeleton,
+        topic = topic,
+        type = type,
+        mode = property.mode,
+        createViewModelSkeleton = createViewModelSkeleton,
+        extractViewDependencies = extractViewDependencies,
+        viewFactory = viewFactory,
+        createEditModelSkeleton = createEditModelSkeleton,
+        extractEditDependencies = extractEditDependencies,
+        editFactory = editFactory,
+    )
 
     val goBackHandler: GoBackHandler = value.flatMapState(scope) { valueOrErrorLoading ->
         valueOrErrorLoading.fold(
