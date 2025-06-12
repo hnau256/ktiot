@@ -11,11 +11,16 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import hnau.common.kotlin.coroutines.mapState
 import hnau.common.kotlin.coroutines.mapWithScope
 import hnau.common.kotlin.foldBoolean
+import hnau.common.kotlin.foldNullable
+import hnau.common.kotlin.ifNull
 import hnau.common.projector.uikit.HnauButton
 import hnau.common.projector.uikit.state.StateContent
 import hnau.common.projector.uikit.state.TransitionSpec
+import hnau.common.projector.uikit.table.Cell
+import hnau.common.projector.uikit.table.CellScope
 import hnau.common.projector.uikit.table.Table
 import hnau.common.projector.uikit.table.TableOrientation
 import hnau.common.projector.utils.Icon
@@ -121,68 +126,58 @@ class EditableProjector<
             }
         }
 
-    @Composable
-    override fun TopContent() {
-        state
-            .collectAsState()
-            .value
-            .StateContent(
-                label = "ViewOrEditTopContent",
-                transitionSpec = TransitionSpec.horizontal(),
-                contentKey = State::key
-            ) { state ->
-                when (state) {
-                    is State.Edit -> EditTopContent(state)
-                    is State.View -> ViewTopContent(state)
+    override val topCells: StateFlow<List<Cell>> = state
+        .mapState(scope) { state ->
+            when (state) {
+                is State.Edit -> editTopCells(state)
+                is State.View -> viewTopCells(state)
+            }
+        }
+
+    private fun viewTopCells(
+        state: State.View,
+    ): List<Cell> = state
+        .edit
+        .foldNullable(
+            ifNull = {
+                emptyList()
+            },
+            ifNotNull = { edit ->
+                listOf {
+                    HnauButton(
+                        shape = shape,
+                        onClick = edit,
+                    ) {
+                        Icon(Icons.Filled.Edit)
+                    }
                 }
             }
-    }
+        )
 
-    @Composable
-    private fun ViewTopContent(
-        state: State.View,
-    ) {
-        state.edit?.let { edit ->
+    private fun editTopCells(
+        state: State.Edit,
+    ): List<Cell> = listOf(
+        {
             HnauButton(
-                onClick = edit,
+                onClick = state.cancel,
+                shape = shape,
             ) {
-                Icon(Icons.Filled.Edit)
+                Icon(Icons.Filled.Cancel)
+            }
+        },
+        {
+            val saveOrNull by state.save.collectAsState()
+            val enabled = saveOrNull != null
+            val saveOrSaving = saveOrNull?.collectAsState()?.value
+            //TODO progress
+            HnauButton(
+                onClick = saveOrSaving,
+                shape = shape,
+            ) {
+                Icon(Icons.Filled.Done)
             }
         }
-    }
-
-    @Composable
-    private fun EditTopContent(
-        state: State.Edit,
-    ) {
-        Table(
-            orientation = TableOrientation.Horizontal,
-            items = remember { persistentListOf(false, true) },
-        ) { cancelOrSave ->
-            cancelOrSave.foldBoolean(
-                ifFalse = {
-                    HnauButton(
-                        onClick = state.cancel,
-                        shape = shape,
-                    ) {
-                        Icon(Icons.Filled.Cancel)
-                    }
-                },
-                ifTrue = {
-                    val saveOrNull by state.save.collectAsState()
-                    val enabled = saveOrNull != null
-                    val saveOrSaving = saveOrNull?.collectAsState()?.value
-                    //TODO progress
-                    HnauButton(
-                        onClick = saveOrSaving,
-                        shape = shape,
-                    ) {
-                        Icon(Icons.Filled.Done)
-                    }
-                },
-            )
-        }
-    }
+    )
 
     @Composable
     override fun MainContent() {

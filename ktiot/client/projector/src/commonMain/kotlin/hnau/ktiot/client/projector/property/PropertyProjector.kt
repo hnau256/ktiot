@@ -3,6 +3,7 @@ package hnau.ktiot.client.projector.property
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.ContentTransform
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -12,16 +13,28 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import hnau.common.kotlin.Loadable
+import hnau.common.kotlin.coroutines.flatMapState
+import hnau.common.kotlin.coroutines.mapState
 import hnau.common.kotlin.coroutines.mapWithScope
+import hnau.common.kotlin.coroutines.scopedInState
+import hnau.common.kotlin.coroutines.toMutableStateFlowAsInitial
 import hnau.common.kotlin.fold
+import hnau.common.kotlin.ifNull
 import hnau.common.kotlin.map
+import hnau.common.kotlin.valueOrElse
 import hnau.common.projector.uikit.ErrorPanel
 import hnau.common.projector.uikit.progressindicator.ProgressIndicatorInBox
 import hnau.common.projector.uikit.state.StateContent
 import hnau.common.projector.uikit.state.TransitionSpec
+import hnau.common.projector.uikit.table.Cell
+import hnau.common.projector.uikit.table.CellBox
+import hnau.common.projector.uikit.table.Subtable
+import hnau.common.projector.uikit.table.Table
+import hnau.common.projector.uikit.table.TableOrientation
 import hnau.common.projector.uikit.utils.Dimens
 import hnau.common.projector.utils.Icon
 import hnau.ktiot.client.model.property.value.FractionModel
@@ -33,6 +46,9 @@ import hnau.ktiot.client.projector.property.value.ValueProjector
 import hnau.ktiot.client.projector.utils.icon
 import hnau.ktiot.client.projector.utils.toTitle
 import hnau.pipe.annotations.Pipe
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
 
@@ -74,53 +90,84 @@ class PropertyProjector(
         }
     }
 
+    private val topCells: StateFlow<ImmutableList<Cell>> = value
+        .scopedInState(scope)
+        .flatMapState(scope) { (valueScope, valueOrErrorOrLoading) ->
+            valueOrErrorOrLoading
+                .valueOrElse { null }
+                ?.getOrNull()
+                ?.topCells
+                .ifNull { emptyList<Cell>().toMutableStateFlowAsInitial() }
+                .mapState(valueScope) { actions ->
+                    buildList<Cell> {
+                        add {
+                            CellBox(
+                                modifier = Modifier.weight(1f),
+                                contentAlignment = Alignment.CenterStart,
+                            ) {
+                                Row(
+                                    modifier = Modifier.padding(
+                                        horizontal = Dimens.separation,
+                                        vertical = Dimens.smallSeparation,
+                                    ),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(Dimens.smallSeparation),
+                                ) {
+                                    Icon(
+                                        icon = model.mode.icon,
+                                    )
+                                    Text(
+                                        text = model.topic.toTitle(),
+                                        style = MaterialTheme.typography.titleMedium,
+                                    )
+                                }
+                            }
+                        }
+                        addAll(actions)
+                    }.toImmutableList()
+                }
+        }
+
     @Composable
     fun Content(
         modifier: Modifier,
     ) {
-        Card(
+        Table(
             modifier = modifier,
-        ) {
-            Column(
-                modifier = Modifier.padding(
-                    horizontal = Dimens.separation,
-                    vertical = Dimens.separation,
-                ),
-                verticalArrangement = Arrangement.spacedBy(Dimens.separation)
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(Dimens.smallSeparation),
-                ) {
-                    Icon(
-                        icon = model.mode.icon,
-                    )
-                    Text(
-                        modifier = Modifier.weight(1f),
-                        text = model.topic.toTitle(),
-                        style = MaterialTheme.typography.titleMedium,
-                    )
-                    TopActions()
-                }
-                Value()
+            orientation = TableOrientation.Vertical,
+            cells = remember(topCells, value) {
+                persistentListOf(
+                    {
+                        Subtable(
+                            cells = topCells.collectAsState().value,
+                        )
+                    },
+                    {
+                        CellBox {
+                            Box(
+                                modifier = Modifier.padding(
+                                    horizontal = Dimens.separation,
+                                    vertical = Dimens.smallSeparation,
+                                )
+                            ) {
+                                Value()
+                            }
+                        }
+                    }
+                )
             }
-        }
+        )
     }
 
     @Composable
-    private fun Content(
-        label: String,
-        transitionSpec: AnimatedContentTransitionScope<Loadable<Result<ValueProjector>>>.() -> ContentTransform,
-        Loading: @Composable () -> Unit = {},
-        Error: @Composable (Throwable) -> Unit = {},
-        Value: @Composable (ValueProjector) -> Unit,
-    ) {
+    private fun Value() {
+
         value
             .collectAsState()
             .value
             .StateContent(
-                label = label,
-                transitionSpec = transitionSpec,
+                label = "propertyValueOrErrorOrLoading",
+                transitionSpec = TransitionSpec.vertical(),
                 contentKey = { valueOrErrorOrLoading: Loadable<Result<ValueProjector>> ->
                     valueOrErrorOrLoading.fold(
                         ifLoading = { 0 },
@@ -134,48 +181,24 @@ class PropertyProjector(
                 },
             ) { valueOrErrorOrLoading ->
                 valueOrErrorOrLoading.fold(
-                    ifLoading = { Loading() },
+                    ifLoading = { ProgressIndicatorInBox() },
                     ifReady = { valueOrError ->
                         valueOrError.fold(
                             onFailure = { error ->
-                                Error(error)
+                                ErrorPanel(
+                                    title = {
+                                        Text(
+                                            text = error.message.toString(),
+                                        )
+                                    }
+                                )
                             },
                             onSuccess = { valueProjector ->
-                                Value(valueProjector)
+                                valueProjector.MainContent()
                             },
                         )
                     }
                 )
             }
-    }
-
-    @Composable
-    private fun Value() {
-        Content(
-            label = "propertyValueOrErrorOrLoadingMain",
-            transitionSpec = TransitionSpec.vertical(),
-            Loading = { ProgressIndicatorInBox() },
-            Error = { error ->
-                ErrorPanel(
-                    title = {
-                        Text(
-                            text = error.message.toString(),
-                        )
-                    }
-                )
-            },
-        ) { valueProjector ->
-            valueProjector.MainContent()
-        }
-    }
-
-    @Composable
-    private fun TopActions() {
-        Content(
-            label = "propertyValueOrErrorOrLoadingTop",
-            transitionSpec = TransitionSpec.horizontal(),
-        ) { valueProjector ->
-            valueProjector.TopContent()
-        }
     }
 }
