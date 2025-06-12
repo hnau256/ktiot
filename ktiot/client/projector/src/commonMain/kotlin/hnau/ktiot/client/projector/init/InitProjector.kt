@@ -17,11 +17,8 @@ import hnau.ktiot.client.projector.LoggedProjector
 import hnau.ktiot.client.projector.LoginProjector
 import hnau.pipe.annotations.Pipe
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
 
 private val logger = KotlinLogging.logger {  }
 

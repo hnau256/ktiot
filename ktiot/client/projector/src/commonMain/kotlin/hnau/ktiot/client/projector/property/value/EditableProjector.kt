@@ -9,20 +9,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import hnau.common.kotlin.coroutines.mapState
 import hnau.common.kotlin.coroutines.mapWithScope
-import hnau.common.kotlin.foldBoolean
 import hnau.common.kotlin.foldNullable
-import hnau.common.kotlin.ifNull
 import hnau.common.projector.uikit.HnauButton
 import hnau.common.projector.uikit.state.StateContent
 import hnau.common.projector.uikit.state.TransitionSpec
 import hnau.common.projector.uikit.table.Cell
-import hnau.common.projector.uikit.table.CellScope
-import hnau.common.projector.uikit.table.Table
-import hnau.common.projector.uikit.table.TableOrientation
 import hnau.common.projector.utils.Icon
 import hnau.ktiot.client.model.property.value.EditableModel
 import hnau.ktiot.client.model.property.value.editable.EditModel
@@ -35,7 +29,6 @@ import hnau.ktiot.client.projector.property.value.editable.TextViewProjector
 import hnau.ktiot.client.projector.property.value.editable.ViewProjector
 import hnau.ktiot.scheme.PropertyType
 import hnau.pipe.annotations.Pipe
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
 

@@ -1,7 +1,6 @@
 package hnau.ktiot.client.model.property.value
 
 import hnau.common.model.goback.GoBackHandler
-import hnau.ktiot.client.model.property.PropertyModel
 import hnau.ktiot.scheme.PropertyType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow

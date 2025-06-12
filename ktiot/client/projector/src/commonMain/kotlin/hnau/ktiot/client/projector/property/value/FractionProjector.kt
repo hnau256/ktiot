@@ -10,7 +10,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.util.fastCoerceIn
 import hnau.common.kotlin.foldBoolean
-import hnau.common.projector.uikit.table.CellScope
 import hnau.ktiot.client.model.property.value.FractionModel
 import hnau.pipe.annotations.Pipe
 import kotlinx.coroutines.CoroutineScope

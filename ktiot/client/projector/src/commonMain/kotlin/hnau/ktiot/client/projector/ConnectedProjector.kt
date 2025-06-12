@@ -3,7 +3,6 @@ package hnau.ktiot.client.projector
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -12,7 +11,6 @@ import hnau.common.model.goback.GlobalGoBackHandler
 import hnau.common.model.goback.GoBackHandler
 import hnau.common.projector.utils.NavigationIcon
 import hnau.ktiot.client.model.ConnectedModel
-import hnau.ktiot.client.model.utils.TemplateModel
 import hnau.ktiot.client.projector.screen.ScreenProjector
 import hnau.pipe.annotations.Pipe
 import kotlinx.coroutines.CoroutineScope

@@ -1,13 +1,9 @@
 package hnau.ktiot.client.projector.property
 
-import androidx.compose.animation.AnimatedContentTransitionScope
-import androidx.compose.animation.ContentTransform
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,9 +33,9 @@ import hnau.common.projector.uikit.table.Table
 import hnau.common.projector.uikit.table.TableOrientation
 import hnau.common.projector.uikit.utils.Dimens
 import hnau.common.projector.utils.Icon
-import hnau.ktiot.client.model.property.value.FractionModel
 import hnau.ktiot.client.model.property.PropertyModel
 import hnau.ktiot.client.model.property.value.EditableModel
+import hnau.ktiot.client.model.property.value.FractionModel
 import hnau.ktiot.client.projector.property.value.EditableProjector
 import hnau.ktiot.client.projector.property.value.FractionProjector
 import hnau.ktiot.client.projector.property.value.ValueProjector

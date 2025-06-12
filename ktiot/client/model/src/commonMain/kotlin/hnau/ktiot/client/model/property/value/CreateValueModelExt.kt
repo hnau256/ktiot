@@ -20,7 +20,6 @@ import hnau.common.kotlin.shrinkType
 import hnau.common.kotlin.toAccessor
 import hnau.common.logging.tryOrLog
 import hnau.ktiot.client.model.property.PropertyModel
-import hnau.ktiot.client.model.property.value.EditableModel
 import hnau.ktiot.client.model.property.value.editable.EditModel
 import hnau.ktiot.client.model.property.value.editable.ViewModel
 import hnau.ktiot.client.model.utils.Timestamped
