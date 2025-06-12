@@ -38,12 +38,11 @@ class TextViewProjector(
     @Pipe
     interface Dependencies
 
-    override val cells: StateFlow<List<Cell>> = MutableStateFlow(
+    override val topCells: StateFlow<List<Cell>> = MutableStateFlow(
         listOf {
             CellBox {
                 Text(
                     modifier = Modifier
-                        .fillMaxWidth()
                         .padding(Dimens.separation),
                     text = model
                         .value
@@ -67,7 +66,7 @@ class TextEditProjector(
     @Pipe
     interface Dependencies
 
-    override val cells: StateFlow<List<Cell>> = MutableStateFlow(
+    override val mainCells: StateFlow<List<Cell>> = MutableStateFlow(
         listOf {
             val focusRequester = remember { FocusRequester() }
             TextInput(

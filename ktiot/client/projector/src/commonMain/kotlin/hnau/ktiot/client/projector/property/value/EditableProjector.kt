@@ -10,7 +10,7 @@ import androidx.compose.runtime.getValue
 import hnau.common.kotlin.coroutines.flatMapState
 import hnau.common.kotlin.coroutines.mapState
 import hnau.common.kotlin.coroutines.mapWithScope
-import hnau.common.kotlin.foldNullable
+import hnau.common.kotlin.coroutines.scopedInState
 import hnau.common.projector.uikit.HnauButton
 import hnau.common.projector.uikit.table.Cell
 import hnau.common.projector.utils.Icon
@@ -26,6 +26,7 @@ import hnau.ktiot.client.projector.property.value.editable.ViewProjector
 import hnau.ktiot.scheme.PropertyType
 import hnau.pipe.annotations.Pipe
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 @Immutable
@@ -51,25 +52,25 @@ class EditableProjector<
 
     sealed interface State {
 
-        val cells: StateFlow<List<Cell>>
+        val mainCells: StateFlow<List<Cell>>
 
         data class View(
-            private val projector: ViewProjector,
+            val projector: ViewProjector,
             val edit: (() -> Unit)?,
         ) : State {
 
-            override val cells: StateFlow<List<Cell>>
-                get() = projector.cells
+            override val mainCells: StateFlow<List<Cell>>
+                get() = projector.mainCells
         }
 
         data class Edit(
-            private val projector: EditProjector,
+            val projector: EditProjector,
             val save: StateFlow<StateFlow<(() -> Unit)?>?>,
             val cancel: () -> Unit,
         ) : State {
 
-            override val cells: StateFlow<List<Cell>>
-                get() = projector.cells
+            override val mainCells: StateFlow<List<Cell>>
+                get() = projector.mainCells
         }
     }
 
@@ -103,59 +104,76 @@ class EditableProjector<
         }
 
     override val topCells: StateFlow<List<Cell>> = state
-        .mapState(scope) { state ->
+        .scopedInState(scope)
+        .flatMapState(scope) { (stateScope, state) ->
             when (state) {
-                is State.Edit -> editTopCells(state)
-                is State.View -> viewTopCells(state)
+                is State.Edit -> editTopCells(
+                    scope = stateScope,
+                    state = state,
+                )
+
+                is State.View -> viewTopCells(
+                    scope = stateScope,
+                    state = state,
+                )
             }
         }
 
     private fun viewTopCells(
+        scope: CoroutineScope,
         state: State.View,
-    ): List<Cell> = state
-        .edit
-        .foldNullable(
-            ifNull = {
-                emptyList()
-            },
-            ifNotNull = { edit ->
-                listOf {
-                    HnauButton(
-                        shape = shape,
-                        onClick = edit,
-                    ) {
-                        Icon(Icons.Filled.Edit)
+    ): StateFlow<List<Cell>> = state
+        .projector
+        .topCells
+        .mapState(scope) { topCells ->
+            buildList {
+                addAll(topCells)
+                state.edit?.let { edit ->
+                    add {
+                        HnauButton(
+                            shape = shape,
+                            onClick = edit,
+                        ) {
+                            Icon(Icons.Filled.Edit)
+                        }
                     }
                 }
             }
-        )
+        }
 
     private fun editTopCells(
+        scope: CoroutineScope,
         state: State.Edit,
-    ): List<Cell> = listOf(
-        {
-            HnauButton(
-                onClick = state.cancel,
-                shape = shape,
-            ) {
-                Icon(Icons.Filled.Cancel)
-            }
-        },
-        {
-            val saveOrNull by state.save.collectAsState()
-            val enabled = saveOrNull != null
-            val saveOrSaving = saveOrNull?.collectAsState()?.value
-            //TODO progress
-            HnauButton(
-                onClick = saveOrSaving,
-                shape = shape,
-            ) {
-                Icon(Icons.Filled.Done)
+    ): StateFlow<List<Cell>> = state
+        .projector
+        .topCells
+        .mapState(scope) { topCells ->
+            buildList {
+                addAll(topCells)
+                add {
+                    HnauButton(
+                        onClick = state.cancel,
+                        shape = shape,
+                    ) {
+                        Icon(Icons.Filled.Cancel)
+                    }
+                }
+                add {
+                    val saveOrNull by state.save.collectAsState()
+                    val enabled = saveOrNull != null
+                    val saveOrSaving = saveOrNull?.collectAsState()?.value
+                    //TODO progress
+                    HnauButton(
+                        onClick = saveOrSaving,
+                        shape = shape,
+                    ) {
+                        Icon(Icons.Filled.Done)
+                    }
+                }
             }
         }
-    )
 
-    override val mainCells: StateFlow<List<Cell>> = state.flatMapState(scope) {state ->
-        state.cells
+    override val mainCells: StateFlow<List<Cell>> = state.flatMapState(scope) { state ->
+        state.mainCells
     }
 }
