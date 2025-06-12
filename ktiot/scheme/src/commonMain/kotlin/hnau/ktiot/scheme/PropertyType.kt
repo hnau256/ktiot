@@ -48,13 +48,13 @@ sealed interface PropertyType<T> {
                 get() = Boolean.serializer()
         }
 
-        @Serializable
+        /*@Serializable
         @SerialName("rgb")
         data object RGB : State<RGBABytes> {
 
             override val serializer: KSerializer<RGBABytes>
                 get() = RGBABytes.serializer()
-        }
+        }*/
 
         @Serializable
         @SerialName("enum")
@@ -87,13 +87,13 @@ sealed interface PropertyType<T> {
                 get() = String.serializer()
         }
 
-        @Serializable
+        /*@Serializable
         @SerialName("timestamp")
         data object Timestamp : State<Instant> {
 
             override val serializer: KSerializer<Instant>
                 get() = Instant.serializer()
-        }
+        }*/
 
         @Serializable
         @SerialName("fraction")

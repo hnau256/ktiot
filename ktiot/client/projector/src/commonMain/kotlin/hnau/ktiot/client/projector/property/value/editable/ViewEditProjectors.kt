@@ -1,15 +1,14 @@
 package hnau.ktiot.client.projector.property.value.editable
 
-import androidx.compose.runtime.Composable
+import hnau.common.projector.uikit.table.Cell
+import kotlinx.coroutines.flow.StateFlow
 
 sealed interface ViewProjector {
 
-    @Composable
-    fun Content()
+    val cells: StateFlow<List<Cell>>
 }
 
 sealed interface EditProjector {
 
-    @Composable
-    fun Content()
+    val cells: StateFlow<List<Cell>>
 }

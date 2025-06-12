@@ -11,7 +11,7 @@ import hnau.ktiot.client.model.init.impl
 fun createPinFinAppSeed(
     defaultBrightness: ThemeBrightness? = null,
 ): AppSeed<InitModel, InitModel.Skeleton> = AppSeed(
-    fallbackHue = MaterialHue.LightGreen,
+    fallbackHue = MaterialHue.Purple,
     defaultBrightness = defaultBrightness,
     skeletonSerializer = InitModel.Skeleton.serializer(),
     createDefaultSkeleton = { InitModel.Skeleton() },

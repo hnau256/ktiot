@@ -7,6 +7,7 @@ import hnau.common.model.goback.GoBackHandler
 import hnau.common.model.goback.NeverGoBackHandler
 import hnau.common.mqtt.utils.MqttClient
 import hnau.ktiot.client.model.property.value.EditableModel
+import hnau.ktiot.client.model.property.value.FlagModel
 import hnau.ktiot.client.model.property.value.FractionModel
 import hnau.ktiot.client.model.property.value.ValueModel
 import hnau.ktiot.client.model.property.value.createValueModel
@@ -39,6 +40,8 @@ class PropertyModel(
 
         val mqttClient: MqttClient
 
+        fun flag(): FlagModel.Dependencies
+
         fun fraction(): FractionModel.Dependencies
 
         fun editable(): EditableModel.Dependencies
@@ -64,11 +67,14 @@ class PropertyModel(
 
             is PropertyType.State.Enum -> TODO()
 
-            PropertyType.State.Flag -> TODO()
+            is PropertyType.State.Flag -> createValueModel(
+                valueModelFactory = FlagModel.factory,
+                createInitialSkeleton = { FlagModel.Skeleton() },
+                extractDependencies = Dependencies::flag,
+                type = type,
+            )
 
             is PropertyType.State.Number -> TODO()
-
-            PropertyType.State.RGB -> TODO()
 
             is PropertyType.State.Text -> createEditableModel(
                 createViewModelSkeleton = { TextViewModel.Skeleton() },
@@ -79,8 +85,6 @@ class PropertyModel(
                 editFactory = TextEditModel.factory,
                 type = type,
             )
-
-            PropertyType.State.Timestamp -> TODO()
         }
     }
 

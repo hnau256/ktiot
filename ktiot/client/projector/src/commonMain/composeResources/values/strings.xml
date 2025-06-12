@@ -16,4 +16,6 @@
     <string name="minutes_short">м</string>
     <string name="hours_short">ч</string>
     <string name="days_short">д</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
 </resources>

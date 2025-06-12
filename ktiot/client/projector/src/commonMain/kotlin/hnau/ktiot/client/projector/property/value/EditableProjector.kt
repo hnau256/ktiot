@@ -1,21 +1,17 @@
 package hnau.ktiot.client.projector.property.value
 
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
+import hnau.common.kotlin.coroutines.flatMapState
 import hnau.common.kotlin.coroutines.mapState
 import hnau.common.kotlin.coroutines.mapWithScope
 import hnau.common.kotlin.foldNullable
 import hnau.common.projector.uikit.HnauButton
-import hnau.common.projector.uikit.state.StateContent
-import hnau.common.projector.uikit.state.TransitionSpec
 import hnau.common.projector.uikit.table.Cell
 import hnau.common.projector.utils.Icon
 import hnau.ktiot.client.model.property.value.EditableModel
@@ -55,23 +51,15 @@ class EditableProjector<
 
     sealed interface State {
 
-        val key: Int
-
-        @Composable
-        fun Content()
+        val cells: StateFlow<List<Cell>>
 
         data class View(
             private val projector: ViewProjector,
             val edit: (() -> Unit)?,
         ) : State {
 
-            override val key: Int
-                get() = 0
-
-            @Composable
-            override fun Content() {
-                projector.Content()
-            }
+            override val cells: StateFlow<List<Cell>>
+                get() = projector.cells
         }
 
         data class Edit(
@@ -80,13 +68,8 @@ class EditableProjector<
             val cancel: () -> Unit,
         ) : State {
 
-            override val key: Int
-                get() = 1
-
-            @Composable
-            override fun Content() {
-                projector.Content()
-            }
+            override val cells: StateFlow<List<Cell>>
+                get() = projector.cells
         }
     }
 
@@ -172,18 +155,7 @@ class EditableProjector<
         }
     )
 
-    @Composable
-    override fun MainContent() {
-        state
-            .collectAsState()
-            .value
-            .StateContent(
-                modifier = Modifier.fillMaxWidth(),
-                label = "ViewOrEditMainContent",
-                transitionSpec = TransitionSpec.vertical(),
-                contentKey = State::key
-            ) { state ->
-                state.Content()
-            }
+    override val mainCells: StateFlow<List<Cell>> = state.flatMapState(scope) {state ->
+        state.cells
     }
 }
