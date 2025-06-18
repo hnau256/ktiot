@@ -1,15 +1,16 @@
 package hnau.ktiot.coordinator.utils
 
+import hnau.common.kotlin.coroutines.scopedInState
 import hnau.common.mqtt.utils.MqttClient
 import hnau.ktiot.coordinator.ScreenBuilder
 import hnau.ktiot.scheme.Element
 import hnau.ktiot.scheme.PropertyMode
 import hnau.ktiot.scheme.PropertyType
+import hnau.ktiot.scheme.topic.ChildTopic
 import hnau.ktiot.scheme.topic.MqttTopic
 import hnau.ktiot.scheme.topic.asChild
 import hnau.ktiot.scheme.topic.ktiotElements
 import hnau.ktiot.scheme.topic.raw
-import hnau.ktiot.scheme.utils.PropertyAccessor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -23,10 +24,12 @@ internal fun buildScreen(
     builds: MutableStateFlow<ScreenBuilder.(CoroutineScope) -> Unit>,
 ) {
     scope.launch {
-        builds.collectLatest { build ->
+        builds
+            .scopedInState(scope)
+            .collectLatest { (buildScope, build) ->
             val builder = ScreenBuilderImpl(
+                scope = buildScope,
                 topic = topic,
-                scope = scope,
                 client = client,
             )
             builder.build(scope)
@@ -40,7 +43,7 @@ internal fun buildScreen(
 }
 
 private class ScreenBuilderImpl(
-    private val scope: CoroutineScope,
+    override val scope: CoroutineScope,
     override val topic: MqttTopic.Absolute,
     override val client: MqttClient,
 ) : ScreenBuilder {
@@ -50,26 +53,26 @@ private class ScreenBuilderImpl(
     val elements: List<Element>
         get() = _elements
 
-    override fun <T> property(
+    override fun property(
         topic: MqttTopic,
-        type: PropertyType<T>,
-        publishMode: PropertyMode?,
-    ): PropertyAccessor<T> {
+    ): RawProperty = RawProperty(
+        topic = topic.asChild(this@ScreenBuilderImpl.topic),
+        client = client,
+    )
 
-        publishMode?.let { mode ->
-            _elements.add(
-                Element.Property(
-                    topic = topic,
-                    type = type,
-                    mode = mode,
-                ),
-            )
-        }
-
-        return PropertyAccessor(
-            type = type,
-            client = client,
-            topic = topic.asChild(this@ScreenBuilderImpl.topic).topic
+    override fun <T, P: PropertyType<T>> share(
+        property: Property<T, P>,
+        mode: PropertyMode,
+    ) {
+        _elements.add(
+            Element.Property(
+                topic = when (val topic = property.topic) {
+                    is ChildTopic.Absolute -> topic.topic
+                    is ChildTopic.Relative -> topic.child
+                },
+                type = property.type,
+                mode = mode,
+            ),
         )
     }
 }

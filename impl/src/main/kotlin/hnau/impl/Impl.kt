@@ -3,12 +3,10 @@ package hnau.impl
 import hnau.common.mqtt.utils.MqttConfig
 import hnau.ktiot.coordinator.ScreenBuilder
 import hnau.ktiot.coordinator.coordinator
+import hnau.ktiot.coordinator.utils.typed
 import hnau.ktiot.scheme.PropertyMode
 import hnau.ktiot.scheme.PropertyType
-import hnau.ktiot.scheme.topic.MqttTopic
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.slf4j.simple.SimpleLogger
 
@@ -25,13 +23,11 @@ fun main() = runBlocking {
         ),
         builds = MutableStateFlow { scope ->
             addType(
-                scope = scope,
                 prefix = "text",
                 type = PropertyType.State.Text,
                 initialValue = "QWERTY"
             )
             addType(
-                scope = scope,
                 prefix = "fraction",
                 type = PropertyType.State.Fraction(
                     range = 0f..10f
@@ -39,7 +35,6 @@ fun main() = runBlocking {
                 initialValue = 3.5f,
             )
             addType(
-                scope = scope,
                 prefix = "flag",
                 type = PropertyType.State.Flag,
                 initialValue = true,
@@ -49,25 +44,23 @@ fun main() = runBlocking {
 }
 
 private fun <T> ScreenBuilder.addType(
-    scope: CoroutineScope,
     prefix: String,
     type: PropertyType.State<T>,
     initialValue: T,
 ) {
-    val master = property(
-        topic = MqttTopic.Relative("${prefix}_master"),
-        type = type,
-        publishMode = PropertyMode.Manual,
+    val master = this
+        .property("${prefix}_master")
+        .typed(type)
+        .fallback { initialValue }
+        .share(PropertyMode.Manual)
+
+    val slave = this
+        .property("${prefix}_slave")
+        .typed(type)
+        .share(PropertyMode.Calculated)
+
+    slave.bind(
+        values = master.subscribe(),
+        retained = true,
     )
-    val slave = property(
-        topic = MqttTopic.Relative("${prefix}_slave"),
-        type = type,
-        publishMode = PropertyMode.Calculated,
-    )
-    scope.launch {
-        master.publish(initialValue, true)
-        master.subscribe().collect {
-            slave.publish(it, true)
-        }
-    }
 }
