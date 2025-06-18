@@ -6,6 +6,7 @@ import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.api.internal.project.DefaultProject
+import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.jetbrains.compose.ComposePlugin
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
@@ -28,6 +29,13 @@ internal fun Project.config(
     val javaVersion: JavaVersion =
         JavaVersion.valueOf(javaVersionString)
 
+    val javaVersionInt: Int = javaVersionString
+        .dropWhile { !it.isDigit() }
+        .toInt()
+
+    val javaLanguageVersion: JavaLanguageVersion =
+        JavaLanguageVersion.of(javaVersionInt)
+
     plugins.apply("org.jetbrains.kotlin.multiplatform")
 
     when (androidMode) {
@@ -44,6 +52,14 @@ internal fun Project.config(
     val hasKspPlugin =
         project.plugins.hasPlugin("com.google.devtools.ksp")
 
+    extensions.configure(JavaPluginExtension::class.java) { extension ->
+        extension.toolchain { javaToolchainSpec ->
+            javaToolchainSpec
+                .languageVersion
+                .set(javaLanguageVersion)
+        }
+    }
+
     extensions.configure(KotlinMultiplatformExtension::class.java) { extension ->
 
         extension.androidTarget {
@@ -57,7 +73,7 @@ internal fun Project.config(
         extension.jvmToolchain { javaToolchainSpec ->
             javaToolchainSpec
                 .languageVersion
-                .set(JavaLanguageVersion.of(javaVersionString.dropWhile { !it.isDigit() }))
+                .set(javaLanguageVersion)
         }
         extension.jvm("desktop") {
             compilations.configureEach { jvmCompilation ->
