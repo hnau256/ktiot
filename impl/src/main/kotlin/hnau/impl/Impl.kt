@@ -7,6 +7,7 @@ import hnau.ktiot.coordinator.utils.typed
 import hnau.ktiot.scheme.PropertyMode
 import hnau.ktiot.scheme.PropertyType
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
 import org.slf4j.simple.SimpleLogger
 
@@ -22,7 +23,31 @@ fun main() = runBlocking {
             )
         ),
         builds = MutableStateFlow { scope ->
-            addType(
+
+            val events = this
+                .property("events")
+                .typed(PropertyType.State.Flag)
+                .fallback { false }
+                .share(PropertyMode.Hardware)
+
+            val value = this
+                .property("value")
+                .typed(PropertyType.State.Fraction())
+                .share(PropertyMode.Calculated)
+
+            value.bind(
+                values = events
+                    .subscribe()
+                    .map {
+                        when (it) {
+                            false -> 0f
+                            true -> 1f
+                        }
+                    },
+                retained = true,
+            )
+
+            /*addType(
                 prefix = "text",
                 type = PropertyType.State.Text,
                 initialValue = "QWERTY"
@@ -38,7 +63,7 @@ fun main() = runBlocking {
                 prefix = "flag",
                 type = PropertyType.State.Flag,
                 initialValue = true,
-            )
+            )*/
         }
     )
 }

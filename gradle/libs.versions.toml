@@ -62,7 +62,7 @@ pipe-processor = { module = "com.github.hnau256.common-gen-pipe:processor", vers
 hnau-kotlin = { module = "com.github.hnau256.common-kotlin:common-kotlin", version = "1.0.5" }
 hnau-gen-kt = { module = "com.github.hnau256:common-gen-kt", version = "1.0.0" }
 hnau-model = { module = "com.github.hnau256.common-model:common-model", version = "1.0.14" }
-hnau-projector = { module = "com.github.hnau256:common-projector", version = "1.0.18" }
+hnau-projector = { module = "com.github.hnau256.common-projector:common-projector", version = "1.0.18" }
 paho = { module = "org.eclipse.paho:org.eclipse.paho.client.mqttv3", version = "1.2.1" }
 #logging
 logging = { module = "io.github.oshai:kotlin-logging", version = "7.0.3" }
