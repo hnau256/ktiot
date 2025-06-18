@@ -32,7 +32,7 @@ tasks.jar {
 }
 
 group = "com.github.hnau256"
-version = "1.0.5"
+version = "1.0.6"
 
 publishing {
     repositories {
