@@ -1,7 +1,7 @@
 .gradle
 .kotlin
+.DS_Store
 local.properties
 .idea/
 build
-*-tcp*/
 preferences.txt
