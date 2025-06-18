@@ -19,8 +19,6 @@ import kotlinx.coroutines.flow.onSubscription
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonElement
 import org.eclipse.paho.client.mqttv3.IMqttAsyncClient
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken
 import org.eclipse.paho.client.mqttv3.MqttCallback
@@ -33,19 +31,13 @@ class JvmMqttClient(
     private val client: IMqttAsyncClient,
 ) : MqttClient {
 
-    private data class Message(
-        val topic: Topic,
-        val message: JsonElement,
-        val retained: Boolean,
-    )
-
-    private val messages: MutableSharedFlow<Message> = MutableSharedFlow(
+    private val messages: MutableSharedFlow<Pair<Topic, Message>> = MutableSharedFlow(
         replay = 0,
         extraBufferCapacity = Int.MAX_VALUE,
         onBufferOverflow = BufferOverflow.DROP_OLDEST,
     )
 
-    private val subscriptions = HashMap<Topic, Flow<JsonElement>>()
+    private val subscriptions = HashMap<Topic, Flow<Message>>()
 
     private data class Operation(
         val log: String,
@@ -116,22 +108,11 @@ class JvmMqttClient(
                     topic: String,
                     message: MqttMessage,
                 ) {
-                    val messageString = logger.tryOrLog(
-                        log = "decoding ByteArray to String (message from $topic)"
-                    ) {
-                        message.payload.decodeToString()
-                    }.getOrNull() ?: return
-
-                    val messageJson = logger.tryOrLog(
-                        log = "parsing '$messageString' to JsonElement (message from $topic)"
-                    ) {
-                        Json.Default.parseToJsonElement(messageString)
-                    }.getOrNull() ?: return
-
+                    val topic = Topic(topic)
                     messages.tryEmit(
-                        value = Message(
-                            topic = Topic(topic),
-                            message = messageJson,
+                        value = topic to Message(
+                            id = message.id,
+                            payload = message.payload,
                             retained = message.isRetained,
                         ),
                     )
@@ -194,19 +175,19 @@ class JvmMqttClient(
     override fun subscribe(
         topic: Topic,
         qoS: QoS,
-    ): Flow<JsonElement> = synchronized(subscriptions) {
+    ): Flow<Message> = synchronized(subscriptions) {
         subscriptions.getOrPut(topic) {
-            var lastRetainedMessage: JsonElement? = null
+            var lastRetainedMessage: Message? = null
             flow {
                 try {
                     doSubscribe(topic, qoS)
                     messages
-                        .filter { it.topic == topic }
-                        .collect{message ->
+                        .filter { (messageTopic) -> messageTopic == topic }
+                        .collect { (_, message) ->
                             message
                                 .retained
-                                .ifTrue { lastRetainedMessage = message.message }
-                            emit(message.message)
+                                .ifTrue { lastRetainedMessage = message }
+                            emit(message)
                         }
                 } finally {
                     lastRetainedMessage = null
@@ -226,24 +207,12 @@ class JvmMqttClient(
     override suspend fun publish(
         topic: Topic,
         qoS: QoS,
-        value: JsonElement,
+        payload: ByteArray,
         retained: Boolean,
     ): Boolean {
         val topicString = topic.topic
 
-        val messageString = logger.tryOrLog(
-            log = "encoding '$value' to String (message for $topic)"
-        ) {
-            Json.Default.encodeToString(value)
-        }.getOrNull() ?: return false
-
-        val message = logger.tryOrLog(
-            log = "decoding ByteArray to String (message for $topic)"
-        ) {
-            messageString.encodeToByteArray()
-        }.getOrNull() ?: return false
-
-        val log = "publishing to `$topicString`: '$messageString'"
+        val log = "publishing to `$topicString`: '${payload.decodeToString()}'"
         return pushOperationAndWait(
             log = log,
         ) {
@@ -252,7 +221,7 @@ class JvmMqttClient(
             ) {
                 publish(
                     /* topic = */ topicString,
-                    /* payload = */ message,
+                    /* payload = */ payload,
                     /* qos = */ qoS.code,
                     /* retained = */ retained
                 )

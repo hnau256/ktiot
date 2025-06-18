@@ -33,7 +33,7 @@ internal fun buildScreen(
             client.publish(
                 topic = topic.ktiotElements.raw,
                 retained = true,
-                value = Element.listJsonMapper.reverse(builder.elements),
+                payload = Element.listMqttPayloadMapper.reverse(builder.elements),
             )
         }
     }

@@ -1,12 +1,15 @@
 package hnau.ktiot.scheme
 
 import hnau.common.kotlin.mapper.Mapper
+import hnau.common.kotlin.mapper.bytesToString
+import hnau.common.kotlin.mapper.plus
 import hnau.ktiot.scheme.topic.MqttTopic
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.decodeFromJsonElement
 
 @Serializable
 sealed interface Element {
@@ -36,17 +39,17 @@ sealed interface Element {
 
     companion object {
 
-        val listJsonMapper: Mapper<JsonElement, List<Element>> = ListSerializer(serializer())
+        val listMqttPayloadMapper: Mapper<ByteArray, List<Element>> = ListSerializer(serializer())
             .let { serializer ->
-                Mapper<JsonElement, List<Element>>(
-                    direct = { encoded ->
-                        Json.decodeFromJsonElement(
+                Mapper.bytesToString + Mapper<String, List<Element>>(
+                    direct = { json ->
+                        Json.decodeFromString(
                             deserializer = serializer,
-                            element = encoded,
+                            string = json,
                         )
                     },
                     reverse = { elements ->
-                        Json.encodeToJsonElement(
+                        Json.encodeToString(
                             serializer = serializer,
                             value = elements,
                         )

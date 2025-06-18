@@ -65,7 +65,7 @@ inline fun <
     topic = topic,
     createInitialSkeleton = {
         EditableModel.Skeleton<VS, ES>(
-        state = createViewModelSkeleton().right().toMutableStateFlowAsInitial(),
+            state = createViewModelSkeleton().right().toMutableStateFlowAsInitial(),
         )
     },
     extractDependencies = { editable() },
@@ -98,13 +98,13 @@ inline fun <reified T, P : PropertyType.State<T>, D, reified S : ValueModel.Skel
             .subscribe(
                 topic = topic.topic.raw,
             )
-            .map { element ->
+            .map { message ->
                 logger.tryOrLog(
-                    log = "parsing '$element' from $topic",
+                    log = "parsing '$message' from $topic",
                     block = {
-                        Json.decodeFromJsonElement(
+                        Json.decodeFromString(
                             deserializer = type.serializer,
-                            element = element
+                            string = message.payload.decodeToString(),
                         )
                         //TODO(error bubble) if exception
                     }
@@ -178,14 +178,16 @@ inline fun <reified T, P : PropertyType.State<T>, D, reified S : ValueModel.Skel
                                             publish = operationOrNullIfExecuting(
                                                 stickableScope
                                             ) { valueToSend ->
-                                                val encoded = logger
+                                                val payload = logger
                                                     .tryOrLog(
                                                         log = "encoding '$valueToSend' for $topic"
                                                     ) {
-                                                        Json.Default.encodeToJsonElement(
-                                                            serializer = type.serializer,
-                                                            value = valueToSend
-                                                        )
+                                                        Json.Default
+                                                            .encodeToString(
+                                                                serializer = type.serializer,
+                                                                value = valueToSend
+                                                            )
+                                                            .encodeToByteArray()
                                                     }
                                                     .getOrNull()
                                                     ?: return@operationOrNullIfExecuting //TODO(error bubble)
@@ -195,7 +197,7 @@ inline fun <reified T, P : PropertyType.State<T>, D, reified S : ValueModel.Skel
 
                                                 client.publish(
                                                     topic = topic.topic.raw,
-                                                    value = encoded,
+                                                    payload = payload,
                                                     retained = true,
                                                 ) //TODO(error bubble) if false
 

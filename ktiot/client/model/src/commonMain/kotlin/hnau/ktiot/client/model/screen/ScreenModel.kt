@@ -70,12 +70,12 @@ class ScreenModel(
                 .subscribe(
                     topic = ktIoTTopic,
                 )
-                .mapNotNull { elementsJson ->
+                .mapNotNull { message ->
                     logger
                         .tryOrLog(
-                            log = "parsing ktiot elements from '$ktIoTTopic' from $elementsJson"
+                            log = "parsing ktiot elements from '$ktIoTTopic' from $message"
                         ) {
-                            Element.Companion.listJsonMapper.direct(elementsJson)
+                            Element.Companion.listMqttPayloadMapper.direct(message.payload)
                         }
                         .getOrNull()
                 }

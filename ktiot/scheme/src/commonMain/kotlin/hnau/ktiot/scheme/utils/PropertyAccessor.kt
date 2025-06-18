@@ -26,14 +26,14 @@ class PropertyAccessor<T>(
         .subscribe(
             topic = topic.raw,
         )
-        .transformLatest { element ->
+        .transformLatest { message ->
             logger
                 .tryOrLog(
-                    log = "parsing '$element' from $topic"
+                    log = "parsing '$message' from $topic"
                 ) {
-                    Json.Default.decodeFromJsonElement(
+                    Json.Default.decodeFromString(
                         deserializer = type.serializer,
-                        element = element
+                        string = message.payload.decodeToString(),
                     )
                 }
                 .onSuccess { parsed -> emit(parsed) }
@@ -43,21 +43,23 @@ class PropertyAccessor<T>(
         value: T,
         retained: Boolean,
     ): Boolean {
-        val encoded = logger
+        val payload = logger
             .tryOrLog(
                 log = "encoding '$value' for $topic"
             ) {
-                Json.Default.encodeToJsonElement(
-                    serializer = type.serializer,
-                    value = value
-                )
+                Json.Default
+                    .encodeToString(
+                        serializer = type.serializer,
+                        value = value
+                    )
+                    .encodeToByteArray()
             }
             .getOrNull()
             ?: return false
 
         return client.publish(
             topic = topic.raw,
-            value = encoded,
+            payload = payload,
             retained = retained,
         )
     }
