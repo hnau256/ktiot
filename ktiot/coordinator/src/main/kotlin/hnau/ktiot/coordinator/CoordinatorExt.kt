@@ -11,12 +11,13 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 private val logger: KLogger = KotlinLogging.logger { }
 
 suspend fun coordinator(
     config: MqttConfig,
-    builds: MutableStateFlow<ScreenBuilder.(CoroutineScope) -> Unit>,
+    builds: StateFlow<ScreenBuilder.() -> Unit>,
 ) {
     mqtt(
         config = config,

@@ -1,15 +1,24 @@
 package hnau.impl
 
 import hnau.common.mqtt.utils.MqttConfig
-import hnau.ktiot.coordinator.ScreenBuilder
 import hnau.ktiot.coordinator.coordinator
 import hnau.ktiot.coordinator.utils.typed
 import hnau.ktiot.scheme.PropertyMode
 import hnau.ktiot.scheme.PropertyType
+import kotlinx.coroutines.channels.ticker
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flatten
+import kotlinx.coroutines.flow.flattenConcat
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.runBlocking
+import kotlinx.datetime.Clock
 import org.slf4j.simple.SimpleLogger
+import kotlin.math.PI
+import kotlin.math.sin
 
 fun main() = runBlocking {
     System.setProperty(SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "TRACE")
@@ -22,70 +31,60 @@ fun main() = runBlocking {
                 password = "qwerty",
             )
         ),
-        builds = MutableStateFlow { scope ->
+        builds = MutableStateFlow {
 
-            val events = this
-                .property("events")
+            val useManual = property("use_manual")
                 .typed(PropertyType.State.Flag)
                 .fallback { false }
-                .share(PropertyMode.Hardware)
+                .share(PropertyMode.Manual)
+                .subscribe()
 
-            val value = this
-                .property("value")
-                .typed(PropertyType.State.Fraction())
-                .share(PropertyMode.Calculated)
-
-            value.bind(
-                values = events
-                    .subscribe()
-                    .map {
-                        when (it) {
-                            false -> 0f
-                            true -> 1f
+            val value = include(
+                topicPart = "manual_config",
+                builds = useManual.map { currentUseManual ->
+                    when (currentUseManual) {
+                        false -> {
+                            {
+                                property("auto")
+                                    .typed(PropertyType.State.Fraction())
+                                    .share(PropertyMode.Calculated)
+                                    .apply {
+                                        bind(
+                                            values = ticker(
+                                                delayMillis = 1000L,
+                                                initialDelayMillis = 0L,
+                                            )
+                                                .consumeAsFlow()
+                                                .map { sin(Clock.System.now().epochSeconds % 10 / 10f * PI.toFloat() * 2) / 2 + 0.5f },
+                                            retained = true,
+                                        )
+                                    }
+                                    .subscribe()
+                            }
                         }
-                    },
-                retained = true,
-            )
 
-            /*addType(
-                prefix = "text",
-                type = PropertyType.State.Text,
-                initialValue = "QWERTY"
+                        true -> {
+                            {
+                                property("manual")
+                                    .typed(PropertyType.State.Fraction())
+                                    .share(PropertyMode.Manual)
+                                    .fallback { 0.25f }
+                                    .subscribe()
+                            }
+                        }
+                    }
+                }
             )
-            addType(
-                prefix = "fraction",
-                type = PropertyType.State.Fraction(
-                    range = 0f..10f
-                ),
-                initialValue = 3.5f,
-            )
-            addType(
-                prefix = "flag",
-                type = PropertyType.State.Flag,
-                initialValue = true,
-            )*/
+                .flatMapLatest { it }
+
+            property("value")
+                .typed(PropertyType.State.Fraction())
+                .bind(
+                    values = value,
+                    retained = true,
+                )
+
+
         }
-    )
-}
-
-private fun <T> ScreenBuilder.addType(
-    prefix: String,
-    type: PropertyType.State<T>,
-    initialValue: T,
-) {
-    val master = this
-        .property("${prefix}_master")
-        .typed(type)
-        .fallback { initialValue }
-        .share(PropertyMode.Manual)
-
-    val slave = this
-        .property("${prefix}_slave")
-        .typed(type)
-        .share(PropertyMode.Calculated)
-
-    slave.bind(
-        values = master.subscribe(),
-        retained = true,
     )
 }

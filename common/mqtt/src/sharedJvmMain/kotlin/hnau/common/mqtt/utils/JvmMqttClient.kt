@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.onSubscription
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.launch
@@ -180,13 +181,13 @@ class JvmMqttClient(
             var lastRetainedMessage: Message? = null
             flow {
                 try {
-                    doSubscribe(topic, qoS)
                     messages
                         .filter { (messageTopic) -> messageTopic == topic }
                         .collect { (_, message) ->
                             message
                                 .retained
                                 .ifTrue { lastRetainedMessage = message }
+                            logger.debug { "Received from '${topic.topic}': '${message.payload.decodeToString()}'" }
                             emit(message)
                         }
                 } finally {
@@ -194,6 +195,7 @@ class JvmMqttClient(
                     doUnsubscribe(topic)
                 }
             }
+                .onStart { doSubscribe(topic, qoS) }
                 .shareIn(
                     scope = scope,
                     started = SharingStarted.WhileSubscribed(),

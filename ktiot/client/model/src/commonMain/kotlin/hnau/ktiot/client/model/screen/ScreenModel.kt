@@ -1,15 +1,19 @@
 package hnau.ktiot.client.model.screen
 
+import arrow.core.identity
 import arrow.core.toNonEmptyListOrNull
 import hnau.common.kotlin.Loadable
 import hnau.common.kotlin.Loading
 import hnau.common.kotlin.Ready
+import hnau.common.kotlin.coroutines.combineState
 import hnau.common.kotlin.coroutines.flatMapState
 import hnau.common.kotlin.coroutines.mapReusable
+import hnau.common.kotlin.coroutines.mapState
 import hnau.common.kotlin.coroutines.scopedInState
 import hnau.common.kotlin.coroutines.toMutableStateFlowAsInitial
 import hnau.common.kotlin.fold
 import hnau.common.kotlin.foldNullable
+import hnau.common.kotlin.ifNull
 import hnau.common.kotlin.map
 import hnau.common.logging.tryOrLog
 import hnau.common.model.goback.GoBackHandler
@@ -39,7 +43,7 @@ class ScreenModel(
     scope: CoroutineScope,
     private val dependencies: Dependencies,
     private val skeleton: Skeleton,
-    private val topic: MqttTopic.Absolute
+    topic: MqttTopic.Absolute,
 ) {
 
     @Pipe
@@ -61,7 +65,15 @@ class ScreenModel(
         val topic: ChildTopic,
     )
 
-    val items: StateFlow<Loadable<List<Item>>> = topic
+    val items: StateFlow<Loadable<List<Item>>> = createItemsForTopic(
+        topic = topic,
+        scope = scope,
+    )
+
+    private fun createItemsForTopic(
+        scope: CoroutineScope,
+        topic: MqttTopic.Absolute,
+    ): StateFlow<Loadable<List<Item>>> = topic
         .ktiotElements
         .raw
         .let { ktIoTTopic ->
@@ -92,61 +104,105 @@ class ScreenModel(
                             getOrPutItem(
                                 key = itemTopic,
                             ) { elementScope ->
-                                val itemModel = createItem(
+                                createItems(
+                                    parentTopic = topic,
                                     scope = elementScope,
                                     element = element,
-                                )
-                                Item(
-                                    model = itemModel,
-                                    topic = itemTopic,
                                 )
                             }
                         }
                     }
                 }
         }
+        .scopedInState(scope)
+        .flatMapState(scope) { (stateScope, stateOrLoading) ->
+            stateOrLoading.fold(
+                ifLoading = { Loading.toMutableStateFlowAsInitial() },
+                ifReady = { items ->
+                    items
+                        .toNonEmptyListOrNull()
+                        ?.let { nonEmptyItems ->
+                            nonEmptyItems.tail.fold(
+                                initial = nonEmptyItems.head,
+                            ) { acc, nextModels ->
+                                combineState(
+                                    scope = stateScope,
+                                    a = acc,
+                                    b = nextModels,
+                                ) { currentAcc, currentNextModels ->
+                                    currentAcc + currentNextModels
+                                }
+                            }
+                        }
+                        .ifNull { emptyList<Item>().toMutableStateFlowAsInitial() }
+                        .mapState(stateScope) { Ready(it) }
+                }
+            )
+        }
 
-    private fun createItem(
+    private fun createItems(
+        parentTopic: MqttTopic.Absolute,
         scope: CoroutineScope,
         element: Element,
-    ): ScreenItemModel = when (element) {
+    ): StateFlow<List<Item>> = when (element) {
         is Element.Property<*> -> createPropertyItem(
+            parentTopic = parentTopic,
             scope = scope,
             element = element,
         )
+            .let(::listOf)
+            .toMutableStateFlowAsInitial()
+
+        is Element.Include -> createItemsForTopic(
+            topic = element.topic.asChild(parentTopic).topic,
+            scope = scope,
+        ).mapState(scope) { itemsOrLoading ->
+            itemsOrLoading.fold(
+                ifLoading = { emptyList() },
+                ifReady = ::identity,
+            )
+        }
     }
 
     private inline fun <reified T : ScreenItemModel.Skeleton> getOrCreateItemSkeleton(
-        topic: MqttTopic,
+        topic: ChildTopic,
         create: () -> T,
     ): T = skeleton.items.let { items ->
-        var result = items[topic] as? T
+        var result = items[topic.topic] as? T
         if (result == null) {
             result = create()
-            items[topic] = result
+            items[topic.topic] = result
         }
         result
     }
 
     private fun <T> createPropertyItem(
+        parentTopic: MqttTopic.Absolute,
         scope: CoroutineScope,
         element: Element.Property<T>,
-    ): ScreenItemModel = ScreenItemModel.Property(
-        PropertyModel(
-            scope = scope,
-            skeleton = getOrCreateItemSkeleton(
-                topic = element.topic,
-                create = {
-                    ScreenItemModel.Skeleton.Property(
-                        PropertyModel.Skeleton()
-                    )
-                }
-            ).skeleton,
-            dependencies = dependencies.property(),
-            topic = element.topic.asChild(topic),
-            property = element,
+    ): Item {
+        val topic = element.topic.asChild(parentTopic)
+        val model = ScreenItemModel.Property(
+            PropertyModel(
+                scope = scope,
+                skeleton = getOrCreateItemSkeleton(
+                    topic = topic,
+                    create = {
+                        ScreenItemModel.Skeleton.Property(
+                            PropertyModel.Skeleton()
+                        )
+                    }
+                ).skeleton,
+                dependencies = dependencies.property(),
+                topic =topic ,
+                property = element,
+            )
         )
-    )
+        return Item(
+            topic = topic,
+            model = model,
+        )
+    }
 
     val goBackHandler: GoBackHandler = items
         .scopedInState(scope)

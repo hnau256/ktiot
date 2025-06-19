@@ -22,6 +22,19 @@ interface ScreenBuilder {
 
     val client: MqttClient
 
+    fun <T> include(
+        topic: MqttTopic,
+        builds: Flow<ScreenBuilder.() -> T>,
+    ): Flow<T>
+
+    fun <T> include(
+        topicPart: String,
+        builds: Flow<ScreenBuilder.() -> T>,
+    ): Flow<T> = include(
+        topic = MqttTopic.Relative(topicPart),
+        builds = builds,
+    )
+
     fun property(
         topic: MqttTopic,
     ): RawProperty
