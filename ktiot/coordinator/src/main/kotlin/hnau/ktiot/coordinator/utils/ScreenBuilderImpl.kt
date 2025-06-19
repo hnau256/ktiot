@@ -56,13 +56,15 @@ private class ScreenBuilderImpl(
     val elements: List<Element>
         get() = _elements
 
-    override fun <T> include(
+    override fun <T> child(
         topic: MqttTopic,
         builds: Flow<ScreenBuilder.() -> T>,
+        include: Boolean,
     ): Flow<T> {
         _elements.add(
-            Element.Include(
+            Element.Child(
                 topic = topic,
+                include = include,
             ),
         )
         val absoluteTopic = topic.asChild(this@ScreenBuilderImpl.topic).topic

@@ -6,14 +6,10 @@ import hnau.ktiot.coordinator.utils.typed
 import hnau.ktiot.scheme.PropertyMode
 import hnau.ktiot.scheme.PropertyType
 import kotlinx.coroutines.channels.ticker
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flatten
-import kotlinx.coroutines.flow.flattenConcat
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Clock
 import org.slf4j.simple.SimpleLogger
@@ -39,8 +35,9 @@ fun main() = runBlocking {
                 .share(PropertyMode.Manual)
                 .subscribe()
 
-            val value = include(
+            val value = child(
                 topicPart = "manual_config",
+                include = true,
                 builds = useManual.map { currentUseManual ->
                     when (currentUseManual) {
                         false -> {
