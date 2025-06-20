@@ -1,5 +1,6 @@
 package hnau.ktiot.client.model.screen
 
+import arrow.core.Either
 import arrow.core.identity
 import arrow.core.toNonEmptyListOrNull
 import hnau.common.kotlin.Loadable
@@ -9,6 +10,7 @@ import hnau.common.kotlin.coroutines.combineState
 import hnau.common.kotlin.coroutines.flatMapState
 import hnau.common.kotlin.coroutines.mapReusable
 import hnau.common.kotlin.coroutines.mapState
+import hnau.common.kotlin.coroutines.mapWithScope
 import hnau.common.kotlin.coroutines.scopedInState
 import hnau.common.kotlin.coroutines.toMutableStateFlowAsInitial
 import hnau.common.kotlin.fold
@@ -30,6 +32,7 @@ import hnau.ktiot.scheme.topic.raw
 import hnau.pipe.annotations.Pipe
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -56,6 +59,9 @@ class ScreenModel(
 
     @Serializable
     data class Skeleton(
+        val selectedChild: MutableStateFlow<Pair<MqttTopic.Absolute, Skeleton>?> =
+            null.toMutableStateFlowAsInitial(),
+
         @Serializable(MutableMapSerializer::class)
         val items: MutableMap<MqttTopic, ScreenItemModel.Skeleton> = HashMap(),
     )
@@ -65,10 +71,40 @@ class ScreenModel(
         val topic: ChildTopic,
     )
 
-    val items: StateFlow<Loadable<List<Item>>> = createItemsForTopic(
-        topic = topic,
+    val itemsOrChild: StateFlow<Loadable<Either<List<Item>, ScreenModel>>> = combineState(
         scope = scope,
-    )
+        a = createItemsForTopic(
+            topic = topic,
+            scope = scope,
+        ),
+        b = skeleton.selectedChild,
+    ) { itemsOrLoading, selectedChildOrNull ->
+        itemsOrLoading.map { items ->
+            selectedChildOrNull
+                ?.takeIf { selectedChild ->
+                    val selectedTopic = selectedChild.first
+                    items.any { it.topic.topic == selectedTopic }
+                }
+                .foldNullable(
+                    ifNull = { Either.Left(items) },
+                    ifNotNull = { selectedChild ->
+                        Either.Right(selectedChild)
+                    }
+                )
+        }
+    }
+        .mapWithScope(scope) { stateScope, itemsOrSelectedChildOrLoading ->
+            itemsOrSelectedChildOrLoading.map { itemsOrChildSkeleton ->
+                itemsOrChildSkeleton.map { (childTopic, childSkeleton) ->
+                    ScreenModel(
+                        scope = stateScope,
+                        skeleton = childSkeleton,
+                        dependencies = dependencies,
+                        topic = childTopic,
+                    )
+                }
+            }
+        }
 
     private fun createItemsForTopic(
         scope: CoroutineScope,
@@ -194,7 +230,7 @@ class ScreenModel(
                     }
                 ).skeleton,
                 dependencies = dependencies.property(),
-                topic =topic ,
+                topic = topic,
                 property = element,
             )
         )
@@ -204,15 +240,29 @@ class ScreenModel(
         )
     }
 
-    val goBackHandler: GoBackHandler = items
+    val goBackHandler: GoBackHandler = itemsOrChild
         .scopedInState(scope)
-        .flatMapState(scope) { (itemsScope, itemsOrLoading) ->
-            itemsOrLoading.fold(
+        .flatMapState(scope) { (stateScope, stateOrLoading) ->
+            stateOrLoading.fold(
                 ifLoading = { NeverGoBackHandler },
-                ifReady = { items ->
-                    items
-                        .asReversed()
-                        .createGoBackHandler(itemsScope)
+                ifReady = { itemsOrChild ->
+                    itemsOrChild.fold(
+                        ifLeft = { items ->
+                            items
+                                .asReversed()
+                                .createGoBackHandler(stateScope)
+                        },
+                        ifRight = { selectedChild ->
+                            selectedChild
+                                .goBackHandler
+                                .mapState(stateScope) { childGoBack ->
+                                    childGoBack.foldNullable(
+                                        ifNull = { { skeleton.selectedChild.value = null } },
+                                        ifNotNull = ::identity,
+                                    )
+                                }
+                        }
+                    )
                 }
             )
         }
