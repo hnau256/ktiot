@@ -1,9 +1,23 @@
 package hnau.ktiot.client.projector.screen
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import hnau.common.mqtt.utils.Topic
+import hnau.common.projector.uikit.HnauButton
+import hnau.common.projector.uikit.TripleRow
+import hnau.common.projector.uikit.table.Table
+import hnau.common.projector.uikit.table.TableOrientation
+import hnau.common.projector.utils.Icon
 import hnau.ktiot.client.projector.property.PropertyProjector
+import hnau.ktiot.client.projector.utils.toTitle
+import hnau.ktiot.scheme.topic.ChildTopic
+import kotlinx.collections.immutable.persistentListOf
 
 @Immutable
 sealed interface ScreenItemProjector {
@@ -31,5 +45,45 @@ sealed interface ScreenItemProjector {
 
         override val key: Int
             get() = 0
+    }
+
+    @Immutable
+    data class ChildButton(
+        val topic: ChildTopic,
+        val onClick: () -> Unit,
+    ) : ScreenItemProjector {
+
+        @Composable
+        override fun Content(
+            modifier: Modifier,
+        ) {
+            Table(
+                modifier = modifier,
+                orientation = TableOrientation.Horizontal,
+                cells = remember(topic, onClick) {
+                    persistentListOf(
+                        {
+                            HnauButton(
+                                shape = shape,
+                                onClick = onClick,
+                            ) {
+                                TripleRow(
+                                    content = {
+                                        Text(
+                                            text = topic.toTitle(),
+                                            style = MaterialTheme.typography.titleMedium,
+                                        )
+                                    },
+                                    trailing = { Icon(Icons.Filled.ChevronRight) }
+                                )
+                            }
+                        }
+                    )
+                }
+            )
+        }
+
+        override val key: Int
+            get() = 1
     }
 }

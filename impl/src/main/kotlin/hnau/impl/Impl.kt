@@ -5,11 +5,14 @@ import hnau.ktiot.coordinator.coordinator
 import hnau.ktiot.coordinator.utils.typed
 import hnau.ktiot.scheme.PropertyMode
 import hnau.ktiot.scheme.PropertyType
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.channels.ticker
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Clock
 import org.slf4j.simple.SimpleLogger
@@ -29,59 +32,62 @@ fun main() = runBlocking {
         ),
         builds = MutableStateFlow {
 
-            val useManual = property("use_manual")
-                .typed(PropertyType.State.Flag)
-                .fallback { false }
-                .share(PropertyMode.Manual)
-                .subscribe()
+           child(
+                topicPart ="fraction_test",
+                builds = MutableStateFlow {
 
-            val value = include(
-                topicPart = "manual_config",
-                include = true,
-                builds = useManual.map { currentUseManual ->
-                    when (currentUseManual) {
-                        false -> {
-                            {
-                                property("auto")
-                                    .typed(PropertyType.State.Fraction())
-                                    .share(PropertyMode.Calculated)
-                                    .apply {
-                                        bind(
-                                            values = ticker(
-                                                delayMillis = 1000L,
-                                                initialDelayMillis = 0L,
-                                            )
-                                                .consumeAsFlow()
-                                                .map { sin(Clock.System.now().epochSeconds % 10 / 10f * PI.toFloat() * 2) / 2 + 0.5f },
-                                            retained = true,
-                                        )
+                    val useManual = property("use_manual")
+                        .typed(PropertyType.State.Flag)
+                        .fallback { false }
+                        .share(PropertyMode.Manual)
+                        .subscribe()
+
+                    val value = include(
+                        topicPart = "manual_config",
+                        builds = useManual.map { currentUseManual ->
+                            when (currentUseManual) {
+                                false -> {
+                                    {
+                                        property("auto")
+                                            .typed(PropertyType.State.Fraction())
+                                            .share(PropertyMode.Calculated)
+                                            .apply {
+                                                bind(
+                                                    values = ticker(
+                                                        delayMillis = 1000L,
+                                                        initialDelayMillis = 0L,
+                                                    )
+                                                        .consumeAsFlow()
+                                                        .map { sin(Clock.System.now().epochSeconds % 10 / 10f * PI.toFloat() * 2) / 2 + 0.5f },
+                                                    retained = true,
+                                                )
+                                            }
+                                            .subscribe()
                                     }
-                                    .subscribe()
-                            }
-                        }
+                                }
 
-                        true -> {
-                            {
-                                property("manual")
-                                    .typed(PropertyType.State.Fraction())
-                                    .share(PropertyMode.Manual)
-                                    .fallback { 0.25f }
-                                    .subscribe()
+                                true -> {
+                                    {
+                                        property("manual")
+                                            .typed(PropertyType.State.Fraction())
+                                            .share(PropertyMode.Manual)
+                                            .fallback { 0.25f }
+                                            .subscribe()
+                                    }
+                                }
                             }
                         }
-                    }
+                    )
+                        .flatMapLatest { it }
+
+                    property("value")
+                        .typed(PropertyType.State.Fraction())
+                        .bind(
+                            values = value,
+                            retained = true,
+                        )
                 }
             )
-                .flatMapLatest { it }
-
-            property("value")
-                .typed(PropertyType.State.Fraction())
-                .bind(
-                    values = value,
-                    retained = true,
-                )
-
-
         }
     )
 }

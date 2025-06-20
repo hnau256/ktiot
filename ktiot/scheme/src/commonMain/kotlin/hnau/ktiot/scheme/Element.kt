@@ -15,6 +15,12 @@ sealed interface Element {
     val topic: MqttTopic
 
     @Serializable
+    @SerialName("child")
+    data class Child(
+        override val topic: MqttTopic,
+    ): Element
+
+    @Serializable
     @SerialName("include")
     data class Include(
         override val topic: MqttTopic,

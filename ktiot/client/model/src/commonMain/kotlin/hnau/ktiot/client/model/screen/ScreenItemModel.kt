@@ -1,6 +1,7 @@
 package hnau.ktiot.client.model.screen
 
 import hnau.common.model.goback.GoBackHandler
+import hnau.common.model.goback.NeverGoBackHandler
 import hnau.ktiot.client.model.property.PropertyModel
 
 sealed interface ScreenItemModel {
@@ -18,6 +19,16 @@ sealed interface ScreenItemModel {
 
         override val goBackHandler: GoBackHandler
             get() = model.goBackHandler
+    }
+
+    data object ChildButton: ScreenItemModel {
+
+        override val key: Int
+            get() = 1
+
+        override val goBackHandler: GoBackHandler
+            get() = NeverGoBackHandler
+
     }
 
     sealed interface Skeleton {

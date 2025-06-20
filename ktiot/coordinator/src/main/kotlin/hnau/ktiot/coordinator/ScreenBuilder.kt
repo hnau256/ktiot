@@ -22,6 +22,19 @@ interface ScreenBuilder {
 
     val client: MqttClient
 
+    fun <T> child(
+        topic: MqttTopic,
+        builds: Flow<ScreenBuilder.() -> T>,
+    ): Flow<T>
+
+    fun <T> child(
+        topicPart: String,
+        builds: Flow<ScreenBuilder.() -> T>,
+    ): Flow<T> = child(
+        topic = MqttTopic.Relative(topicPart),
+        builds = builds,
+    )
+
     fun <T> include(
         topic: MqttTopic,
         builds: Flow<ScreenBuilder.() -> T>,

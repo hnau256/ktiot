@@ -28,6 +28,7 @@ import hnau.common.projector.utils.plus
 import hnau.ktiot.client.model.screen.ScreenItemModel
 import hnau.ktiot.client.model.screen.ScreenModel
 import hnau.ktiot.client.projector.property.PropertyProjector
+import hnau.ktiot.client.projector.screen.ScreenItemProjector.*
 import hnau.ktiot.scheme.topic.ChildTopic
 import hnau.ktiot.scheme.topic.raw
 import hnau.pipe.annotations.Pipe
@@ -40,7 +41,7 @@ import kotlinx.coroutines.flow.StateFlow
 @Immutable
 class ScreenProjector(
     scope: CoroutineScope,
-    model: ScreenModel,
+    private val model: ScreenModel,
     dependencies: Dependencies,
 ) {
 
@@ -110,16 +111,22 @@ class ScreenProjector(
                         .map { itemModel ->
                             fromCache?.remove(itemModel.topic).ifNull {
                                 val itemScope = scope.createChild()
+                                val topic = itemModel.topic
                                 State.Items.Item(
                                     scope = itemScope,
-                                    topic = itemModel.topic,
+                                    topic = topic,
                                     projector = when (val itemModel = itemModel.model) {
-                                        is ScreenItemModel.Property -> ScreenItemProjector.Property(
+                                        is ScreenItemModel.Property -> Property(
                                             projector = PropertyProjector(
                                                 scope = itemScope,
                                                 dependencies = dependencies.property(),
                                                 model = itemModel.model,
                                             )
+                                        )
+
+                                        ScreenItemModel.ChildButton -> ChildButton(
+                                            topic = topic,
+                                            onClick = { model.openChild(topic) },
                                         )
                                     }
                                 )

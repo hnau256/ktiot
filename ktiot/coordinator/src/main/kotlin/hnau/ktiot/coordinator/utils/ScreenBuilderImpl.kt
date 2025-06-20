@@ -11,7 +11,9 @@ import hnau.ktiot.scheme.topic.MqttTopic
 import hnau.ktiot.scheme.topic.asChild
 import hnau.ktiot.scheme.topic.ktiotElements
 import hnau.ktiot.scheme.topic.raw
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
@@ -56,15 +58,10 @@ private class ScreenBuilderImpl(
     val elements: List<Element>
         get() = _elements
 
-    override fun <T> include(
+    private fun <T> handleChildOrInclude(
         topic: MqttTopic,
         builds: Flow<ScreenBuilder.() -> T>,
     ): Flow<T> {
-        _elements.add(
-            Element.Include(
-                topic = topic,
-            ),
-        )
         val absoluteTopic = topic.asChild(this@ScreenBuilderImpl.topic).topic
         val builderWithResult = builds
             .scoped(scope)
@@ -80,6 +77,7 @@ private class ScreenBuilderImpl(
             .shareIn(
                 scope = scope,
                 started = SharingStarted.Eagerly,
+                replay = 1,
             )
         scope.launch {
             builderWithResult.collectLatest { (builder) ->
@@ -91,6 +89,36 @@ private class ScreenBuilderImpl(
             }
         }
         return builderWithResult.map { it.second }
+    }
+
+    override fun <T> child(
+        topic: MqttTopic,
+        builds: Flow<ScreenBuilder.() -> T>,
+    ): Flow<T> {
+        _elements.add(
+            Element.Child(
+                topic = topic,
+            ),
+        )
+        return handleChildOrInclude(
+            topic = topic,
+            builds = builds,
+        )
+    }
+
+    override fun <T> include(
+        topic: MqttTopic,
+        builds: Flow<ScreenBuilder.() -> T>,
+    ): Flow<T> {
+        _elements.add(
+            Element.Include(
+                topic = topic,
+            ),
+        )
+        return handleChildOrInclude(
+            topic = topic,
+            builds = builds,
+        )
     }
 
     override fun property(

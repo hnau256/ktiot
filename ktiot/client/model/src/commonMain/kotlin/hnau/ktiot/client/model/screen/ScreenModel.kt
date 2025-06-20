@@ -66,6 +66,14 @@ class ScreenModel(
         val items: MutableMap<MqttTopic, ScreenItemModel.Skeleton> = HashMap(),
     )
 
+    fun openChild(
+        topic: ChildTopic,
+    ) {
+        skeleton
+            .selectedChild
+            .value = topic.topic to Skeleton()
+    }
+
     data class Item(
         val model: ScreenItemModel,
         val topic: ChildTopic,
@@ -185,6 +193,13 @@ class ScreenModel(
             parentTopic = parentTopic,
             scope = scope,
             element = element,
+        )
+            .let(::listOf)
+            .toMutableStateFlowAsInitial()
+
+        is Element.Child -> Item(
+            topic = element.topic.asChild(parentTopic),
+            model = ScreenItemModel.ChildButton,
         )
             .let(::listOf)
             .toMutableStateFlowAsInitial()
