@@ -76,8 +76,7 @@ private class ScreenBuilderImpl(
             }
             .shareIn(
                 scope = scope,
-                started = SharingStarted.Eagerly,
-                replay = 1,
+                started = SharingStarted.Lazily,
             )
         scope.launch {
             builderWithResult.collectLatest { (builder) ->
