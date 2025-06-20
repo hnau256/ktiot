@@ -189,7 +189,7 @@ class ScreenModel(
             .let(::listOf)
             .toMutableStateFlowAsInitial()
 
-        is Element.Child -> createItemsForTopic(
+        is Element.Include -> createItemsForTopic(
             topic = element.topic.asChild(parentTopic).topic,
             scope = scope,
         ).mapState(scope) { itemsOrLoading ->

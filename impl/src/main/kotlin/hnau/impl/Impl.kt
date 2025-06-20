@@ -35,7 +35,7 @@ fun main() = runBlocking {
                 .share(PropertyMode.Manual)
                 .subscribe()
 
-            val value = child(
+            val value = include(
                 topicPart = "manual_config",
                 include = true,
                 builds = useManual.map { currentUseManual ->
