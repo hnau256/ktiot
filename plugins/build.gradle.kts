@@ -12,10 +12,8 @@ dependencies {
     implementation(libs.kotlin.serialization.json)
 }
 
-val javaVersionNumber: Int = libs.versions.java
-    .get()
-    .dropWhile { !it.isDigit() }
-    .toInt()
+val javaVersion = JavaVersion.valueOf(libs.versions.java.get())
+val javaVersionNumber = javaVersion.ordinal + 1
 
 java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(javaVersionNumber))

@@ -14,13 +14,14 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlinx.datetime.Clock
+import kotlin.time.Clock
 import org.slf4j.simple.SimpleLogger
 import kotlin.math.PI
 import kotlin.math.sin
 
 fun main() = runBlocking {
     System.setProperty(SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "TRACE")
+
     coordinator(
         config = MqttConfig(
             address = "192.168.0.11",

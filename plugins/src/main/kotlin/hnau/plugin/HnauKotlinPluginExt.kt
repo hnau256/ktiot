@@ -9,6 +9,7 @@ import org.gradle.api.internal.project.DefaultProject
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.jvm.toolchain.JavaLanguageVersion
 import org.jetbrains.compose.ComposePlugin
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 internal enum class AndroidMode { Lib, App }
@@ -26,15 +27,17 @@ internal fun Project.config(
     val javaVersionString = versions
         .requireVersion("java")
 
+    val javaVersionNumberString: String =
+        javaVersionString.dropWhile { !it.isDigit() }
+
+    val javaTarget: JvmTarget =
+        JvmTarget.fromTarget(javaVersionNumberString)
+
     val javaVersion: JavaVersion =
         JavaVersion.valueOf(javaVersionString)
 
-    val javaVersionInt: Int = javaVersionString
-        .dropWhile { !it.isDigit() }
-        .toInt()
-
     val javaLanguageVersion: JavaLanguageVersion =
-        JavaLanguageVersion.of(javaVersionInt)
+        JavaLanguageVersion.of(javaVersionNumberString.toInt())
 
     plugins.apply("org.jetbrains.kotlin.multiplatform")
 
@@ -63,25 +66,23 @@ internal fun Project.config(
     extensions.configure(KotlinMultiplatformExtension::class.java) { extension ->
 
         extension.androidTarget {
-            compilations.configureEach { jvmCompilation ->
-                jvmCompilation.kotlinOptions {
-                    jvmTarget = javaVersion.toString()
-                }
+            compilerOptions {
+                jvmTarget.set(javaTarget)
             }
         }
 
         extension.jvmToolchain { javaToolchainSpec ->
             javaToolchainSpec
                 .languageVersion
-                .set(javaLanguageVersion)
+                .set(JavaLanguageVersion.of(javaVersionNumberString))
         }
+
         extension.jvm("desktop") {
-            compilations.configureEach { jvmCompilation ->
-                jvmCompilation.kotlinOptions {
-                    jvmTarget = javaVersion.toString()
-                }
+            compilerOptions {
+                jvmTarget.set(javaTarget)
             }
         }
+
         if (hasComposePlugin) {
             extension.sourceSets.getByName("desktopMain").apply {
                 dependencies {

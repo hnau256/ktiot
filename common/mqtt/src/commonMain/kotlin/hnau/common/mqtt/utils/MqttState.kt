@@ -1,6 +1,6 @@
 package hnau.common.mqtt.utils
 
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 
 sealed interface MqttState {
 

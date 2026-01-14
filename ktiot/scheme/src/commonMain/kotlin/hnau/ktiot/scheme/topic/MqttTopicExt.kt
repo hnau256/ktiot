@@ -1,6 +1,7 @@
 package hnau.ktiot.scheme.topic
 
 import hnau.common.mqtt.utils.Topic
+import hnau.ktiot.scheme.SchemeConstants
 
 
 fun MqttTopic.asChild(
@@ -16,7 +17,7 @@ fun MqttTopic.asChild(
 }
 
 val MqttTopic.Absolute.ktiotElements: MqttTopic.Absolute
-    get() = plus("ktiot")
+    get() = plus(SchemeConstants.schemeTopic)
 
 val MqttTopic.Absolute.raw: Topic
     get() = Topic(MqttTopicParts.Companion.stringMapper.reverse(parts))

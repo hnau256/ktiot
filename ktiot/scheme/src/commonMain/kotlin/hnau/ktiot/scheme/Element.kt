@@ -10,49 +10,25 @@ import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 
 @Serializable
-sealed interface Element {
+data class Element(
+    val topic: MqttTopic.Relative,
+    val type: Type,
+) {
 
-    val topic: MqttTopic
+    sealed interface Type {
 
-    @Serializable
-    @SerialName("child")
-    data class Child(
-        override val topic: MqttTopic,
-    ): Element
+        @Serializable
+        @SerialName("child")
+        data class Child(
+            val included: Boolean,
+        ) : Type
 
-    @Serializable
-    @SerialName("include")
-    data class Include(
-        override val topic: MqttTopic,
-    ): Element
-
-    @Serializable
-    @SerialName("property")
-    data class Property<T>(
-        override val topic: MqttTopic,
-        @SerialName("property_type")
-        val type: PropertyType<T>,
-        val mode: PropertyMode,
-    ) : Element
-
-    companion object {
-
-        val listMqttPayloadMapper: Mapper<ByteArray, List<Element>> = ListSerializer(serializer())
-            .let { serializer ->
-                Mapper.bytesToString + Mapper<String, List<Element>>(
-                    direct = { json ->
-                        Json.decodeFromString(
-                            deserializer = serializer,
-                            string = json,
-                        )
-                    },
-                    reverse = { elements ->
-                        Json.encodeToString(
-                            serializer = serializer,
-                            value = elements,
-                        )
-                    }
-                )
-            }
+        @Serializable
+        @SerialName("property")
+        data class Property<T>(
+            @SerialName("property_type")
+            val type: PropertyType<T>,
+            val mode: PropertyMode,
+        ) : Type
     }
 }

@@ -226,7 +226,7 @@ class JvmMqttClient(
                     /* payload = */ payload,
                     /* qos = */ qoS.code,
                     /* retained = */ retained
-                )
+                ).await()
             }
         }.isSuccess
     }

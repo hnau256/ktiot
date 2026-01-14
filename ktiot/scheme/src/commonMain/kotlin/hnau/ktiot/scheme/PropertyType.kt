@@ -2,11 +2,10 @@ package hnau.ktiot.scheme
 
 import arrow.core.NonEmptyList
 import arrow.core.serialization.NonEmptyListSerializer
+import hnau.common.app.model.color.RGBABytes
+import hnau.common.app.model.color.gradient.Gradient
+import hnau.common.app.model.color.gradient.create
 import hnau.common.kotlin.serialization.ClosedFloatingPointRangeSerializer
-import hnau.common.model.color.RGBABytes
-import hnau.common.model.color.gradient.Gradient
-import hnau.common.model.color.gradient.create
-import kotlinx.datetime.Instant
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -99,10 +98,9 @@ sealed interface PropertyType<T> {
         @SerialName("fraction")
         data class Fraction(
             @Serializable(ClosedFloatingPointRangeSerializer.Float::class)
-            val range: ClosedFloatingPointRange<Float> = 0f..1f,
-            val display: Display = Display.Percent,
-            val gradient: Gradient<RGBABytes> =
-                Gradient.create(RGBABytes.Black, RGBABytes.White),
+            val range: ClosedFloatingPointRange<Float> = defaultRange,
+            val display: Display = Display.default,
+            val gradient: Gradient<RGBABytes> = defaultGradient,
         ) : State<Float> {
 
             @Serializable
@@ -118,6 +116,21 @@ sealed interface PropertyType<T> {
                     val suffix: String = "",
                     val decimalPlaces: Int = 0,
                 ) : Display
+
+                companion object {
+
+                    val default: Display
+                        get() = Percent
+                }
+            }
+
+            companion object {
+
+                val defaultGradient: Gradient<RGBABytes> =
+                    Gradient.create(RGBABytes.Black, RGBABytes.White)
+
+                val defaultRange: ClosedFloatingPointRange<Float> =
+                    0f..1f
             }
 
             override val serializer: KSerializer<Float>

@@ -1,12 +1,12 @@
 package hnau.ktiot.coordinator.utils
 
 import hnau.ktiot.scheme.PropertyType
-import hnau.ktiot.scheme.topic.ChildTopic
+import hnau.ktiot.scheme.topic.MqttTopic
 import kotlinx.coroutines.flow.Flow
 
-interface Property<T, P: PropertyType<T>> {
+interface Property<T, P : PropertyType<T>> {
 
-    val topic: ChildTopic
+    val topic: MqttTopic.Relative
 
     val type: P
 

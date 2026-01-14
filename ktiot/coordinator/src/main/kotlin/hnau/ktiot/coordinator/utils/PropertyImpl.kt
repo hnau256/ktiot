@@ -4,58 +4,28 @@ import hnau.common.logging.tryOrLog
 import hnau.common.mqtt.utils.MqttClient
 import hnau.common.mqtt.utils.Topic
 import hnau.ktiot.scheme.PropertyType
-import hnau.ktiot.scheme.topic.ChildTopic
 import hnau.ktiot.scheme.topic.MqttTopic
 import hnau.ktiot.scheme.topic.raw
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.serialization.json.Json
 
 private val logger = KotlinLogging.logger { }
 
-fun RawProperty(
-    topic: ChildTopic,
-    client: MqttClient,
-): RawProperty = object : RawProperty {
+class PropertyImpl<T, P : PropertyType<T>>(
+    private val client: MqttClient,
+    parentTopic: MqttTopic.Absolute,
+    override val topic: MqttTopic.Relative,
+    override val type: P,
+) : Property<T, P> {
 
-    override val topic: ChildTopic
-        get() = topic
+    private val absoluteTopic: Topic = (parentTopic + topic).raw
 
-    private val rawTopic: Topic = topic.topic.raw
-
-    override fun subscribe(): Flow<ByteArray> = client
+    override fun subscribe(): Flow<T> = client
         .subscribe(
-            topic = rawTopic,
+            topic = absoluteTopic,
         )
-        .map { message -> message.payload }
-
-    override suspend fun publish(
-        payload: ByteArray,
-        retained: Boolean,
-    ): Boolean = client.publish(
-        topic = rawTopic,
-        payload = payload,
-        retained = retained,
-    )
-}
-
-fun <T, P : PropertyType<T>> RawProperty.typed(
-    type: P,
-): Property<T, P> = object : Property<T, P> {
-
-    private val source: RawProperty
-        get() = this@typed
-
-    override val topic: ChildTopic
-        get() = source.topic
-
-    override val type: P
-        get() = type
-
-    override fun subscribe(): Flow<T> = source
-        .subscribe()
         .transformLatest { payload ->
             logger
                 .tryOrLog(
@@ -63,7 +33,7 @@ fun <T, P : PropertyType<T>> RawProperty.typed(
                 ) {
                     Json.decodeFromString(
                         deserializer = type.serializer,
-                        string = payload.decodeToString()
+                        string = payload.payload.decodeToString(),
                     )
                 }
                 .onSuccess { emit(it) }
@@ -86,10 +56,10 @@ fun <T, P : PropertyType<T>> RawProperty.typed(
             }
             .getOrNull()
             ?: return false
-        return source.publish(
+        return client.publish(
+            topic = absoluteTopic,
             payload = payloadBytes,
             retained = retained,
         )
     }
-
 }

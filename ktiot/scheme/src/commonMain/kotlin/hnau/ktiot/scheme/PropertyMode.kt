@@ -1,5 +1,17 @@
 package hnau.ktiot.scheme
 
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+@Serializable
 enum class PropertyMode {
-    Hardware, Manual, Calculated,
+
+    @SerialName("hardware")
+    Hardware,
+
+    @SerialName("manual")
+    Manual,
+
+    @SerialName("calculated")
+    Calculated,
 }
