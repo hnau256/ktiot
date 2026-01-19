@@ -1,12 +1,13 @@
 package hnau.ktiot.coordinator
 
+import hnau.common.kotlin.Loadable
 import hnau.ktiot.scheme.PropertyMode
 import hnau.ktiot.scheme.PropertyType
 import hnau.ktiot.scheme.topic.MqttTopic
 import kotlinx.coroutines.flow.StateFlow
 
 data class ElementWithChildren<out T: ElementWithChildren.Type>(
-    val topic: MqttTopic.Relative,
+    val topic: MqttTopic.Absolute,
     val type: T,
 ) {
 
@@ -14,7 +15,7 @@ data class ElementWithChildren<out T: ElementWithChildren.Type>(
 
         data class Child(
             val included: Boolean,
-            val children: StateFlow<List<ElementWithChildren<*>>>,
+            val children: StateFlow<Loadable<List<ElementWithChildren<*>>>>,
         ) : Type
 
         data class Property<T>(

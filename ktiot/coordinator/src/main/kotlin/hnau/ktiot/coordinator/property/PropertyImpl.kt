@@ -1,8 +1,7 @@
-package hnau.ktiot.coordinator.utils
+package hnau.ktiot.coordinator.property
 
 import hnau.common.logging.tryOrLog
 import hnau.common.mqtt.utils.MqttClient
-import hnau.common.mqtt.utils.Topic
 import hnau.ktiot.scheme.PropertyType
 import hnau.ktiot.scheme.topic.MqttTopic
 import hnau.ktiot.scheme.topic.raw
@@ -13,18 +12,17 @@ import kotlinx.serialization.json.Json
 
 private val logger = KotlinLogging.logger { }
 
-class PropertyImpl<T, P : PropertyType<T>>(
+internal class PropertyImpl<T, P : PropertyType<T>>(
     private val client: MqttClient,
-    parentTopic: MqttTopic.Absolute,
-    override val topic: MqttTopic.Relative,
+    override val topic: MqttTopic.Absolute,
     override val type: P,
 ) : Property<T, P> {
 
-    private val absoluteTopic: Topic = (parentTopic + topic).raw
+    private val rawTopic = topic.raw
 
     override fun subscribe(): Flow<T> = client
         .subscribe(
-            topic = absoluteTopic,
+            topic = rawTopic,
         )
         .transformLatest { payload ->
             logger
@@ -57,7 +55,7 @@ class PropertyImpl<T, P : PropertyType<T>>(
             .getOrNull()
             ?: return false
         return client.publish(
-            topic = absoluteTopic,
+            topic = rawTopic,
             payload = payloadBytes,
             retained = retained,
         )

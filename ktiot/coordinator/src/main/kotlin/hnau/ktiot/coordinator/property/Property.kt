@@ -1,4 +1,4 @@
-package hnau.ktiot.coordinator.utils
+package hnau.ktiot.coordinator.property
 
 import hnau.ktiot.scheme.PropertyType
 import hnau.ktiot.scheme.topic.MqttTopic
@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface Property<T, P : PropertyType<T>> {
 
-    val topic: MqttTopic.Relative
+    val topic: MqttTopic.Absolute
 
     val type: P
 

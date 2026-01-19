@@ -2,7 +2,7 @@ package hnau.ktiot.coordinator.client
 
 import hnau.common.mqtt.utils.MqttClient
 import hnau.ktiot.coordinator.ElementWithChildren
-import hnau.ktiot.coordinator.utils.Property
+import hnau.ktiot.coordinator.property.Property
 import hnau.ktiot.scheme.PropertyType
 import hnau.ktiot.scheme.topic.MqttTopic
 
