@@ -7,16 +7,10 @@ import hnau.common.kotlin.coroutines.mapWithScope
 import hnau.common.kotlin.coroutines.toMutableStateFlowAsInitial
 import hnau.common.mqtt.utils.MqttClient
 import hnau.ktiot.coordinator.ElementWithChildren
-import hnau.ktiot.coordinator.property.Property
-import hnau.ktiot.coordinator.property.property
-import hnau.ktiot.coordinator.property.subscribeToState
-import hnau.ktiot.coordinator.property.toElement
-import hnau.ktiot.scheme.PropertyMode
-import hnau.ktiot.scheme.PropertyType
+import hnau.ktiot.coordinator.property.*
 import hnau.ktiot.scheme.topic.MqttTopic
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
 
 
 class InsectsBlocker(
@@ -25,16 +19,15 @@ class InsectsBlocker(
     client: MqttClient,
 ) {
 
-    private val isManualProperty: Property<Boolean, PropertyType.State.Flag> = client
-        .property(
-            topic = topic + "manual",
-            type = PropertyType.State.Flag,
-        )
+    private val manualProperty = topic
+        .plus("manual")
+        .flagProperty()
+        .manual()
 
     private val manualConfigTopic = topic + "manualConfig"
 
-    private val manual: StateFlow<Loadable<InsectsBlockerManualConfig?>> = isManualProperty
-        .subscribeToState(scope) { false }
+    private val manual: StateFlow<Loadable<InsectsBlockerManualConfig?>> = manualProperty
+        .subscribe(scope, client) { false }
         .mapWithScope(scope) { scope, isManualOrLoading ->
             isManualOrLoading.map { isManual ->
                 isManual.ifTrue {
@@ -59,31 +52,21 @@ class InsectsBlocker(
         )
     }
 
-    private val isEnabledProperty = client
-        .property(
-            topic = topic + "enabled",
-            type = PropertyType.State.Flag,
+    private val isEnabledProperty = topic
+        .plus("enabled")
+        .flagProperty()
+        .calculated()
+
+    init {
+        isEnabledProperty.publish(
+            scope = scope,
+            client = client,
+            payload = isEnabled,
         )
-        .apply {
-            scope.launch {
-                isEnabled.collect { enabledOrLoading ->
-                    enabledOrLoading.fold(
-                        ifLoading = {},
-                        ifReady = { enabled ->
-                            publish(
-                                payload = enabled,
-                                retained = true,
-                            )
-                        }
-                    )
-                }
-            }
-        }
+    }
 
     val children: List<ElementWithChildren<*>> = listOf(
-        isManualProperty.toElement(
-            mode = PropertyMode.Manual,
-        ),
+        manualProperty.element,
         ElementWithChildren(
             topic = manualConfigTopic,
             type = ElementWithChildren.Type.Child(
@@ -97,9 +80,7 @@ class InsectsBlocker(
                 }
             )
         ),
-        isEnabledProperty.toElement(
-            mode = PropertyMode.Calculated,
-        ),
+        isEnabledProperty.element,
     )
 }
 
@@ -109,18 +90,15 @@ class InsectsBlockerManualConfig(
     client: MqttClient,
 ) {
 
-    private val isEnabledProperty: Property<Boolean, PropertyType.State.Flag> = client
-        .property(
-            topic = topic + "enabled",
-            type = PropertyType.State.Flag,
-        )
+    private val isEnabledProperty = topic
+        .plus("enabled")
+        .flagProperty()
+        .manual()
 
     val children: List<ElementWithChildren<*>> = listOf(
-        isEnabledProperty.toElement(
-            mode = PropertyMode.Manual,
-        )
+        isEnabledProperty.element
     )
 
     val isEnabled: StateFlow<Loadable<Boolean>> =
-        isEnabledProperty.subscribeToState(scope) { false }
+        isEnabledProperty.subscribe(scope, client) { false }
 }
