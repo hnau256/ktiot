@@ -8,8 +8,8 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import hnau.common.kotlin.coroutines.flatMapState
-import hnau.common.kotlin.coroutines.mapState
-import hnau.common.kotlin.coroutines.mapWithScope
+import hnau.common.kotlin.coroutines.flow.state.mapState
+import hnau.common.kotlin.coroutines.flow.state.mapWithScope
 import hnau.common.kotlin.coroutines.scopedInState
 import hnau.common.projector.uikit.HnauButton
 import hnau.common.projector.uikit.table.Cell

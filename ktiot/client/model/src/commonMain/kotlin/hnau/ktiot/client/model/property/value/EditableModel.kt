@@ -10,8 +10,8 @@ import arrow.core.left
 import arrow.core.right
 import arrow.core.serialization.EitherSerializer
 import hnau.common.kotlin.coroutines.flatMapState
-import hnau.common.kotlin.coroutines.mapState
-import hnau.common.kotlin.coroutines.mapWithScope
+import hnau.common.kotlin.coroutines.flow.state.mapState
+import hnau.common.kotlin.coroutines.flow.state.mapWithScope
 import hnau.common.kotlin.coroutines.scopedInState
 import hnau.common.kotlin.ifNull
 import hnau.common.kotlin.ifTrue

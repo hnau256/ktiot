@@ -8,12 +8,12 @@ import hnau.common.kotlin.Loading
 import hnau.common.kotlin.Ready
 import hnau.common.kotlin.coroutines.Stickable
 import hnau.common.kotlin.coroutines.combineState
-import hnau.common.kotlin.coroutines.mapState
+import hnau.common.kotlin.coroutines.flow.state.mapState
 import hnau.common.kotlin.coroutines.operationOrNullIfExecuting
 import hnau.common.kotlin.coroutines.predeterminated
 import hnau.common.kotlin.coroutines.stateFlow
 import hnau.common.kotlin.coroutines.stick
-import hnau.common.kotlin.coroutines.toMutableStateFlowAsInitial
+import hnau.common.kotlin.coroutines.flow.state.mutable.toMutableStateFlowAsInitial
 import hnau.common.kotlin.fold
 import hnau.common.kotlin.getOrInit
 import hnau.common.kotlin.shrinkType

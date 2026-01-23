@@ -6,7 +6,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import hnau.common.kotlin.Loadable
-import hnau.common.kotlin.coroutines.mapWithScope
+import hnau.common.kotlin.coroutines.flow.state.mapWithScope
 import hnau.common.kotlin.map
 import hnau.common.projector.uikit.state.LoadableContent
 import hnau.common.projector.uikit.state.StateContent

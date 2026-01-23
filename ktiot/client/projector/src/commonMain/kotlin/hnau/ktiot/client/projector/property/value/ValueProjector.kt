@@ -1,6 +1,6 @@
 package hnau.ktiot.client.projector.property.value
 
-import hnau.common.kotlin.coroutines.toMutableStateFlowAsInitial
+import hnau.common.kotlin.coroutines.flow.state.mutable.toMutableStateFlowAsInitial
 import hnau.common.projector.uikit.table.Cell
 import kotlinx.coroutines.flow.StateFlow
 
