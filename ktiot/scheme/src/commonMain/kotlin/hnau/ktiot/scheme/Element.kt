@@ -10,6 +10,7 @@ data class Element(
     val type: Type,
 ) {
 
+    @Serializable
     sealed interface Type {
 
         @Serializable

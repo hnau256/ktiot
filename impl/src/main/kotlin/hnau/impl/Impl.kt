@@ -11,12 +11,8 @@ fun main() = runBlocking {
 
     coordinator(
         config = MqttConfig(
-            address = "192.168.0.11",
+            address = "192.168.0.13",
             clientId = "coordinator",
-            auth = MqttConfig.Auth(
-                user = "coordinator",
-                password = "qwerty",
-            )
         )
     ) { scope, client ->
         createHome(

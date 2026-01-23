@@ -45,7 +45,7 @@ class InsectsBlocker(
             ifLoading = { Loading.toMutableStateFlowAsInitial() },
             ifReady = { configOrNull ->
                 configOrNull.foldNullable(
-                    ifNull = { TODO("Calculate") },
+                    ifNull = { false.let(::Ready).toMutableStateFlowAsInitial() /*TODO*/ },
                     ifNotNull = { config -> config.isEnabled }
                 )
             }
