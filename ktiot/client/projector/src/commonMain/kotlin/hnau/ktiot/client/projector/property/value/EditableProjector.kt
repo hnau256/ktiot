@@ -10,7 +10,7 @@ import androidx.compose.runtime.getValue
 import hnau.common.kotlin.coroutines.flatMapState
 import hnau.common.kotlin.coroutines.flow.state.mapState
 import hnau.common.kotlin.coroutines.flow.state.mapWithScope
-import hnau.common.kotlin.coroutines.scopedInState
+import hnau.common.kotlin.coroutines.flow.state.scopedInState
 import hnau.common.projector.uikit.HnauButton
 import hnau.common.projector.uikit.table.Cell
 import hnau.common.projector.utils.Icon

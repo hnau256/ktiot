@@ -7,7 +7,7 @@ import hnau.common.kotlin.Ready
 import hnau.common.kotlin.coroutines.flatMapState
 import hnau.common.kotlin.coroutines.flow.state.mapState
 import hnau.common.kotlin.coroutines.flow.state.mapWithScope
-import hnau.common.kotlin.coroutines.scopedInState
+import hnau.common.kotlin.coroutines.flow.state.scopedInState
 import hnau.common.kotlin.coroutines.flow.state.mutable.toMutableStateFlowAsInitial
 import hnau.common.kotlin.fold
 import hnau.common.kotlin.getOrInit

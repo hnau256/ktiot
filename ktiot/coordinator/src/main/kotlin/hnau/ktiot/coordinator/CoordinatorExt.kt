@@ -1,23 +1,26 @@
 package hnau.ktiot.coordinator
 
+import hnau.common.kotlin.Loadable
+import hnau.common.kotlin.Ready
+import hnau.common.kotlin.coroutines.flow.state.mutable.toMutableStateFlowAsInitial
 import hnau.common.mqtt.mqtt
+import hnau.common.mqtt.utils.MqttClient
 import hnau.common.mqtt.utils.MqttConfig
 import hnau.common.mqtt.utils.MqttState
-import hnau.ktiot.coordinator.utils.buildScreen
-import hnau.ktiot.scheme.topic.MqttTopic
+import hnau.ktiot.coordinator.utils.ElementWithChildren
+import hnau.ktiot.coordinator.utils.publishScheme
 import io.github.oshai.kotlinlogging.KLogger
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 private val logger: KLogger = KotlinLogging.logger { }
 
-suspend fun coordinator(
+suspend fun mutableCoordinator(
     config: MqttConfig,
-    builds: StateFlow<ScreenBuilder.() -> Unit>,
+    createRootElements: (CoroutineScope, MqttClient) -> StateFlow<Loadable<List<ElementWithChildren<*>>>>,
 ) {
     mqtt(
         config = config,
@@ -27,14 +30,27 @@ suspend fun coordinator(
             MqttState.Connecting, is MqttState.WaitingForReconnection -> Unit
             is MqttState.Connected -> coroutineScope {
                 val scope = this
-                buildScreen(
-                    topic = MqttTopic.Absolute.root,
+                val client = state.client
+                val rootElements = createRootElements(scope, client)
+                client.publishScheme(
                     scope = scope,
-                    client = state.client,
-                    builds = builds,
+                    rootElements = rootElements,
                 )
                 awaitCancellation()
             }
         }
+    }
+}
+
+suspend fun coordinator(
+    config: MqttConfig,
+    createRootElements: (CoroutineScope, MqttClient) -> List<ElementWithChildren<*>>,
+) {
+    mutableCoordinator(
+        config = config,
+    ) { scope, client ->
+        createRootElements(scope, client)
+            .let(::Ready)
+            .toMutableStateFlowAsInitial()
     }
 }

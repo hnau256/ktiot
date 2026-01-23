@@ -7,7 +7,7 @@ import hnau.common.kotlin.coroutines.flow.state.mutable.toMutableStateFlowAsInit
 import hnau.common.kotlin.fold
 import hnau.common.logging.tryOrLog
 import hnau.common.mqtt.utils.MqttClient
-import hnau.ktiot.coordinator.ElementWithChildren
+import hnau.ktiot.coordinator.utils.ElementWithChildren
 import hnau.ktiot.scheme.PropertyMode
 import hnau.ktiot.scheme.PropertyType
 import hnau.ktiot.scheme.topic.MqttTopic

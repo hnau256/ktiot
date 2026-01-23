@@ -6,7 +6,7 @@ import hnau.common.kotlin.coroutines.flow.state.mapState
 import hnau.common.kotlin.coroutines.flow.state.mapWithScope
 import hnau.common.kotlin.coroutines.flow.state.mutable.toMutableStateFlowAsInitial
 import hnau.common.mqtt.utils.MqttClient
-import hnau.ktiot.coordinator.ElementWithChildren
+import hnau.ktiot.coordinator.utils.ElementWithChildren
 import hnau.ktiot.coordinator.property.*
 import hnau.ktiot.scheme.topic.MqttTopic
 import kotlinx.coroutines.CoroutineScope

@@ -1,4 +1,4 @@
-package hnau.ktiot.coordinator
+package hnau.ktiot.coordinator.utils
 
 import hnau.common.kotlin.Loadable
 import hnau.ktiot.scheme.PropertyMode

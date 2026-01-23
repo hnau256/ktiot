@@ -1,13 +1,34 @@
 package hnau.impl
 
-import hnau.ktiot.coordinator.ElementWithChildren
-import hnau.ktiot.coordinator.client.RelativeMqttClient
-import hnau.ktiot.coordinator.client.RelativeMqttClientImpl
+import hnau.common.kotlin.Ready
+import hnau.common.kotlin.coroutines.flow.state.mutable.toMutableStateFlowAsInitial
+import hnau.common.mqtt.utils.MqttClient
+import hnau.ktiot.coordinator.utils.ElementWithChildren
+import hnau.ktiot.scheme.topic.MqttTopic
 import kotlinx.coroutines.CoroutineScope
 
 fun createHome(
     scope: CoroutineScope,
-    client: RelativeMqttClient,
-): List<ElementWithChildren<*>> {
+    topic: MqttTopic.Absolute,
+    client: MqttClient,
+): List<ElementWithChildren<*>> = (0..1).map { index ->
 
+    val childTopic = topic + "room_${index + 1}"
+
+    val blocker = InsectsBlocker(
+        scope = scope,
+        topic = childTopic,
+        client = client,
+    )
+
+    ElementWithChildren(
+        topic = childTopic,
+        type = ElementWithChildren.Type.Child(
+            included = false,
+            children = blocker
+                .children
+                .let(::Ready)
+                .toMutableStateFlowAsInitial(),
+        )
+    )
 }

@@ -12,7 +12,7 @@ import arrow.core.serialization.EitherSerializer
 import hnau.common.kotlin.coroutines.flatMapState
 import hnau.common.kotlin.coroutines.flow.state.mapState
 import hnau.common.kotlin.coroutines.flow.state.mapWithScope
-import hnau.common.kotlin.coroutines.scopedInState
+import hnau.common.kotlin.coroutines.flow.state.scopedInState
 import hnau.common.kotlin.ifNull
 import hnau.common.kotlin.ifTrue
 import hnau.common.kotlin.serialization.MutableStateFlowSerializer

@@ -2,7 +2,7 @@
 #tools
 kotlin = "2.3.0"
 #kotest = "5.8.0"
-java = "VERSION_17" #update also jitpack.yml
+java = "VERSION_21" #update also jitpack.yml
 androidGradlePlugin = "8.9.2"
 androidCompileSdk = "35"
 androidMinSdk = "24"
