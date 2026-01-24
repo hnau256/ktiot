@@ -68,7 +68,7 @@ sealup-processor = { module = "com.github.hnau256.common-gen-sealup:processor", 
 enumvalues-annotations = { module = "com.github.hnau256.common-gen-enumvalues:annotations", version.ref = "enumvalues" }
 enumvalues-processor = { module = "com.github.hnau256.common-gen-enumvalues:processor", version.ref = "enumvalues" }
 #hnau
-hnau-kotlin = { module = "com.github.hnau256.common-kotlin:common-kotlin", version = "1.9.0" }
+hnau-kotlin = { module = "com.github.hnau256.common-kotlin:common-kotlin", version = "1.10.0" }
 hnau-gen-kt = { module = "com.github.hnau256:common-gen-kt", version = "1.4.0" }
 hnau-dynamiccolor = { module = "com.github.hnau256:common-dynamiccolor", version = "1.1.1" }
 hnau-model = { module = "com.github.hnau256.common-app:model", version.ref = "app" }

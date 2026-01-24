@@ -1,6 +1,7 @@
 package hnau.impl
 
 import hnau.common.mqtt.utils.MqttConfig
+import hnau.ktiot.coordinator.asReadyStateFlow
 import hnau.ktiot.coordinator.coordinator
 import hnau.ktiot.scheme.topic.MqttTopic
 import kotlinx.coroutines.runBlocking
@@ -19,6 +20,6 @@ fun main() = runBlocking {
             scope = scope,
             topic = MqttTopic.Absolute.root,
             client = client,
-        )
+        ).asReadyStateFlow()
     }
 }

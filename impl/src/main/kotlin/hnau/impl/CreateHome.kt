@@ -1,8 +1,7 @@
 package hnau.impl
 
-import hnau.common.kotlin.Ready
-import hnau.common.kotlin.coroutines.flow.state.mutable.toMutableStateFlowAsInitial
 import hnau.common.mqtt.utils.MqttClient
+import hnau.ktiot.coordinator.asReadyStateFlow
 import hnau.ktiot.coordinator.utils.ElementWithChildren
 import hnau.ktiot.scheme.topic.MqttTopic
 import kotlinx.coroutines.CoroutineScope
@@ -27,8 +26,7 @@ fun createHome(
             included = false,
             children = blocker
                 .children
-                .let(::Ready)
-                .toMutableStateFlowAsInitial(),
+                .asReadyStateFlow(),
         )
     )
 }

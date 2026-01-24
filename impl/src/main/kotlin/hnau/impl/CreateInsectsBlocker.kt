@@ -6,6 +6,7 @@ import hnau.common.kotlin.coroutines.flow.state.mapState
 import hnau.common.kotlin.coroutines.flow.state.mapWithScope
 import hnau.common.kotlin.coroutines.flow.state.mutable.toMutableStateFlowAsInitial
 import hnau.common.mqtt.utils.MqttClient
+import hnau.ktiot.coordinator.asReadyStateFlow
 import hnau.ktiot.coordinator.utils.ElementWithChildren
 import hnau.ktiot.coordinator.property.*
 import hnau.ktiot.scheme.topic.MqttTopic
@@ -45,7 +46,7 @@ class InsectsBlocker(
             ifLoading = { Loading.toMutableStateFlowAsInitial() },
             ifReady = { configOrNull ->
                 configOrNull.foldNullable(
-                    ifNull = { false.let(::Ready).toMutableStateFlowAsInitial() /*TODO*/ },
+                    ifNull = { false.asReadyStateFlow() /*TODO*/ },
                     ifNotNull = { config -> config.isEnabled }
                 )
             }

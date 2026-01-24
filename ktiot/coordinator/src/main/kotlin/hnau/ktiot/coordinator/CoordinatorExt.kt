@@ -1,8 +1,6 @@
 package hnau.ktiot.coordinator
 
 import hnau.common.kotlin.Loadable
-import hnau.common.kotlin.Ready
-import hnau.common.kotlin.coroutines.flow.state.mutable.toMutableStateFlowAsInitial
 import hnau.common.mqtt.mqtt
 import hnau.common.mqtt.utils.MqttClient
 import hnau.common.mqtt.utils.MqttConfig
@@ -18,7 +16,7 @@ import kotlinx.coroutines.flow.StateFlow
 
 private val logger: KLogger = KotlinLogging.logger { }
 
-suspend fun mutableCoordinator(
+suspend fun coordinator(
     config: MqttConfig,
     createRootElements: (CoroutineScope, MqttClient) -> StateFlow<Loadable<List<ElementWithChildren<*>>>>,
 ) {
@@ -39,18 +37,5 @@ suspend fun mutableCoordinator(
                 awaitCancellation()
             }
         }
-    }
-}
-
-suspend fun coordinator(
-    config: MqttConfig,
-    createRootElements: (CoroutineScope, MqttClient) -> List<ElementWithChildren<*>>,
-) {
-    mutableCoordinator(
-        config = config,
-    ) { scope, client ->
-        createRootElements(scope, client)
-            .let(::Ready)
-            .toMutableStateFlowAsInitial()
     }
 }
