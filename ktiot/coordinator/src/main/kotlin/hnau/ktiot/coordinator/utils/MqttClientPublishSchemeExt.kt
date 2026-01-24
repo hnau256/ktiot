@@ -9,6 +9,7 @@ import hnau.common.mqtt.utils.MqttClient
 import hnau.ktiot.scheme.Element
 import hnau.ktiot.scheme.SchemeConstants
 import hnau.ktiot.scheme.topic.MqttTopic
+import hnau.ktiot.scheme.topic.ktiotElements
 import hnau.ktiot.scheme.topic.raw
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
@@ -67,7 +68,7 @@ private fun MqttClient.publishElements(
                 )
 
                 publish(
-                    topic = topic.raw,
+                    topic = topic.ktiotElements.raw,
                     retained = true,
                     payload = SchemeConstants.mapper.reverse(
                         elementsWithChildrenOrLoading.map { elementsWithChildren ->
