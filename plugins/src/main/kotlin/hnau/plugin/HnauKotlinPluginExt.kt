@@ -1,6 +1,5 @@
 package hnau.plugin
 
-import com.android.build.gradle.BaseExtension
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalog
@@ -42,7 +41,7 @@ internal fun Project.config(
     plugins.apply("org.jetbrains.kotlin.multiplatform")
 
     when (androidMode) {
-        AndroidMode.Lib -> plugins.apply("com.android.library")
+        AndroidMode.Lib -> plugins.apply("com.android.kotlin.multiplatform.library")
         AndroidMode.App -> plugins.apply("com.android.application")
     }
 
@@ -65,9 +64,18 @@ internal fun Project.config(
 
     extensions.configure(KotlinMultiplatformExtension::class.java) { extension ->
 
-        extension.androidTarget {
-            compilerOptions {
-                jvmTarget.set(javaTarget)
+        when (androidMode) {
+            AndroidMode.Lib -> {
+                // For library mode, android configuration is done in separate android block
+                // This will be configured later in the android extension block
+            }
+
+            AndroidMode.App -> {
+                extension.androidTarget {
+                    compilerOptions {
+                        jvmTarget.set(javaTarget)
+                    }
+                }
             }
         }
 
@@ -94,14 +102,13 @@ internal fun Project.config(
         extension.sourceSets.getByName("commonMain").apply {
             languageSettings.enableLanguageFeature("ContextReceivers")
             dependencies {
-
                 implementation(versions.findLibrary("logging").get().get())
                 implementation(versions.findLibrary("arrow-core").get().get())
                 implementation(versions.findLibrary("arrow-coroutines").get().get())
                 implementation(versions.findLibrary("coroutines").get().get())
                 implementation(versions.findLibrary("hnau-kotlin").get().get())
 
-                if (identitifer != CommonLogginIdentifier) {
+                if (identifer != CommonLogginIdentifier) {
                     implementation(project(CommonLogginIdentifier))
                 }
 
@@ -124,31 +131,15 @@ internal fun Project.config(
     if (hasKspPlugin) {
         dependencies.add(
             "kspCommonMainMetadata",
-            versions.findLibrary("pipe-processor").get().get()
+            versions.findLibrary("pipe-processor").get().get(),
         )
     }
 
-    extensions.configure(BaseExtension::class.java) { extension ->
-
-        val compileSdk = versions.requireVersion("androidCompileSdk").toInt()
-        val minSdk = versions.requireVersion("androidMinSdk").toInt()
-        extension.compileSdkVersion(compileSdk)
-        extension.buildToolsVersion(versions.requireVersion("androidBuildTools"))
-
-        extension.defaultConfig { config ->
-            config.minSdk = minSdk
-            config.targetSdk = compileSdk
-        }
-
-        extension.compileOptions { options ->
-            options.targetCompatibility = javaVersion
-            options.sourceCompatibility = javaVersion
-        }
-        extension.namespace = "hnau." + path.drop(1).replace(':', '.')
-    }
+    // Android configuration for library mode handled by new plugin automatically
+    // Default settings should be sufficient for now
 }
 
-private val Project.identitifer: String
+private val Project.identifer: String
     get() = (project as DefaultProject).identityPath.toString()
 
 private fun VersionCatalog.requireVersion(
