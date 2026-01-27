@@ -9,5 +9,5 @@ plugins {
     alias(libs.plugins.kotlin.multiplatform) apply false
     alias(libs.plugins.ksp) apply false
     alias(libs.plugins.android.app) apply false
-    alias(libs.plugins.android.kmp.lib) apply false
+    alias(libs.plugins.android.lib) apply false
 }
