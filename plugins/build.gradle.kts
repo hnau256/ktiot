@@ -7,9 +7,11 @@ plugins {
 dependencies {
     implementation(libs.gradle.plugin.kotlin.jvm)
     implementation(libs.gradle.plugin.android)
+    implementation(libs.gradle.plugin.android.api)
     implementation(libs.gradle.plugin.compose)
     implementation(libs.arrow.core)
     implementation(libs.kotlin.serialization.json)
+    compileOnly(gradleApi())
 }
 
 val javaVersion = JavaVersion.valueOf(libs.versions.java.get())
@@ -24,10 +26,6 @@ kotlin {
 }
 
 gradlePlugin {
-    plugins.create("Android application") {
-        id = "hnau.android.app"
-        implementationClass = "hnau.plugin.HnauAndroidAppPlugin"
-    }
     plugins.create("Android library") {
         id = "hnau.android.lib"
         implementationClass = "hnau.plugin.HnauAndroidLibPlugin"
