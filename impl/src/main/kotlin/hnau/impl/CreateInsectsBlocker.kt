@@ -10,6 +10,7 @@ import hnau.ktiot.coordinator.asReadyStateFlow
 import hnau.ktiot.coordinator.utils.ElementWithChildren
 import hnau.ktiot.coordinator.property.*
 import hnau.ktiot.scheme.topic.MqttTopic
+import hnau.pipe.annotations.Pipe
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
 
@@ -17,8 +18,16 @@ import kotlinx.coroutines.flow.StateFlow
 class InsectsBlocker(
     scope: CoroutineScope,
     topic: MqttTopic.Absolute,
-    client: MqttClient,
+    dependencies: Dependencies,
 ) {
+
+    @Pipe
+    interface Dependencies {
+
+        val client: MqttClient
+
+        fun manual(): InsectsBlockerManualConfig.Dependencies
+    }
 
     private val manualProperty = topic
         .plus("manual")
@@ -28,13 +37,13 @@ class InsectsBlocker(
     private val manualConfigTopic = topic + "manualConfig"
 
     private val manual: StateFlow<Loadable<InsectsBlockerManualConfig?>> = manualProperty
-        .subscribe(scope, client) { false }
+        .subscribe(scope, dependencies.client) { false }
         .mapWithScope(scope) { scope, isManualOrLoading ->
             isManualOrLoading.map { isManual ->
                 isManual.ifTrue {
                     InsectsBlockerManualConfig(
                         scope = scope,
-                        client = client,
+                        dependencies = dependencies.manual(),
                         topic = manualConfigTopic,
                     )
                 }
@@ -61,7 +70,7 @@ class InsectsBlocker(
     init {
         isEnabledProperty.publish(
             scope = scope,
-            client = client,
+            client = dependencies.client,
             payload = isEnabled,
         )
     }
@@ -88,8 +97,14 @@ class InsectsBlocker(
 class InsectsBlockerManualConfig(
     scope: CoroutineScope,
     topic: MqttTopic.Absolute,
-    client: MqttClient,
+    dependencies: Dependencies,
 ) {
+
+    @Pipe
+    interface Dependencies {
+
+        val client: MqttClient
+    }
 
     private val isEnabledProperty = topic
         .plus("enabled")
@@ -101,5 +116,5 @@ class InsectsBlockerManualConfig(
     )
 
     val isEnabled: StateFlow<Loadable<Boolean>> =
-        isEnabledProperty.subscribe(scope, client) { false }
+        isEnabledProperty.subscribe(scope, dependencies.client) { false }
 }

@@ -16,10 +16,14 @@ fun main() = runBlocking {
             clientId = "coordinator",
         )
     ) { scope, client ->
-        createHome(
+        Home(
             scope = scope,
             topic = MqttTopic.Absolute.root,
-            client = client,
-        ).asReadyStateFlow()
+            dependencies = Home.Dependencies.impl(
+                client = client,
+            )
+        )
+            .children
+            .asReadyStateFlow()
     }
 }
