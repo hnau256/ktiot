@@ -1,6 +1,6 @@
 package hnau.ktiot.client.projector.utils
 
-import hnau.ktiot.scheme.topic.ChildTopic
+import hnau.ktiot.client.model.utils.ChildTopic
 import hnau.ktiot.scheme.topic.MqttTopic
 import hnau.ktiot.scheme.topic.MqttTopicParts
 

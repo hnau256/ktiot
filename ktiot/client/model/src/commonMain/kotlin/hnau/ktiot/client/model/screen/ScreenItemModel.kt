@@ -1,7 +1,7 @@
 package hnau.ktiot.client.model.screen
 
-import hnau.common.model.goback.GoBackHandler
-import hnau.common.model.goback.NeverGoBackHandler
+import hnau.common.app.model.goback.GoBackHandler
+import hnau.common.app.model.goback.NeverGoBackHandler
 import hnau.ktiot.client.model.property.PropertyModel
 
 sealed interface ScreenItemModel {

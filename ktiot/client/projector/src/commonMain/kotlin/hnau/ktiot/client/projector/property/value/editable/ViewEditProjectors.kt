@@ -1,6 +1,6 @@
 package hnau.ktiot.client.projector.property.value.editable
 
-import hnau.common.projector.uikit.table.Cell
+import hnau.common.app.projector.uikit.table.Cell
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 

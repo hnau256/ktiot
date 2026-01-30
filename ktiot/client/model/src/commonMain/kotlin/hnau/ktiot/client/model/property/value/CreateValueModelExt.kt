@@ -6,14 +6,14 @@ import arrow.core.toOption
 import hnau.common.kotlin.Loadable
 import hnau.common.kotlin.Loading
 import hnau.common.kotlin.Ready
-import hnau.common.kotlin.coroutines.Stickable
-import hnau.common.kotlin.coroutines.combineState
+import hnau.common.kotlin.coroutines.flow.state.Stickable
+import hnau.common.kotlin.coroutines.flow.state.combineState
 import hnau.common.kotlin.coroutines.flow.state.mapState
 import hnau.common.kotlin.coroutines.operationOrNullIfExecuting
-import hnau.common.kotlin.coroutines.predeterminated
-import hnau.common.kotlin.coroutines.stateFlow
-import hnau.common.kotlin.coroutines.stick
 import hnau.common.kotlin.coroutines.flow.state.mutable.toMutableStateFlowAsInitial
+import hnau.common.kotlin.coroutines.flow.state.predetermined
+import hnau.common.kotlin.coroutines.flow.state.stateFlow
+import hnau.common.kotlin.coroutines.flow.state.stick
 import hnau.common.kotlin.fold
 import hnau.common.kotlin.getOrInit
 import hnau.common.kotlin.shrinkType
@@ -25,7 +25,7 @@ import hnau.ktiot.client.model.property.value.editable.ViewModel
 import hnau.ktiot.client.model.utils.Timestamped
 import hnau.ktiot.scheme.PropertyMode
 import hnau.ktiot.scheme.PropertyType
-import hnau.ktiot.scheme.topic.ChildTopic
+import hnau.ktiot.client.model.utils.ChildTopic
 import hnau.ktiot.scheme.topic.raw
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
@@ -117,7 +117,7 @@ inline fun <reified T, P : PropertyType.State<T>, D, reified S : ValueModel.Skel
             )
             .stick(scope) { stickableScope, valueOrErrorOrLoading ->
                 valueOrErrorOrLoading.fold(
-                    ifLoading = { Stickable.predeterminated(Loading) },
+                    ifLoading = { Stickable.predetermined(Loading) },
                     ifReady = { valueOrError ->
                         valueOrError.fold(
                             onSuccess = { initialValue ->
@@ -141,14 +141,14 @@ inline fun <reified T, P : PropertyType.State<T>, D, reified S : ValueModel.Skel
 
                                         val valuesOrOverwritten = combineState(
                                             scope = scope,
-                                            a = overwriteValue.mapState(
+                                            first = overwriteValue.mapState(
                                                 scope = stickableScope
                                             ) { overwrittenOrNull ->
                                                 overwrittenOrNull?.takeIf { overwritten ->
                                                     Clock.System.now() - overwritten.timestamp < 3.seconds
                                                 }
                                             },
-                                            b = values.mapState(
+                                            second = values.mapState(
                                                 scope = stickableScope,
                                                 transform = Timestamped.Companion::now,
                                             ),
@@ -214,7 +214,7 @@ inline fun <reified T, P : PropertyType.State<T>, D, reified S : ValueModel.Skel
                                 )
                             },
                             onFailure = { error ->
-                                Stickable.predeterminated(
+                                Stickable.predetermined(
                                     Ready(Result.failure(error))
                                 )
                             }

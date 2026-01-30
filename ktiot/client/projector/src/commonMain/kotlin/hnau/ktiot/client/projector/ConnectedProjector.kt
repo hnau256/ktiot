@@ -7,9 +7,9 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
-import hnau.common.model.goback.GlobalGoBackHandler
-import hnau.common.model.goback.GoBackHandler
-import hnau.common.projector.utils.NavigationIcon
+import hnau.common.app.model.goback.GlobalGoBackHandler
+import hnau.common.app.model.goback.GoBackHandler
+import hnau.common.app.projector.utils.NavigationIcon
 import hnau.ktiot.client.model.ConnectedModel
 import hnau.ktiot.client.projector.screen.ScreenProjector
 import hnau.pipe.annotations.Pipe

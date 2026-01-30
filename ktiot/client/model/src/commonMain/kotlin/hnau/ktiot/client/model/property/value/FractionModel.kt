@@ -1,11 +1,11 @@
 package hnau.ktiot.client.model.property.value
 
-import hnau.common.kotlin.coroutines.flatMapState
+import hnau.common.kotlin.coroutines.flow.state.flatMapState
 import hnau.common.kotlin.coroutines.flow.state.mapState
 import hnau.common.kotlin.coroutines.flow.state.mutable.toMutableStateFlowAsInitial
 import hnau.common.kotlin.foldNullable
-import hnau.common.model.goback.GoBackHandler
-import hnau.common.model.goback.NeverGoBackHandler
+import hnau.common.app.model.goback.GoBackHandler
+import hnau.common.app.model.goback.NeverGoBackHandler
 import hnau.ktiot.scheme.PropertyType
 import hnau.pipe.annotations.Pipe
 import kotlinx.coroutines.CoroutineScope

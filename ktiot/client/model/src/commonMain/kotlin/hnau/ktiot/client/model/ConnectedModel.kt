@@ -7,7 +7,7 @@ package hnau.ktiot.client.model
 import hnau.common.kotlin.getOrInit
 import hnau.common.kotlin.serialization.MutableStateFlowSerializer
 import hnau.common.kotlin.toAccessor
-import hnau.common.model.goback.GoBackHandler
+import hnau.common.app.model.goback.GoBackHandler
 import hnau.ktiot.client.model.screen.ScreenModel
 import hnau.ktiot.scheme.topic.MqttTopic
 import hnau.pipe.annotations.Pipe

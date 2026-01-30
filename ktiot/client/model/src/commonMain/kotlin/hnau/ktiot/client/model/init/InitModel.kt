@@ -4,7 +4,7 @@ import hnau.common.kotlin.Loadable
 import hnau.common.kotlin.LoadableStateFlow
 import hnau.common.kotlin.Loading
 import hnau.common.kotlin.Ready
-import hnau.common.kotlin.coroutines.flatMapState
+import hnau.common.kotlin.coroutines.flow.state.flatMapState
 import hnau.common.kotlin.coroutines.flow.state.mapState
 import hnau.common.kotlin.coroutines.flow.state.mapWithScope
 import hnau.common.kotlin.coroutines.flow.state.scopedInState
@@ -14,11 +14,11 @@ import hnau.common.kotlin.getOrInit
 import hnau.common.kotlin.mapper.toMapper
 import hnau.common.kotlin.shrinkType
 import hnau.common.kotlin.toAccessor
-import hnau.common.model.goback.GoBackHandler
-import hnau.common.model.goback.NeverGoBackHandler
-import hnau.common.model.preferences.Preferences
-import hnau.common.model.preferences.map
-import hnau.common.model.preferences.withDefault
+import hnau.common.app.model.goback.GoBackHandler
+import hnau.common.app.model.goback.NeverGoBackHandler
+import hnau.common.app.model.preferences.Preferences
+import hnau.common.app.model.preferences.map
+import hnau.common.app.model.preferences.withDefault
 import hnau.ktiot.client.model.LoggedModel
 import hnau.ktiot.client.model.LoginModel
 import hnau.pipe.annotations.Pipe

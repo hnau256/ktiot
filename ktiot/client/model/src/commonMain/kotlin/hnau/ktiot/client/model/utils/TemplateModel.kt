@@ -5,7 +5,7 @@
 package hnau.ktiot.client.model.utils
 
 import hnau.common.kotlin.serialization.MutableStateFlowSerializer
-import hnau.common.model.goback.GoBackHandler
+import hnau.common.app.model.goback.GoBackHandler
 import hnau.pipe.annotations.Pipe
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope

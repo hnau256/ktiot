@@ -9,14 +9,14 @@ import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
 import arrow.core.serialization.EitherSerializer
-import hnau.common.kotlin.coroutines.flatMapState
+import hnau.common.kotlin.coroutines.flow.state.flatMapState
 import hnau.common.kotlin.coroutines.flow.state.mapState
 import hnau.common.kotlin.coroutines.flow.state.mapWithScope
 import hnau.common.kotlin.coroutines.flow.state.scopedInState
 import hnau.common.kotlin.ifNull
 import hnau.common.kotlin.ifTrue
 import hnau.common.kotlin.serialization.MutableStateFlowSerializer
-import hnau.common.model.goback.GoBackHandler
+import hnau.common.app.model.goback.GoBackHandler
 import hnau.ktiot.client.model.property.value.editable.EditModel
 import hnau.ktiot.client.model.property.value.editable.TextEditModel
 import hnau.ktiot.client.model.property.value.editable.TextViewModel

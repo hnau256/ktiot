@@ -1,7 +1,7 @@
 package hnau.ktiot.client.app
 
-import hnau.common.model.app.AppModel
-import hnau.common.projector.app.AppProjector
+import hnau.common.app.model.app.AppModel
+import hnau.common.app.projector.app.AppProjector
 import hnau.ktiot.client.model.init.InitModel
 import hnau.ktiot.client.projector.init.InitProjector
 import hnau.ktiot.client.projector.init.impl

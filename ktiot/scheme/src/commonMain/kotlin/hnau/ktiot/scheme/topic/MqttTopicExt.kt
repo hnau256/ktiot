@@ -4,20 +4,6 @@ import hnau.common.kotlin.ifTrue
 import hnau.common.mqtt.utils.Topic
 import hnau.ktiot.scheme.SchemeConstants
 
-
-fun MqttTopic.asChild(
-    parent: MqttTopic.Absolute,
-): ChildTopic = when (this) {
-    is MqttTopic.Absolute -> ChildTopic.Absolute(
-        topic = this,
-    )
-
-    is MqttTopic.Relative -> ChildTopic.Relative(
-        parent = parent,
-        child = this,
-    )
-}
-
 val MqttTopic.Absolute.ktiotElements: MqttTopic.Absolute
     get() = plus(SchemeConstants.schemeTopic)
 

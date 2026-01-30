@@ -8,9 +8,9 @@ import androidx.compose.ui.Modifier
 import hnau.common.kotlin.Loadable
 import hnau.common.kotlin.coroutines.flow.state.mapWithScope
 import hnau.common.kotlin.map
-import hnau.common.projector.uikit.state.LoadableContent
-import hnau.common.projector.uikit.state.StateContent
-import hnau.common.projector.uikit.state.TransitionSpec
+import hnau.common.app.projector.uikit.state.LoadableContent
+import hnau.common.app.projector.uikit.state.StateContent
+import hnau.common.app.projector.uikit.state.TransitionSpec
 import hnau.ktiot.client.model.init.InitModel
 import hnau.ktiot.client.model.init.InitStateModel
 import hnau.ktiot.client.projector.LoggedProjector

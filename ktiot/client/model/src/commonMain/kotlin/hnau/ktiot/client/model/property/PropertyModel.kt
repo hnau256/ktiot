@@ -1,24 +1,20 @@
 package hnau.ktiot.client.model.property
 
+import hnau.common.app.model.goback.GoBackHandler
+import hnau.common.app.model.goback.NeverGoBackHandler
 import hnau.common.kotlin.Loadable
-import hnau.common.kotlin.coroutines.flatMapState
+import hnau.common.kotlin.coroutines.flow.state.flatMapState
 import hnau.common.kotlin.fold
-import hnau.common.model.goback.GoBackHandler
-import hnau.common.model.goback.NeverGoBackHandler
 import hnau.common.mqtt.utils.MqttClient
-import hnau.ktiot.client.model.property.value.EditableModel
-import hnau.ktiot.client.model.property.value.FlagModel
-import hnau.ktiot.client.model.property.value.FractionModel
-import hnau.ktiot.client.model.property.value.ValueModel
-import hnau.ktiot.client.model.property.value.createValueModel
+import hnau.ktiot.client.model.property.value.*
 import hnau.ktiot.client.model.property.value.editable.EditModel
 import hnau.ktiot.client.model.property.value.editable.TextEditModel
 import hnau.ktiot.client.model.property.value.editable.TextViewModel
 import hnau.ktiot.client.model.property.value.editable.ViewModel
+import hnau.ktiot.client.model.utils.ChildTopic
 import hnau.ktiot.scheme.Element
 import hnau.ktiot.scheme.PropertyMode
 import hnau.ktiot.scheme.PropertyType
-import hnau.ktiot.scheme.topic.ChildTopic
 import hnau.pipe.annotations.Pipe
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
@@ -32,7 +28,7 @@ class PropertyModel(
     private val dependencies: Dependencies,
     private val skeleton: Skeleton,
     val topic: ChildTopic,
-    private val property: Element.Property<*>,
+    private val property: Element.Type.Property<*>,
 ) {
 
     @Pipe

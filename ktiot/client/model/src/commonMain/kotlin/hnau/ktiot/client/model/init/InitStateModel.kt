@@ -1,6 +1,6 @@
 package hnau.ktiot.client.model.init
 
-import hnau.common.model.goback.GoBackHandler
+import hnau.common.app.model.goback.GoBackHandler
 import hnau.ktiot.client.model.LoggedModel
 import hnau.ktiot.client.model.LoginModel
 import kotlinx.serialization.SerialName

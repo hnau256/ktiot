@@ -9,14 +9,14 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import hnau.common.mqtt.utils.Topic
-import hnau.common.projector.uikit.HnauButton
-import hnau.common.projector.uikit.TripleRow
-import hnau.common.projector.uikit.table.Table
-import hnau.common.projector.uikit.table.TableOrientation
-import hnau.common.projector.utils.Icon
+import hnau.common.app.projector.uikit.HnauButton
+import hnau.common.app.projector.uikit.TripleRow
+import hnau.common.app.projector.uikit.table.Table
+import hnau.common.app.projector.uikit.table.TableOrientation
+import hnau.common.app.projector.utils.Icon
 import hnau.ktiot.client.projector.property.PropertyProjector
 import hnau.ktiot.client.projector.utils.toTitle
-import hnau.ktiot.scheme.topic.ChildTopic
+import hnau.ktiot.client.model.utils.ChildTopic
 import kotlinx.collections.immutable.persistentListOf
 
 @Immutable

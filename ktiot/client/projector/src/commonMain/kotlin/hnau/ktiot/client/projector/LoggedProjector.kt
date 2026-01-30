@@ -12,10 +12,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.util.fastJoinToString
 import hnau.common.kotlin.coroutines.flow.state.mapWithScope
-import hnau.common.projector.uikit.ErrorPanel
-import hnau.common.projector.uikit.state.StateContent
-import hnau.common.projector.uikit.state.TransitionSpec
-import hnau.common.projector.uikit.utils.Dimens
+import hnau.common.app.projector.uikit.ErrorPanel
+import hnau.common.app.projector.uikit.state.StateContent
+import hnau.common.app.projector.uikit.state.TransitionSpec
+import hnau.common.app.projector.uikit.utils.Dimens
 import hnau.ktiot.client.model.LoggedModel
 import hnau.ktiot.client.projector.utils.Button
 import hnau.ktiot.client.projector.utils.format

@@ -13,9 +13,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastCoerceIn
 import hnau.common.kotlin.foldBoolean
-import hnau.common.projector.uikit.table.Cell
-import hnau.common.projector.uikit.table.CellBox
-import hnau.common.projector.uikit.utils.Dimens
+import hnau.common.app.projector.uikit.table.Cell
+import hnau.common.app.projector.uikit.table.CellBox
+import hnau.common.app.projector.uikit.utils.Dimens
 import hnau.ktiot.client.model.property.value.FractionModel
 import hnau.pipe.annotations.Pipe
 import kotlinx.coroutines.CoroutineScope

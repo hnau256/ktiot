@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.unit.dp
 import hnau.common.kotlin.foldNullable
-import hnau.common.projector.uikit.TripleRow
+import hnau.common.app.projector.uikit.TripleRow
 import kotlinx.coroutines.flow.StateFlow
 import androidx.compose.material3.Button as MaterialButton
 

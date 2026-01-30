@@ -6,8 +6,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
-import hnau.common.model.ThemeBrightness
-import hnau.common.model.app.DesktopApp
+import hnau.common.app.model.ThemeBrightness
+import hnau.common.app.model.app.DesktopApp
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob

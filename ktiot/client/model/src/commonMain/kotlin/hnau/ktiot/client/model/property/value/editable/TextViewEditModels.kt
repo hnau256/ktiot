@@ -9,10 +9,10 @@ import arrow.core.some
 import hnau.common.kotlin.coroutines.flow.state.mapState
 import hnau.common.kotlin.coroutines.flow.state.mutable.toMutableStateFlowAsInitial
 import hnau.common.kotlin.serialization.MutableStateFlowSerializer
-import hnau.common.model.EditingString
-import hnau.common.model.goback.GoBackHandler
-import hnau.common.model.goback.NeverGoBackHandler
-import hnau.common.model.toEditingString
+import hnau.common.app.model.EditingString
+import hnau.common.app.model.goback.GoBackHandler
+import hnau.common.app.model.goback.NeverGoBackHandler
+import hnau.common.app.model.toEditingString
 import hnau.ktiot.scheme.PropertyType
 import hnau.pipe.annotations.Pipe
 import kotlinx.coroutines.CoroutineScope

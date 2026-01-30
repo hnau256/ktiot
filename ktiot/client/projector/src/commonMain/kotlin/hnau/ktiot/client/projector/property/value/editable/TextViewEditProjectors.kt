@@ -13,10 +13,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import hnau.common.projector.uikit.TextInput
-import hnau.common.projector.uikit.table.Cell
-import hnau.common.projector.uikit.table.CellBox
-import hnau.common.projector.uikit.utils.Dimens
+import hnau.common.app.projector.uikit.TextInput
+import hnau.common.app.projector.uikit.table.Cell
+import hnau.common.app.projector.uikit.table.CellBox
+import hnau.common.app.projector.uikit.utils.Dimens
 import hnau.ktiot.client.model.property.value.editable.TextEditModel
 import hnau.ktiot.client.model.property.value.editable.TextViewModel
 import hnau.pipe.annotations.Pipe

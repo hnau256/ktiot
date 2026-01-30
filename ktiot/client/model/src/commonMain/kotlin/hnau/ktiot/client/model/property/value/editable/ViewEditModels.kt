@@ -1,7 +1,7 @@
 package hnau.ktiot.client.model.property.value.editable
 
 import arrow.core.Option
-import hnau.common.model.goback.GoBackHandler
+import hnau.common.app.model.goback.GoBackHandler
 import hnau.ktiot.scheme.PropertyType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow

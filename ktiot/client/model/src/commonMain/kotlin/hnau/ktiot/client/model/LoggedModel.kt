@@ -5,14 +5,14 @@
 package hnau.ktiot.client.model
 
 import hnau.common.kotlin.coroutines.actionOrNullIfExecuting
-import hnau.common.kotlin.coroutines.flatMapState
+import hnau.common.kotlin.coroutines.flow.state.flatMapState
 import hnau.common.kotlin.coroutines.flow.state.mapState
 import hnau.common.kotlin.coroutines.flow.state.mapWithScope
 import hnau.common.kotlin.coroutines.flow.state.scopedInState
 import hnau.common.kotlin.getOrInit
 import hnau.common.kotlin.serialization.MutableStateFlowSerializer
 import hnau.common.kotlin.toAccessor
-import hnau.common.model.goback.GoBackHandler
+import hnau.common.app.model.goback.GoBackHandler
 import hnau.common.mqtt.mqtt
 import hnau.common.mqtt.utils.MqttClient
 import hnau.common.mqtt.utils.MqttConfig

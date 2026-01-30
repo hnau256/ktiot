@@ -7,13 +7,13 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import hnau.common.kotlin.coroutines.flatMapState
+import hnau.common.kotlin.coroutines.flow.state.flatMapState
 import hnau.common.kotlin.coroutines.flow.state.mapState
 import hnau.common.kotlin.coroutines.flow.state.mapWithScope
 import hnau.common.kotlin.coroutines.flow.state.scopedInState
-import hnau.common.projector.uikit.HnauButton
-import hnau.common.projector.uikit.table.Cell
-import hnau.common.projector.utils.Icon
+import hnau.common.app.projector.uikit.HnauButton
+import hnau.common.app.projector.uikit.table.Cell
+import hnau.common.app.projector.utils.Icon
 import hnau.ktiot.client.model.property.value.EditableModel
 import hnau.ktiot.client.model.property.value.editable.EditModel
 import hnau.ktiot.client.model.property.value.editable.TextEditModel

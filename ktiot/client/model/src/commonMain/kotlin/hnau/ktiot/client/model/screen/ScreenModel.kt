@@ -3,41 +3,26 @@ package hnau.ktiot.client.model.screen
 import arrow.core.Either
 import arrow.core.identity
 import arrow.core.toNonEmptyListOrNull
-import hnau.common.kotlin.Loadable
-import hnau.common.kotlin.Loading
-import hnau.common.kotlin.Ready
-import hnau.common.kotlin.coroutines.combineState
-import hnau.common.kotlin.coroutines.flatMapState
-import hnau.common.kotlin.coroutines.mapReusable
-import hnau.common.kotlin.coroutines.flow.state.mapState
-import hnau.common.kotlin.coroutines.flow.state.mapWithScope
-import hnau.common.kotlin.coroutines.flow.state.scopedInState
+import hnau.common.app.model.goback.GoBackHandler
+import hnau.common.app.model.goback.NeverGoBackHandler
+import hnau.common.kotlin.*
+import hnau.common.kotlin.coroutines.flow.state.*
 import hnau.common.kotlin.coroutines.flow.state.mutable.toMutableStateFlowAsInitial
-import hnau.common.kotlin.fold
-import hnau.common.kotlin.foldNullable
-import hnau.common.kotlin.ifNull
-import hnau.common.kotlin.map
 import hnau.common.logging.tryOrLog
-import hnau.common.model.goback.GoBackHandler
-import hnau.common.model.goback.NeverGoBackHandler
 import hnau.common.mqtt.utils.MqttClient
 import hnau.ktiot.client.model.property.PropertyModel
+import hnau.ktiot.client.model.utils.ChildTopic
 import hnau.ktiot.client.model.utils.MutableMapSerializer
+import hnau.ktiot.client.model.utils.asChild
 import hnau.ktiot.scheme.Element
-import hnau.ktiot.scheme.topic.ChildTopic
+import hnau.ktiot.scheme.SchemeConstants
 import hnau.ktiot.scheme.topic.MqttTopic
-import hnau.ktiot.scheme.topic.asChild
 import hnau.ktiot.scheme.topic.ktiotElements
 import hnau.ktiot.scheme.topic.raw
 import hnau.pipe.annotations.Pipe
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.*
 import kotlinx.serialization.Serializable
 
 private val logger = KotlinLogging.logger { }
@@ -81,11 +66,11 @@ class ScreenModel(
 
     val itemsOrChild: StateFlow<Loadable<Either<List<Item>, ScreenModel>>> = combineState(
         scope = scope,
-        a = createItemsForTopic(
+        first = createItemsForTopic(
             topic = topic,
             scope = scope,
         ),
-        b = skeleton.selectedChild,
+        second = skeleton.selectedChild,
     ) { itemsOrLoading, selectedChildOrNull ->
         itemsOrLoading.map { items ->
             selectedChildOrNull
@@ -131,7 +116,7 @@ class ScreenModel(
                         .tryOrLog(
                             log = "parsing ktiot elements from '$ktIoTTopic' from $message"
                         ) {
-                            Element.Companion.listMqttPayloadMapper.direct(message.payload)
+                            SchemeConstants.mapper.direct(message.payload)
                         }
                         .getOrNull()
                 }
@@ -142,20 +127,25 @@ class ScreenModel(
                     initialValue = Loading,
                 )
                 .mapReusable(scope) { elementsOrLoading ->
-                    elementsOrLoading.map { elements ->
-                        elements.map { element ->
-                            val itemTopic = element.topic.asChild(topic)
-                            getOrPutItem(
-                                key = itemTopic,
-                            ) { elementScope ->
-                                createItems(
-                                    parentTopic = topic,
-                                    scope = elementScope,
-                                    element = element,
-                                )
+                    elementsOrLoading.map { elementsOrLoading ->
+                        elementsOrLoading.map { elements ->
+                            elements.map { element ->
+                                val itemTopic = element.topic.asChild(topic)
+                                getOrPutItem(
+                                    key = itemTopic,
+                                ) { elementScope ->
+                                    createItems(
+                                        parentTopic = topic,
+                                        scope = elementScope,
+                                        element = element,
+                                    )
+                                }
                             }
                         }
                     }
+                }
+                .mapState(scope) { elementsOrLoading2 ->
+                    elementsOrLoading2.flatMap(::it)
                 }
         }
         .scopedInState(scope)
@@ -171,8 +161,8 @@ class ScreenModel(
                             ) { acc, nextModels ->
                                 combineState(
                                     scope = stateScope,
-                                    a = acc,
-                                    b = nextModels,
+                                    first = acc,
+                                    second = nextModels,
                                 ) { currentAcc, currentNextModels ->
                                     currentAcc + currentNextModels
                                 }
@@ -188,30 +178,36 @@ class ScreenModel(
         parentTopic: MqttTopic.Absolute,
         scope: CoroutineScope,
         element: Element,
-    ): StateFlow<List<Item>> = when (element) {
-        is Element.Property<*> -> createPropertyItem(
-            parentTopic = parentTopic,
-            scope = scope,
-            element = element,
-        )
-            .let(::listOf)
-            .toMutableStateFlowAsInitial()
-
-        is Element.Child -> Item(
-            topic = element.topic.asChild(parentTopic),
-            model = ScreenItemModel.ChildButton,
-        )
-            .let(::listOf)
-            .toMutableStateFlowAsInitial()
-
-        is Element.Include -> createItemsForTopic(
-            topic = element.topic.asChild(parentTopic).topic,
-            scope = scope,
-        ).mapState(scope) { itemsOrLoading ->
-            itemsOrLoading.fold(
-                ifLoading = { emptyList() },
-                ifReady = ::identity,
+    ): StateFlow<List<Item>> {
+        val topic = element.topic.asChild(parentTopic)
+        return when (val type = element.type) {
+            is Element.Type.Property<*> -> createPropertyItem(
+                scope = scope,
+                topic = topic,
+                element = type,
             )
+                .let(::listOf)
+                .toMutableStateFlowAsInitial()
+
+            is Element.Type.Child -> when (type.included) {
+                true -> createItemsForTopic(
+                    topic = topic.topic,
+                    scope = scope,
+                )
+                    .mapState(scope) { itemsOrLoading ->
+                        itemsOrLoading.fold(
+                            ifLoading = { emptyList() },
+                            ifReady = ::identity,
+                        )
+                    }
+
+                false -> Item(
+                    topic = element.topic.asChild(parentTopic),
+                    model = ScreenItemModel.ChildButton,
+                )
+                    .let(::listOf)
+                    .toMutableStateFlowAsInitial()
+            }
         }
     }
 
@@ -228,11 +224,10 @@ class ScreenModel(
     }
 
     private fun <T> createPropertyItem(
-        parentTopic: MqttTopic.Absolute,
         scope: CoroutineScope,
-        element: Element.Property<T>,
+        topic: ChildTopic,
+        element: Element.Type.Property<T>,
     ): Item {
-        val topic = element.topic.asChild(parentTopic)
         val model = ScreenItemModel.Property(
             PropertyModel(
                 scope = scope,

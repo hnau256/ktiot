@@ -8,7 +8,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
-import hnau.common.model.app.AppViewModel
+import hnau.common.app.model.app.AppViewModel
 import hnau.ktiot.client.model.init.InitModel
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged

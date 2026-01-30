@@ -1,4 +1,6 @@
-package hnau.ktiot.scheme.topic
+package hnau.ktiot.client.model.utils
+
+import hnau.ktiot.scheme.topic.MqttTopic
 
 sealed interface ChildTopic {
 
@@ -16,4 +18,6 @@ sealed interface ChildTopic {
     data class Absolute(
         override val topic: MqttTopic.Absolute
     ): ChildTopic
+
+    companion object
 }

@@ -8,9 +8,9 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import hnau.common.kotlin.foldBoolean
-import hnau.common.projector.uikit.table.Cell
-import hnau.common.projector.uikit.table.CellBox
-import hnau.common.projector.uikit.utils.Dimens
+import hnau.common.app.projector.uikit.table.Cell
+import hnau.common.app.projector.uikit.table.CellBox
+import hnau.common.app.projector.uikit.utils.Dimens
 import hnau.ktiot.client.model.property.value.FlagModel
 import hnau.ktiot.client.projector.Res
 import hnau.ktiot.client.projector.no

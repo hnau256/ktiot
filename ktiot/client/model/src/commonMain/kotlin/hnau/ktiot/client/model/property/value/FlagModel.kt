@@ -1,7 +1,7 @@
 package hnau.ktiot.client.model.property.value
 
-import hnau.common.model.goback.GoBackHandler
-import hnau.common.model.goback.NeverGoBackHandler
+import hnau.common.app.model.goback.GoBackHandler
+import hnau.common.app.model.goback.NeverGoBackHandler
 import hnau.ktiot.scheme.PropertyType
 import hnau.pipe.annotations.Pipe
 import kotlinx.coroutines.CoroutineScope
