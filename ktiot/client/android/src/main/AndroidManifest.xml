@@ -10,7 +10,7 @@
         android:enableOnBackInvokedCallback="true">
 
         <activity
-            android:name="hnau.ktiot.client.app.AppActivity"
+            android:name="hnau.ktiot.client.android.AppActivity"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|mnc|colorMode|density|fontScale|fontWeightAdjustment|keyboard|layoutDirection|locale|mcc|navigation|smallestScreenSize|touchscreen|uiMode"
             android:exported="true"
             android:windowSoftInputMode="adjustResize">

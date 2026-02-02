@@ -1,4 +1,4 @@
-package hnau.ktiot.client.app
+package hnau.ktiot.client.android
 
 import android.os.Build
 import android.os.Bundle
@@ -9,6 +9,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import hnau.common.app.model.app.AppViewModel
+import hnau.ktiot.client.app.createAppProjector
+import hnau.ktiot.client.app.createPinFinAppSeed
 import hnau.ktiot.client.model.init.InitModel
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -16,7 +18,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 class AppActivity : ComponentActivity() {
-
     private val viewModel: AppViewModel<InitModel, InitModel.Skeleton> by viewModels {
         AppViewModel.Companion.factory(
             context = applicationContext,
@@ -25,16 +26,17 @@ class AppActivity : ComponentActivity() {
     }
 
     private val goBackHandler: StateFlow<(() -> Unit)?>
-        get() = viewModel.appModel.goBackHandler
+        get() = viewModel.appModel.model.goBackHandler
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         initOnBackPressedDispatcherCallback()
-        val projector = createAppProjector(
-            scope = lifecycleScope,
-            model = viewModel.appModel,
-        )
+        val projector =
+            createAppProjector(
+                scope = lifecycleScope,
+                model = viewModel.appModel,
+            )
         setContent {
             projector.Content()
         }
@@ -55,13 +57,14 @@ class AppActivity : ComponentActivity() {
         if (!useOnBackPressedDispatcher) {
             return
         }
-        val callback = object : OnBackPressedCallback(
-            enabled = goBackHandler.value != null,
-        ) {
-            override fun handleOnBackPressed() {
-                goBackHandler.value?.invoke()
+        val callback =
+            object : OnBackPressedCallback(
+                enabled = goBackHandler.value != null,
+            ) {
+                override fun handleOnBackPressed() {
+                    goBackHandler.value?.invoke()
+                }
             }
-        }
         lifecycleScope.launch {
             goBackHandler
                 .map { it != null }
@@ -74,7 +77,6 @@ class AppActivity : ComponentActivity() {
     }
 
     companion object {
-
         private val useOnBackPressedDispatcher: Boolean = Build.VERSION.SDK_INT >= 33
     }
 }

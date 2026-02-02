@@ -6,7 +6,7 @@
     android:viewportHeight="16">
     <path
         android:fillColor="#1b1b1b"
-        android:pathData="M 8 0 hnau.ktiot.client.model.A 8 8 0 0 0 0 8 hnau.ktiot.client.model.A 8 8 0 0 0 8 16 hnau.ktiot.client.model.A 8 8 0 0 0 16 8 hnau.ktiot.client.model.A 8 8 0 0 0 8 0 z" />
+        android:pathData="M 8 0 A 8 8 0 0 0 0 8 A 8 8 0 0 0 8 16 A 8 8 0 0 0 16 8 A 8 8 0 0 0 8 0 z" />
     <group
         android:rotation="45"
         android:translateX="8"
