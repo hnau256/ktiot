@@ -96,8 +96,11 @@ class PropertyProjector(
             orientation = TableOrientation.Vertical,
         ) {
             Subtable {
-                CellBox {
+                CellBox(
+                    configModifier = { it.weight(1f) },
+                ) {
                     Text(
+                        modifier = Modifier.weight(1f),
                         text = model.topic.toTitle(),
                         style = MaterialTheme.typography.titleMedium,
                     )

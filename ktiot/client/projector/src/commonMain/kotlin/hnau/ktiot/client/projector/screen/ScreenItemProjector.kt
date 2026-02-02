@@ -1,5 +1,7 @@
 package hnau.ktiot.client.projector.screen
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material3.Button
@@ -8,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import hnau.common.app.projector.uikit.ItemsRow
 import hnau.common.app.projector.uikit.table.Table
 import hnau.common.app.projector.uikit.table.TableOrientation
@@ -60,7 +63,7 @@ sealed interface ScreenItemProjector {
             ) {
                 Cell { modifier ->
                     Button(
-                        modifier = modifier,
+                        modifier = modifier.weight(1f),
                         shape = shape,
                         onClick = onClick,
                     ) {
