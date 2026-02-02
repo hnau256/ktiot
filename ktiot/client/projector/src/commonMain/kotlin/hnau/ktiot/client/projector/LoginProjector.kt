@@ -1,23 +1,13 @@
 package hnau.ktiot.client.projector
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredWidthIn
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -26,22 +16,21 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import hnau.common.kotlin.coroutines.flow.state.mapState
-import hnau.common.kotlin.foldBoolean
-import hnau.common.kotlin.ifTrue
 import hnau.common.app.projector.uikit.TextInput
-import hnau.common.app.projector.uikit.table.CellScope
 import hnau.common.app.projector.uikit.table.Subtable
 import hnau.common.app.projector.uikit.table.Table
 import hnau.common.app.projector.uikit.table.TableOrientation
+import hnau.common.app.projector.uikit.table.TableScope
 import hnau.common.app.projector.uikit.utils.Dimens
 import hnau.common.app.projector.utils.horizontalDisplayPadding
 import hnau.common.app.projector.utils.verticalDisplayPadding
+import hnau.common.kotlin.coroutines.flow.state.mapState
+import hnau.common.kotlin.foldBoolean
+import hnau.common.kotlin.ifTrue
 import hnau.ktiot.client.model.LoginModel
 import hnau.ktiot.client.projector.utils.Button
 import hnau.pipe.annotations.Pipe
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
@@ -97,14 +86,16 @@ class LoginProjector(
                     max = 320.dp,
                 ),
                 orientation = TableOrientation.Vertical,
-                items = visibleItems.collectAsState().value,
-            ) { item ->
-                when (item) {
-                    Item.AddressWithPort -> AddressWithPort()
-                    is Item.ClientId -> ClientId(isLast = item.isLast)
-                    Item.AuthSwitcher -> AuthSwitcher()
-                    is Item.User -> User(model.user)
-                    is Item.Password -> Password(model.password)
+            ) {
+                AddressWithPort()
+                val useCredentials by model.useCredentials.collectAsState()
+                ClientId(
+                    isLast = !useCredentials,
+                )
+                AuthSwitcher()
+                if (useCredentials) {
+                    User(model.user)
+                    Password(model.password)
                 }
             }
             model
@@ -116,99 +107,109 @@ class LoginProjector(
     }
 
     @Composable
-    private fun CellScope.AddressWithPort() {
-        Subtable(
-            items = remember { persistentListOf(false, true) }
-        ) { item ->
-            when (item) {
-                false -> {
-                    val focusRequester = remember { FocusRequester() }
-                    Input(
-                        label = stringResource(Res.string.address),
-                        input = model.address,
-                        shape = shape,
-                        keyboardType = KeyboardType.Uri,
-                        modifier = Modifier
-                            .weight(3f)
-                            .focusRequester(focusRequester),
-                    )
-                    LaunchedEffect(focusRequester) { focusRequester.requestFocus() }
-                }
+    private fun TableScope.AddressWithPort() {
+        Subtable {
 
-                true -> Input(
+            Cell { modifier ->
+                val focusRequester = remember { FocusRequester() }
+                Input(
+                    label = stringResource(Res.string.address),
+                    input = model.address,
+                    shape = shape,
+                    keyboardType = KeyboardType.Uri,
+                    modifier = modifier
+                        .weight(3f)
+                        .focusRequester(focusRequester),
+                )
+                LaunchedEffect(focusRequester) { focusRequester.requestFocus() }
+            }
+
+            Cell { modifier ->
+                Input(
                     label = stringResource(Res.string.port),
                     input = model.port,
                     shape = shape,
                     keyboardType = KeyboardType.Decimal,
-                    modifier = Modifier.weight(1f),
+                    modifier = modifier.weight(1f),
                 )
             }
         }
     }
 
     @Composable
-    private fun CellScope.ClientId(
+    private fun TableScope.ClientId(
         isLast: Boolean,
     ) {
-        Input(
-            label = stringResource(Res.string.client_id),
-            input = model.clientId,
-            shape = shape,
-            keyboardType = KeyboardType.Ascii,
-            isLast = isLast,
-        )
-    }
-
-    @Composable
-    private fun CellScope.AuthSwitcher() {
-        val shape = shape
-        Row(
-            modifier = Modifier
-                .background(
-                    color = MaterialTheme.colorScheme.surfaceContainerLow,
-                    shape = shape,
-                )
-                .padding(
-                    horizontal = Dimens.separation,
-                    vertical = Dimens.smallSeparation,
-                ),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                modifier = Modifier.weight(1f),
-                text = stringResource(Res.string.credentials),
-                style = MaterialTheme.typography.titleMedium,
-            )
-            Switch(
-                checked = model.useCredentials.collectAsState().value,
-                onCheckedChange = { model.useCredentials.value = it },
+        Cell { modifier ->
+            Input(
+                modifier = modifier,
+                label = stringResource(Res.string.client_id),
+                input = model.clientId,
+                shape = shape,
+                keyboardType = KeyboardType.Ascii,
+                isLast = isLast,
             )
         }
     }
 
     @Composable
-    private fun CellScope.User(
-        input: LoginModel.Input,
-    ) {
-        Input(
-            label = stringResource(Res.string.user),
-            input = input,
-            shape = shape,
-            keyboardType = KeyboardType.Email,
-        )
+    private fun TableScope.AuthSwitcher() {
+        Cell { modifier ->
+            val shape = shape
+            Row(
+                modifier = modifier
+                    .background(
+                        color = MaterialTheme.colorScheme.surfaceContainerLow,
+                        shape = shape,
+                    )
+                    .padding(
+                        horizontal = Dimens.separation,
+                        vertical = Dimens.smallSeparation,
+                    ),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    modifier = Modifier.weight(1f),
+                    text = stringResource(Res.string.credentials),
+                    style = MaterialTheme.typography.titleMedium,
+                )
+                Switch(
+                    checked = model.useCredentials.collectAsState().value,
+                    onCheckedChange = { model.useCredentials.value = it },
+                )
+            }
+        }
     }
 
     @Composable
-    private fun CellScope.Password(
+    private fun TableScope.User(
         input: LoginModel.Input,
     ) {
-        Input(
-            label = stringResource(Res.string.password),
-            input = input,
-            shape = shape,
-            keyboardType = KeyboardType.Password,
-            isLast = true,
-        )
+        Cell { modifier ->
+            Input(
+                modifier = modifier,
+                label = stringResource(Res.string.user),
+                input = input,
+                shape = shape,
+                keyboardType = KeyboardType.Email,
+            )
+        }
+    }
+
+    @Composable
+    private fun TableScope.Password(
+        input: LoginModel.Input,
+    ) {
+        Cell { modifier ->
+            Input(
+                modifier = modifier,
+                label = stringResource(Res.string.password),
+                input = input,
+                shape = shape,
+                keyboardType = KeyboardType.Password,
+                isLast = true,
+            )
+        }
     }
 
     @Composable

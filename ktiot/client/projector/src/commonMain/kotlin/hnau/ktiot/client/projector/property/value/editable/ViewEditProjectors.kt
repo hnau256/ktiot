@@ -1,23 +1,7 @@
 package hnau.ktiot.client.projector.property.value.editable
 
-import hnau.common.app.projector.uikit.table.Cell
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
+import hnau.ktiot.client.projector.property.value.utils.TopMainProjector
 
-sealed interface ViewProjector {
+sealed interface ViewProjector : TopMainProjector
 
-    val topCells: StateFlow<List<Cell>>
-        get() = MutableStateFlow(emptyList())
-
-    val mainCells: StateFlow<List<Cell>>
-        get() = MutableStateFlow(emptyList())
-}
-
-sealed interface EditProjector {
-
-    val topCells: StateFlow<List<Cell>>
-        get() = MutableStateFlow(emptyList())
-
-    val mainCells: StateFlow<List<Cell>>
-        get() = MutableStateFlow(emptyList())
-}
+sealed interface EditProjector : TopMainProjector

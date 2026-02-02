@@ -11,24 +11,20 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.util.fastJoinToString
-import hnau.common.kotlin.coroutines.flow.state.mapWithScope
 import hnau.common.app.projector.uikit.ErrorPanel
 import hnau.common.app.projector.uikit.state.StateContent
 import hnau.common.app.projector.uikit.state.TransitionSpec
 import hnau.common.app.projector.uikit.utils.Dimens
+import hnau.common.kotlin.coroutines.flow.state.mapWithScope
 import hnau.ktiot.client.model.LoggedModel
 import hnau.ktiot.client.projector.utils.Button
 import hnau.ktiot.client.projector.utils.format
 import hnau.pipe.annotations.Pipe
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.ticker
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.consumeAsFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
-import kotlin.time.Clock
+import kotlinx.coroutines.flow.*
 import org.jetbrains.compose.resources.stringResource
+import kotlin.time.Clock
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 import androidx.compose.material3.Button as MaterialButton

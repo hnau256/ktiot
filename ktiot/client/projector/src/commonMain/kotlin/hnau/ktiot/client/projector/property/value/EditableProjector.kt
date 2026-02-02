@@ -4,16 +4,14 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.Button
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import hnau.common.kotlin.coroutines.flow.state.flatMapState
-import hnau.common.kotlin.coroutines.flow.state.mapState
-import hnau.common.kotlin.coroutines.flow.state.mapWithScope
-import hnau.common.kotlin.coroutines.flow.state.scopedInState
-import hnau.common.app.projector.uikit.HnauButton
-import hnau.common.app.projector.uikit.table.Cell
+import hnau.common.app.projector.uikit.table.TableScope
 import hnau.common.app.projector.utils.Icon
+import hnau.common.kotlin.coroutines.flow.state.mapWithScope
 import hnau.ktiot.client.model.property.value.EditableModel
 import hnau.ktiot.client.model.property.value.editable.EditModel
 import hnau.ktiot.client.model.property.value.editable.TextEditModel
@@ -23,10 +21,11 @@ import hnau.ktiot.client.projector.property.value.editable.EditProjector
 import hnau.ktiot.client.projector.property.value.editable.TextEditProjector
 import hnau.ktiot.client.projector.property.value.editable.TextViewProjector
 import hnau.ktiot.client.projector.property.value.editable.ViewProjector
+import hnau.ktiot.client.projector.property.value.utils.TopMainProjector
+import hnau.ktiot.client.projector.utils.Button
 import hnau.ktiot.scheme.PropertyType
 import hnau.pipe.annotations.Pipe
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
 @Immutable
@@ -52,26 +51,18 @@ class EditableProjector<
 
     sealed interface State {
 
-        val mainCells: StateFlow<List<Cell>>
+        val projector: TopMainProjector
 
         data class View(
-            val projector: ViewProjector,
+            override val projector: ViewProjector,
             val edit: (() -> Unit)?,
-        ) : State {
-
-            override val mainCells: StateFlow<List<Cell>>
-                get() = projector.mainCells
-        }
+        ) : State
 
         data class Edit(
-            val projector: EditProjector,
+            override val projector: EditProjector,
             val save: StateFlow<StateFlow<(() -> Unit)?>?>,
             val cancel: () -> Unit,
-        ) : State {
-
-            override val mainCells: StateFlow<List<Cell>>
-                get() = projector.mainCells
-        }
+        ) : State
     }
 
     private val state: StateFlow<State> = model
@@ -103,77 +94,71 @@ class EditableProjector<
             }
         }
 
-    override val topCells: StateFlow<List<Cell>> = state
-        .scopedInState(scope)
-        .flatMapState(scope) { (stateScope, state) ->
-            when (state) {
-                is State.Edit -> editTopCells(
-                    scope = stateScope,
-                    state = state,
-                )
+    @Composable
+    override fun TableScope.Top() {
+        val state by state.collectAsState()
+        when (val state = state) {
+            is State.Edit -> EditTopCells(
+                state = state,
+            )
 
-                is State.View -> viewTopCells(
-                    scope = stateScope,
-                    state = state,
-                )
-            }
+            is State.View -> ViewTopCells(
+                state = state,
+            )
         }
+    }
 
-    private fun viewTopCells(
-        scope: CoroutineScope,
+    @Composable
+    override fun TableScope.Main() {
+        val state by state.collectAsState()
+        with(state.projector) { Main() }
+    }
+
+    @Composable
+    private fun TableScope.ViewTopCells(
         state: State.View,
-    ): StateFlow<List<Cell>> = state
-        .projector
-        .topCells
-        .mapState(scope) { topCells ->
-            buildList {
-                addAll(topCells)
-                state.edit?.let { edit ->
-                    add {
-                        HnauButton(
-                            shape = shape,
-                            onClick = edit,
-                        ) {
-                            Icon(Icons.Filled.Edit)
-                        }
-                    }
+    ) {
+        val editOrNull = state.edit
+        with(state.projector) {
+            Top()
+        }
+        editOrNull?.let { edit ->
+            Cell { modifier ->
+                Button(
+                    shape = shape,
+                    modifier = modifier,
+                    onClick = edit,
+                ) {
+                    Icon(Icons.Filled.Edit)
                 }
             }
         }
+    }
 
-    private fun editTopCells(
-        scope: CoroutineScope,
+    @Composable
+    private fun TableScope.EditTopCells(
         state: State.Edit,
-    ): StateFlow<List<Cell>> = state
-        .projector
-        .topCells
-        .mapState(scope) { topCells ->
-            buildList {
-                addAll(topCells)
-                add {
-                    HnauButton(
-                        onClick = state.cancel,
-                        shape = shape,
-                    ) {
-                        Icon(Icons.Filled.Cancel)
-                    }
-                }
-                add {
-                    val saveOrNull by state.save.collectAsState()
-                    val enabled = saveOrNull != null
-                    val saveOrSaving = saveOrNull?.collectAsState()?.value
-                    //TODO progress
-                    HnauButton(
-                        onClick = saveOrSaving,
-                        shape = shape,
-                    ) {
-                        Icon(Icons.Filled.Done)
-                    }
-                }
+    ) {
+        with(state.projector) {
+            Top()
+        }
+        Cell { modifier ->
+            Button(
+                shape = shape,
+                modifier = modifier,
+                onClick = state.cancel,
+            ) {
+                Icon(Icons.Filled.Cancel)
             }
         }
 
-    override val mainCells: StateFlow<List<Cell>> = state.flatMapState(scope) { state ->
-        state.mainCells
+        Cell { modifier ->
+            val saveOrCancel by state.save.collectAsState()
+            saveOrCancel.Button(
+                shape = shape,
+                modifier = modifier,
+                content = { Icon(Icons.Filled.Done) },
+            )
+        }
     }
 }

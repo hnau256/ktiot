@@ -1,32 +1,38 @@
 package hnau.ktiot.client.projector.utils
 
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.key
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.unit.dp
+import hnau.common.app.projector.uikit.ItemsRow
 import hnau.common.kotlin.foldNullable
-import hnau.common.app.projector.uikit.TripleRow
 import kotlinx.coroutines.flow.StateFlow
 import androidx.compose.material3.Button as MaterialButton
 
 @Composable
 fun StateFlow<(() -> Unit)?>?.Button(
+    modifier: Modifier = Modifier,
+    shape: Shape = ButtonDefaults.shape,
     content: @Composable () -> Unit,
 ) {
     Button { leading, onClick, enabled ->
         MaterialButton(
+            shape = shape,
+            modifier = modifier,
             onClick = { onClick?.invoke() },
             enabled = enabled,
         ) {
-            TripleRow(
-                leading = leading,
-                content = content,
-            )
+            ItemsRow {
+                leading?.invoke()
+                content()
+            }
         }
     }
 }

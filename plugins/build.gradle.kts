@@ -30,4 +30,8 @@ gradlePlugin {
         id = "hnau.android.lib"
         implementationClass = "hnau.plugin.HnauAndroidLibPlugin"
     }
+    plugins.create("KMP library") {
+        id = "hnau.kmp.lib"
+        implementationClass = "hnau.plugin.HnauKMPLibPlugin"
+    }
 }

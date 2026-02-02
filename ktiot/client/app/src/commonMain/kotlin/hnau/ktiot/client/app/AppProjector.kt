@@ -13,13 +13,11 @@ fun createAppProjector(
 ): AppProjector<InitModel, InitModel.Skeleton, InitProjector> = AppProjector(
     scope = scope,
     model = model,
-    createProjector = { scope, model, globalGoBackHandler ->
+    createProjector = { scope, model ->
         InitProjector(
                 scope = scope,
                 model = model,
-                dependencies = InitProjector.Dependencies.impl(
-                    globalGoBackHandler = globalGoBackHandler,
-                ),
+                dependencies = InitProjector.Dependencies.impl(),
             )
     },
     content = { rootProjector ->

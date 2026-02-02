@@ -15,11 +15,13 @@ internal enum class AndroidMode { Lib }
 
 private const val CommonLogginIdentifier = ":common:logging"
 
-internal fun Project.config(androidMode: AndroidMode) {
-    val versions: VersionCatalog =
-        extensions
-            .getByType(VersionCatalogsExtension::class.java)
-            .named("libs")
+internal fun Project.config(
+    androidMode: AndroidMode?,
+) {
+
+    val versions: VersionCatalog = extensions
+        .getByType(VersionCatalogsExtension::class.java)
+        .named("libs")
 
     val javaVersionString =
         versions
@@ -39,6 +41,7 @@ internal fun Project.config(androidMode: AndroidMode) {
 
     when (androidMode) {
         AndroidMode.Lib -> plugins.apply("com.android.kotlin.multiplatform.library")
+        null -> Unit
     }
 
     plugins.apply("org.jetbrains.kotlin.multiplatform")
