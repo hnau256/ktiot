@@ -29,24 +29,25 @@ import hnau.common.kotlin.foldBoolean
 import hnau.common.kotlin.ifTrue
 import hnau.ktiot.client.model.LoginModel
 import hnau.ktiot.client.projector.utils.Button
+import hnau.ktiot.client.projector.utils.Localization
 import hnau.pipe.annotations.Pipe
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
-import org.jetbrains.compose.resources.stringResource
 
 @Immutable
 class LoginProjector(
     scope: CoroutineScope,
     private val model: LoginModel,
-    dependencies: Dependencies,
+    private val dependencies: Dependencies,
 ) {
 
     @Immutable
     @Pipe
     interface Dependencies {
 
+        val localization: Localization
     }
 
     private val visibleItems: StateFlow<ImmutableList<Item>> = model.useCredentials.mapState(
@@ -102,7 +103,7 @@ class LoginProjector(
                 .loginOrLogginingOrDisabled
                 .collectAsState()
                 .value
-                .Button { Text(stringResource(Res.string.login)) }
+                .Button { Text(dependencies.localization.login) }
         }
     }
 
@@ -113,7 +114,7 @@ class LoginProjector(
             Cell { modifier ->
                 val focusRequester = remember { FocusRequester() }
                 Input(
-                    label = stringResource(Res.string.address),
+                    label = dependencies.localization.address,
                     input = model.address,
                     shape = shape,
                     keyboardType = KeyboardType.Uri,
@@ -126,7 +127,7 @@ class LoginProjector(
 
             Cell { modifier ->
                 Input(
-                    label = stringResource(Res.string.port),
+                    label = dependencies.localization.port,
                     input = model.port,
                     shape = shape,
                     keyboardType = KeyboardType.Decimal,
@@ -143,7 +144,7 @@ class LoginProjector(
         Cell { modifier ->
             Input(
                 modifier = modifier,
-                label = stringResource(Res.string.client_id),
+                label = dependencies.localization.client_id,
                 input = model.clientId,
                 shape = shape,
                 keyboardType = KeyboardType.Ascii,
@@ -170,7 +171,7 @@ class LoginProjector(
             ) {
                 Text(
                     modifier = Modifier.weight(1f),
-                    text = stringResource(Res.string.credentials),
+                    text = dependencies.localization.credentials,
                     style = MaterialTheme.typography.titleMedium,
                 )
                 Switch(
@@ -188,7 +189,7 @@ class LoginProjector(
         Cell { modifier ->
             Input(
                 modifier = modifier,
-                label = stringResource(Res.string.user),
+                label = dependencies.localization.user,
                 input = input,
                 shape = shape,
                 keyboardType = KeyboardType.Email,
@@ -203,7 +204,7 @@ class LoginProjector(
         Cell { modifier ->
             Input(
                 modifier = modifier,
-                label = stringResource(Res.string.password),
+                label = dependencies.localization.password,
                 input = input,
                 shape = shape,
                 keyboardType = KeyboardType.Password,

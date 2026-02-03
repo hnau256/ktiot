@@ -5,6 +5,7 @@ import hnau.common.app.projector.app.AppProjector
 import hnau.ktiot.client.model.init.InitModel
 import hnau.ktiot.client.projector.init.InitProjector
 import hnau.ktiot.client.projector.init.impl
+import hnau.ktiot.client.projector.utils.Localization
 import kotlinx.coroutines.CoroutineScope
 
 fun createAppProjector(
@@ -17,7 +18,9 @@ fun createAppProjector(
         InitProjector(
                 scope = scope,
                 model = model,
-                dependencies = InitProjector.Dependencies.impl(),
+                dependencies = InitProjector.Dependencies.impl(
+                    localization = Localization(),
+                ),
             )
     },
     content = { rootProjector ->

@@ -2,21 +2,17 @@ package hnau.ktiot.client.projector.utils
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import hnau.ktiot.client.projector.Res
-import hnau.ktiot.client.projector.days_short
-import hnau.ktiot.client.projector.hours_short
-import hnau.ktiot.client.projector.minutes_short
-import hnau.ktiot.client.projector.seconds_short
-import org.jetbrains.compose.resources.stringResource
 import kotlin.time.Duration
 
 @Composable
-fun Duration.format(): String {
+fun Duration.format(
+    localization: Localization,
+): String {
     val wholeSeconds = inWholeSeconds
-    val daysTitle = stringResource(Res.string.days_short)
-    val hoursTitle = stringResource(Res.string.hours_short)
-    val minutesTitle = stringResource(Res.string.minutes_short)
-    val secondsTitle = stringResource(Res.string.seconds_short)
+    val daysTitle = localization.days_short
+    val hoursTitle = localization.hours_short
+    val minutesTitle = localization.minutes_short
+    val secondsTitle = localization.seconds_short
     return remember(
         wholeSeconds,
         daysTitle,

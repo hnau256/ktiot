@@ -1,6 +1,5 @@
 package hnau.ktiot.client.projector.property.value
 
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
@@ -14,25 +13,23 @@ import hnau.common.app.projector.uikit.table.TableScope
 import hnau.common.app.projector.uikit.utils.Dimens
 import hnau.common.kotlin.foldBoolean
 import hnau.ktiot.client.model.property.value.FlagModel
-import hnau.ktiot.client.projector.Res
-import hnau.ktiot.client.projector.no
-import hnau.ktiot.client.projector.yes
+import hnau.ktiot.client.projector.utils.Localization
 import hnau.pipe.annotations.Pipe
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import org.jetbrains.compose.resources.stringResource
 
 @Immutable
 class FlagProjector(
     scope: CoroutineScope,
     private val model: FlagModel,
-    dependencies: Dependencies,
+    private val dependencies: Dependencies,
 ) : ValueProjector {
 
     @Immutable
     @Pipe
-    interface Dependencies
+    interface Dependencies {
+
+        val localization: Localization
+    }
 
     @Composable
     override fun TableScope.Top() {
@@ -52,11 +49,9 @@ class FlagProjector(
                                 horizontal = Dimens.separation,
                                 vertical = Dimens.smallSeparation,
                             ),
-                            text = stringResource(
-                                value.foldBoolean(
-                                    ifTrue = { Res.string.yes },
-                                    ifFalse = { Res.string.no }
-                                )
+                            text = value.foldBoolean(
+                                ifTrue = { dependencies.localization.yes },
+                                ifFalse = { dependencies.localization.no }
                             ),
                             color = value.foldBoolean(
                                 ifTrue = { MaterialTheme.colorScheme.primary },

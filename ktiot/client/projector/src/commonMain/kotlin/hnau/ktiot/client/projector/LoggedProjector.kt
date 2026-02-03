@@ -18,12 +18,12 @@ import hnau.common.app.projector.uikit.utils.Dimens
 import hnau.common.kotlin.coroutines.flow.state.mapWithScope
 import hnau.ktiot.client.model.LoggedModel
 import hnau.ktiot.client.projector.utils.Button
+import hnau.ktiot.client.projector.utils.Localization
 import hnau.ktiot.client.projector.utils.format
 import hnau.pipe.annotations.Pipe
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.ticker
 import kotlinx.coroutines.flow.*
-import org.jetbrains.compose.resources.stringResource
 import kotlin.time.Clock
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
@@ -33,12 +33,14 @@ import androidx.compose.material3.Button as MaterialButton
 class LoggedProjector(
     scope: CoroutineScope,
     model: LoggedModel,
-    dependencies: Dependencies,
+    private val dependencies: Dependencies,
 ) {
 
     @Immutable
     @Pipe
     interface Dependencies {
+
+        val localization: Localization
 
         fun connected(): ConnectedProjector.Dependencies
     }
@@ -136,7 +138,7 @@ class LoggedProjector(
     private fun LogoutButton(
         logout: StateFlow<(() -> Unit)?>,
     ) {
-        logout.Button { Text(stringResource(Res.string.logout)) }
+        logout.Button { Text(dependencies.localization.logout) }
     }
 
     @Composable
@@ -150,7 +152,7 @@ class LoggedProjector(
                     verticalArrangement = Arrangement.spacedBy(Dimens.smallSeparation)
                 ) {
                     CircularProgressIndicator()
-                    Text(stringResource(Res.string.connecting))
+                    Text(dependencies.localization.connecting)
                 }
             },
             button = {
@@ -173,15 +175,18 @@ class LoggedProjector(
                 ) {
                     Text(
                         listOfNotNull(
-                            stringResource(Res.string.connection_error),
+                            dependencies.localization.connection_error,
                             state.errorMessage
                         ).fastJoinToString(
                             separator = ": ",
                         )
                     )
                     Text(
-                        stringResource(Res.string.before_reconnection) +
-                                ": " + state.beforeReconnection.collectAsState().value.format()
+                        dependencies.localization.before_reconnection +
+                                ": " +
+                                state.beforeReconnection.collectAsState().value.format(
+                                    localization = dependencies.localization,
+                                )
                     )
                 }
             },
@@ -196,7 +201,7 @@ class LoggedProjector(
                     MaterialButton(
                         onClick = state.reconnectNow,
                     ) {
-                        Text(stringResource(Res.string.reconnect_now))
+                        Text(dependencies.localization.reconnect_now)
                     }
                 }
             }
