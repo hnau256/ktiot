@@ -26,9 +26,50 @@ dependencies {
 
 tasks.jar {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    from(project(":common:logging").tasks.named("compileKotlinDesktop").get().outputs.files)
-    from(project(":common:mqtt").tasks.named("compileKotlinDesktop").get().outputs.files)
-    from(project(":ktiot:scheme").tasks.named("compileKotlinDesktop").get().outputs.files)
+
+    // Зависимости для компиляции всех модулей
+    val dependentProjects =
+        listOf(
+            project(":common:logging"),
+            project(":common:mqtt"),
+            project(":ktiot:scheme"),
+        )
+
+    dependentProjects.forEach { depProject ->
+        // Ищем задачу компиляции desktop
+        val compileTask =
+            depProject.tasks.find { task ->
+                task.name.contains("desktop", ignoreCase = true) &&
+                    task.name.contains("compile", ignoreCase = true) &&
+                    task.name.contains("kotlin", ignoreCase = true)
+            }
+        if (compileTask != null) {
+            dependsOn(compileTask)
+        }
+    }
+
+    // Включаем классы из зависимых модулей
+    from(
+        provider {
+            val loggingProject = project(":common:logging")
+            val classesDir = file("${loggingProject.buildDir}/classes/kotlin/desktop/main")
+            if (classesDir.exists()) classesDir else files()
+        },
+    )
+    from(
+        provider {
+            val mqttProject = project(":common:mqtt")
+            val classesDir = file("${mqttProject.buildDir}/classes/kotlin/desktop/main")
+            if (classesDir.exists()) classesDir else files()
+        },
+    )
+    from(
+        provider {
+            val schemeProject = project(":ktiot:scheme")
+            val classesDir = file("${schemeProject.buildDir}/classes/kotlin/desktop/main")
+            if (classesDir.exists()) classesDir else files()
+        },
+    )
 }
 
 group = "com.github.hnau256"
@@ -40,9 +81,32 @@ publishing {
     }
     publications {
         create<MavenPublication>("mavenJava") {
-            from(components["java"])
+            artifact(tasks.jar.get())
             groupId = project.group as String
             version = project.version as String
+
+            // Создаем POM только с внешними зависимостями
+            pom.withXml {
+                val node = asNode() as groovy.util.Node
+
+                // Удаляем существующий узел dependencies, если есть
+                node.children().removeAll { (it as groovy.util.Node).name() == "dependencies" }
+
+                // Создаем новый узел dependencies
+                val dependenciesNode = node.appendNode("dependencies")
+
+                // Добавляем только внешние зависимости из implementation
+                val implementationConfig = project.configurations.getByName("implementation")
+                implementationConfig.allDependencies.forEach { dep ->
+                    if (dep !is org.gradle.api.artifacts.ProjectDependency) {
+                        val dependencyNode = dependenciesNode.appendNode("dependency")
+                        dependencyNode.appendNode("groupId", dep.group)
+                        dependencyNode.appendNode("artifactId", dep.name)
+                        dependencyNode.appendNode("version", dep.version ?: "")
+                        dependencyNode.appendNode("scope", "runtime")
+                    }
+                }
+            }
         }
     }
 }
