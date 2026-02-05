@@ -11,11 +11,12 @@ java {
     targetCompatibility = javaVersion
 }
 
-val projectDependencies = listOf(
-    project(":common:logging"),
-    project(":common:mqtt"),
-    project(":ktiot:scheme"),
-)
+val projectDependencies =
+    listOf(
+        project(":common:logging"),
+        project(":common:mqtt"),
+        project(":ktiot:scheme"),
+    )
 
 projectDependencies.forEach { depProject -> evaluationDependsOn(depProject.path) }
 
@@ -49,37 +50,78 @@ tasks.jar {
 group = "com.github.hnau256"
 version = "1.0.7"
 
+tasks.withType<GenerateModuleMetadata> {
+    enabled = false
+}
+
 publishing {
     repositories {
         mavenLocal()
     }
     publications {
         create<MavenPublication>("mavenJava") {
-            artifact(tasks.jar.get())
+            from(components["java"])
             groupId = project.group as String
             version = project.version as String
 
-            // Создаем POM только с внешними зависимостями
             pom.withXml {
-                val node = asNode() as groovy.util.Node
+                fun groovy.util.Node.childNodes() = children().filterIsInstance<groovy.util.Node>()
 
-                // Удаляем существующий узел dependencies, если есть
-                node.children().removeAll { (it as groovy.util.Node).name() == "dependencies" }
+                fun groovy.util.Node.child(name: String) = childNodes().find { it.name().toString().endsWith(name) }
 
-                // Создаем новый узел dependencies
-                val dependenciesNode = node.appendNode("dependencies")
+                fun String.isLocalGroup() = startsWith("KtIoT")
 
-                // Добавляем только внешние зависимости из implementation
-                val implementationConfig = project.configurations.getByName("implementation")
-                implementationConfig.allDependencies.forEach { dep ->
-                    if (dep !is org.gradle.api.artifacts.ProjectDependency) {
-                        val dependencyNode = dependenciesNode.appendNode("dependency")
-                        dependencyNode.appendNode("groupId", dep.group)
-                        dependencyNode.appendNode("artifactId", dep.name)
-                        dependencyNode.appendNode("version", dep.version ?: "")
-                        dependencyNode.appendNode("scope", "runtime")
+                fun collectExternalDeps(
+                    deps: Set<ResolvedDependency>,
+                    visited: MutableSet<String> = mutableSetOf(),
+                ): List<ResolvedDependency> =
+                    deps.flatMap { dep ->
+                        if (!visited.add(dep.moduleGroup + ":" + dep.moduleName)) return@flatMap emptyList()
+                        if (dep.moduleGroup.isLocalGroup()) {
+                            collectExternalDeps(dep.children, visited)
+                        } else {
+                            listOf(dep)
+                        }
                     }
-                }
+
+                val dependenciesNode = (asNode() as groovy.util.Node).child("dependencies") ?: return@withXml
+
+                val existingDeps =
+                    dependenciesNode
+                        .childNodes()
+                        .mapNotNull { node ->
+                            val groupId = node.child("groupId")?.text() ?: return@mapNotNull null
+                            val artifactId = node.child("artifactId")?.text() ?: return@mapNotNull null
+                            groupId to artifactId
+                        }.toSet()
+
+                val localModuleDeps =
+                    projectDependencies.flatMap { proj ->
+                        val firstLevel =
+                            proj.configurations
+                                .findByName("desktopRuntimeClasspath")
+                                ?.resolvedConfiguration
+                                ?.firstLevelModuleDependencies
+                                ?: emptySet()
+                        collectExternalDeps(firstLevel)
+                    }
+
+                localModuleDeps
+                    .distinctBy { it.moduleGroup to it.moduleName }
+                    .filterNot { (it.moduleGroup to it.moduleName) in existingDeps }
+                    .forEach { dep ->
+                        dependenciesNode.appendNode("dependency").apply {
+                            appendNode("groupId", dep.moduleGroup)
+                            appendNode("artifactId", dep.moduleName)
+                            appendNode("version", dep.moduleVersion)
+                            appendNode("scope", "runtime")
+                        }
+                    }
+
+                dependenciesNode
+                    .childNodes()
+                    .filter { it.child("groupId")?.text()?.isLocalGroup() == true }
+                    .forEach { dependenciesNode.remove(it) }
             }
         }
     }
