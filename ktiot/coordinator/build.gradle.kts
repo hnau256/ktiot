@@ -11,6 +11,14 @@ java {
     targetCompatibility = javaVersion
 }
 
+val projectDependencies = listOf(
+    project(":common:logging"),
+    project(":common:mqtt"),
+    project(":ktiot:scheme"),
+)
+
+projectDependencies.forEach { depProject -> evaluationDependsOn(depProject.path) }
+
 dependencies {
     implementation(libs.arrow.core)
     implementation(libs.logging)
@@ -19,57 +27,23 @@ dependencies {
     implementation(libs.kotlin.serialization.json)
     implementation(libs.hnau.kotlin)
     implementation(libs.hnau.model)
-    implementation(project(":common:logging"))
-    implementation(project(":common:mqtt"))
-    implementation(project(":ktiot:scheme"))
+    projectDependencies.forEach { implementation(it) }
 }
 
 tasks.jar {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 
-    // Зависимости для компиляции всех модулей
-    val dependentProjects =
-        listOf(
-            project(":common:logging"),
-            project(":common:mqtt"),
-            project(":ktiot:scheme"),
-        )
-
-    dependentProjects.forEach { depProject ->
-        // Ищем задачу компиляции desktop
-        val compileTask =
-            depProject.tasks.find { task ->
-                task.name.contains("desktop", ignoreCase = true) &&
-                    task.name.contains("compile", ignoreCase = true) &&
-                    task.name.contains("kotlin", ignoreCase = true)
-            }
-        if (compileTask != null) {
-            dependsOn(compileTask)
-        }
+    // Зависимость от сборки всех проектных модулей
+    projectDependencies.forEach { depProject ->
+        dependsOn(depProject.tasks.named("desktopMainClasses"))
     }
 
-    // Включаем классы из зависимых модулей
-    from(
-        provider {
-            val loggingProject = project(":common:logging")
-            val classesDir = file("${loggingProject.buildDir}/classes/kotlin/desktop/main")
-            if (classesDir.exists()) classesDir else files()
-        },
-    )
-    from(
-        provider {
-            val mqttProject = project(":common:mqtt")
-            val classesDir = file("${mqttProject.buildDir}/classes/kotlin/desktop/main")
-            if (classesDir.exists()) classesDir else files()
-        },
-    )
-    from(
-        provider {
-            val schemeProject = project(":ktiot:scheme")
-            val classesDir = file("${schemeProject.buildDir}/classes/kotlin/desktop/main")
-            if (classesDir.exists()) classesDir else files()
-        },
-    )
+    // Включаем классы из всех проектных зависимостей
+    projectDependencies.forEach { depProject ->
+        from(depProject.layout.buildDirectory.dir("classes/kotlin/desktop/main")) {
+            include("**/*.class")
+        }
+    }
 }
 
 group = "com.github.hnau256"
