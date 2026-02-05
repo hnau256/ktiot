@@ -48,7 +48,7 @@ tasks.jar {
 }
 
 group = "com.github.hnau256"
-version = "1.0.7"
+version = "1.1.0"
 
 fun String.isLocalGroup() = startsWith("KtIoT")
 
