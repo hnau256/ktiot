@@ -50,6 +50,17 @@ tasks.jar {
 group = "com.github.hnau256"
 version = "1.0.7"
 
+fun String.isLocalGroup() = startsWith("KtIoT")
+
+fun collectExternalDeps(
+    deps: Set<ResolvedDependency>,
+    visited: MutableSet<String> = mutableSetOf(),
+): List<ResolvedDependency> =
+    deps.flatMap { dep ->
+        if (!visited.add("${dep.moduleGroup}:${dep.moduleName}")) return@flatMap emptyList()
+        if (dep.moduleGroup.isLocalGroup()) collectExternalDeps(dep.children, visited) else listOf(dep)
+    }
+
 tasks.withType<GenerateModuleMetadata> {
     enabled = false
 }
@@ -60,68 +71,26 @@ publishing {
     }
     publications {
         create<MavenPublication>("mavenJava") {
-            from(components["java"])
-            groupId = project.group as String
-            version = project.version as String
+            artifact(tasks.jar)
 
-            pom.withXml {
-                fun groovy.util.Node.childNodes() = children().filterIsInstance<groovy.util.Node>()
+            pom {
+                withXml {
+                    val depsNode = asNode().appendNode("dependencies")
 
-                fun groovy.util.Node.child(name: String) = childNodes().find { it.name().toString().endsWith(name) }
-
-                fun String.isLocalGroup() = startsWith("KtIoT")
-
-                fun collectExternalDeps(
-                    deps: Set<ResolvedDependency>,
-                    visited: MutableSet<String> = mutableSetOf(),
-                ): List<ResolvedDependency> =
-                    deps.flatMap { dep ->
-                        if (!visited.add(dep.moduleGroup + ":" + dep.moduleName)) return@flatMap emptyList()
-                        if (dep.moduleGroup.isLocalGroup()) {
-                            collectExternalDeps(dep.children, visited)
-                        } else {
-                            listOf(dep)
+                    configurations["runtimeClasspath"]
+                        .resolvedConfiguration
+                        .firstLevelModuleDependencies
+                        .let { collectExternalDeps(it) }
+                        .distinctBy { it.moduleGroup to it.moduleName }
+                        .forEach { dep ->
+                            depsNode.appendNode("dependency").apply {
+                                appendNode("groupId", dep.moduleGroup)
+                                appendNode("artifactId", dep.moduleName)
+                                appendNode("version", dep.moduleVersion)
+                                appendNode("scope", "runtime")
+                            }
                         }
-                    }
-
-                val dependenciesNode = (asNode() as groovy.util.Node).child("dependencies") ?: return@withXml
-
-                val existingDeps =
-                    dependenciesNode
-                        .childNodes()
-                        .mapNotNull { node ->
-                            val groupId = node.child("groupId")?.text() ?: return@mapNotNull null
-                            val artifactId = node.child("artifactId")?.text() ?: return@mapNotNull null
-                            groupId to artifactId
-                        }.toSet()
-
-                val localModuleDeps =
-                    projectDependencies.flatMap { proj ->
-                        val firstLevel =
-                            proj.configurations
-                                .findByName("desktopRuntimeClasspath")
-                                ?.resolvedConfiguration
-                                ?.firstLevelModuleDependencies
-                                ?: emptySet()
-                        collectExternalDeps(firstLevel)
-                    }
-
-                localModuleDeps
-                    .distinctBy { it.moduleGroup to it.moduleName }
-                    .filterNot { (it.moduleGroup to it.moduleName) in existingDeps }
-                    .forEach { dep ->
-                        dependenciesNode.appendNode("dependency").apply {
-                            appendNode("groupId", dep.moduleGroup)
-                            appendNode("artifactId", dep.moduleName)
-                            appendNode("version", dep.moduleVersion)
-                            appendNode("scope", "runtime")
-                        }
-                    }
-
-                dependenciesNode
-                    .childNodes()
-                    .filter { it.child("groupId")?.text()?.isLocalGroup() == true }
-                    .forEach { dependenciesNode.remove(it) }
+                }
             }
         }
     }
