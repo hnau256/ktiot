@@ -25,6 +25,8 @@ sealed interface PropertyType<T> {
         @SerialName("number")
         data class Number(
             val suffix: String = "",
+            val limitMin: Float? = null,
+            val limitMax: Float? = null,
         ) : State<Float> {
 
             override val serializer: KSerializer<Float>

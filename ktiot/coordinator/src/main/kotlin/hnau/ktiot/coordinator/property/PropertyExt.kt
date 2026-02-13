@@ -34,6 +34,18 @@ fun <T, P : PropertyType<T>> MqttTopic.Absolute.property(
 fun MqttTopic.Absolute.flagProperty(): PropertyPrototype<Boolean, PropertyType.State.Flag> =
     property(PropertyType.State.Flag)
 
+fun MqttTopic.Absolute.numberProperty(
+    suffix: String = "",
+    limitMin: Float? = null,
+    limitMax: Float? = null,
+): PropertyPrototype<Float, PropertyType.State.Number> = property(
+    PropertyType.State.Number(
+        suffix = suffix,
+        limitMin = limitMin,
+        limitMax = limitMax,
+    ),
+)
+
 fun MqttTopic.Absolute.ticProperty(): PropertyPrototype<Unit, PropertyType.Events.Tic> =
     property(PropertyType.Events.Tic)
 
