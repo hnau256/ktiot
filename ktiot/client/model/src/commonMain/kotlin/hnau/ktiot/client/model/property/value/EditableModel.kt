@@ -18,6 +18,8 @@ import hnau.common.kotlin.ifTrue
 import hnau.common.kotlin.serialization.MutableStateFlowSerializer
 import hnau.common.app.model.goback.GoBackHandler
 import hnau.ktiot.client.model.property.value.editable.EditModel
+import hnau.ktiot.client.model.property.value.editable.NumberEditModel
+import hnau.ktiot.client.model.property.value.editable.NumberViewModel
 import hnau.ktiot.client.model.property.value.editable.TextEditModel
 import hnau.ktiot.client.model.property.value.editable.TextViewModel
 import hnau.ktiot.client.model.property.value.editable.ViewModel
@@ -96,6 +98,10 @@ class EditableModel<
         fun textView(): TextViewModel.Dependencies
 
         fun textEdit(): TextEditModel.Dependencies
+
+        fun numberView(): NumberViewModel.Dependencies
+
+        fun numberEdit(): NumberEditModel.Dependencies
     }
 
     @Serializable

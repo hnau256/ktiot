@@ -9,8 +9,8 @@ import androidx.compose.ui.focus.focusRequester
 import hnau.common.app.projector.uikit.TextInput
 import hnau.common.app.projector.uikit.table.TableScope
 import hnau.common.app.projector.uikit.utils.Dimens
-import hnau.ktiot.client.model.property.value.editable.TextEditModel
-import hnau.ktiot.client.model.property.value.editable.TextViewModel
+import hnau.ktiot.client.model.property.value.editable.NumberEditModel
+import hnau.ktiot.client.model.property.value.editable.NumberViewModel
 import hnau.pipe.annotations.Pipe
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
@@ -18,9 +18,9 @@ import kotlinx.coroutines.CoroutineScope
 private val logger = KotlinLogging.logger { }
 
 @Immutable
-class TextViewProjector(
+class NumberViewProjector(
     scope: CoroutineScope,
-    private val model: TextViewModel,
+    private val model: NumberViewModel,
     dependencies: Dependencies,
 ) : ViewProjector {
 
@@ -45,9 +45,9 @@ class TextViewProjector(
 }
 
 @Immutable
-class TextEditProjector(
+class NumberEditProjector(
     scope: CoroutineScope,
-    private val model: TextEditModel,
+    private val model: NumberEditModel,
     dependencies: Dependencies,
 ) : EditProjector {
 

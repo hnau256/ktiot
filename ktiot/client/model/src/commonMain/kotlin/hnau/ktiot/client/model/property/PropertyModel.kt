@@ -8,6 +8,8 @@ import hnau.common.kotlin.fold
 import hnau.common.mqtt.utils.MqttClient
 import hnau.ktiot.client.model.property.value.*
 import hnau.ktiot.client.model.property.value.editable.EditModel
+import hnau.ktiot.client.model.property.value.editable.NumberEditModel
+import hnau.ktiot.client.model.property.value.editable.NumberViewModel
 import hnau.ktiot.client.model.property.value.editable.TextEditModel
 import hnau.ktiot.client.model.property.value.editable.TextViewModel
 import hnau.ktiot.client.model.property.value.editable.ViewModel
@@ -70,7 +72,15 @@ class PropertyModel(
                 type = type,
             )
 
-            is PropertyType.State.Number -> TODO()
+            is PropertyType.State.Number -> createEditableModel(
+                createViewModelSkeleton = { NumberViewModel.Skeleton() },
+                extractViewDependencies = { numberView() },
+                viewFactory = NumberViewModel.factory,
+                createEditModelSkeleton = { initial -> NumberEditModel.Skeleton(initial) },
+                extractEditDependencies = { numberEdit() },
+                editFactory = NumberEditModel.factory,
+                type = type,
+            )
 
             is PropertyType.State.Text -> createEditableModel(
                 createViewModelSkeleton = { TextViewModel.Skeleton() },

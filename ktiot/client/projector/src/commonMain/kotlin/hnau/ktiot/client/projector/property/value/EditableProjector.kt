@@ -14,10 +14,14 @@ import hnau.common.app.projector.utils.Icon
 import hnau.common.kotlin.coroutines.flow.state.mapWithScope
 import hnau.ktiot.client.model.property.value.EditableModel
 import hnau.ktiot.client.model.property.value.editable.EditModel
+import hnau.ktiot.client.model.property.value.editable.NumberEditModel
+import hnau.ktiot.client.model.property.value.editable.NumberViewModel
 import hnau.ktiot.client.model.property.value.editable.TextEditModel
 import hnau.ktiot.client.model.property.value.editable.TextViewModel
 import hnau.ktiot.client.model.property.value.editable.ViewModel
 import hnau.ktiot.client.projector.property.value.editable.EditProjector
+import hnau.ktiot.client.projector.property.value.editable.NumberEditProjector
+import hnau.ktiot.client.projector.property.value.editable.NumberViewProjector
 import hnau.ktiot.client.projector.property.value.editable.TextEditProjector
 import hnau.ktiot.client.projector.property.value.editable.TextViewProjector
 import hnau.ktiot.client.projector.property.value.editable.ViewProjector
@@ -46,6 +50,10 @@ class EditableProjector<
         fun textView(): TextViewProjector.Dependencies
 
         fun textEdit(): TextEditProjector.Dependencies
+
+        fun numberView(): NumberViewProjector.Dependencies
+
+        fun numberEdit(): NumberEditProjector.Dependencies
 
     }
 
@@ -77,6 +85,12 @@ class EditableProjector<
                             dependencies = dependencies.textView(),
                             model = model
                         )
+
+                        is NumberViewModel -> NumberViewProjector(
+                            scope = stateScope,
+                            dependencies = dependencies.numberView(),
+                            model = model
+                        )
                     }
                 )
 
@@ -87,6 +101,12 @@ class EditableProjector<
                         is TextEditModel -> TextEditProjector(
                             scope = stateScope,
                             dependencies = dependencies.textEdit(),
+                            model = model
+                        )
+
+                        is NumberEditModel -> NumberEditProjector(
+                            scope = stateScope,
+                            dependencies = dependencies.numberEdit(),
                             model = model
                         )
                     }
