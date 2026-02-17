@@ -4,9 +4,11 @@ import hnau.common.app.model.goback.GoBackHandler
 import hnau.ktiot.scheme.PropertyType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.serialization.Serializable
 
 sealed interface ValueModel {
 
+    @Serializable
     sealed interface Skeleton
 
     val goBackHandler: GoBackHandler

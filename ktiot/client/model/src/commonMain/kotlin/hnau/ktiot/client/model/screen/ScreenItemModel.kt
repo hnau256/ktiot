@@ -3,6 +3,8 @@ package hnau.ktiot.client.model.screen
 import hnau.common.app.model.goback.GoBackHandler
 import hnau.common.app.model.goback.NeverGoBackHandler
 import hnau.ktiot.client.model.property.PropertyModel
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
 sealed interface ScreenItemModel {
 
@@ -33,8 +35,11 @@ sealed interface ScreenItemModel {
 
     }
 
+    @Serializable
     sealed interface Skeleton {
 
+        @Serializable
+        @SerialName("property")
         data class Property(
             val skeleton: PropertyModel.Skeleton,
         ): Skeleton

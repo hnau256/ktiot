@@ -28,6 +28,7 @@ import hnau.pipe.annotations.Pipe
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
 
@@ -105,6 +106,7 @@ class EditableModel<
     }
 
     @Serializable
+    @SerialName("editable")
     data class Skeleton<VS : ViewModel.Skeleton, ES : EditModel.Skeleton>(
         val state: MutableStateFlow<Either<ES, VS>>,
     ) : ValueModel.Skeleton

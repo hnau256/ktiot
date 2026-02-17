@@ -6,6 +6,7 @@ import hnau.ktiot.scheme.PropertyType
 import hnau.pipe.annotations.Pipe
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 class FlagModel(
@@ -28,6 +29,7 @@ class FlagModel(
     interface Dependencies
 
     @Serializable
+    @SerialName("flag")
     /*data*/ class Skeleton : ValueModel.Skeleton
 
     override val goBackHandler: GoBackHandler

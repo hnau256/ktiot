@@ -1,3 +1,7 @@
+@file:UseSerializers(
+    MutableStateFlowSerializer::class,
+)
+
 package hnau.ktiot.client.model.screen
 
 import arrow.core.Either
@@ -8,6 +12,7 @@ import hnau.common.app.model.goback.NeverGoBackHandler
 import hnau.common.kotlin.*
 import hnau.common.kotlin.coroutines.flow.state.*
 import hnau.common.kotlin.coroutines.flow.state.mutable.toMutableStateFlowAsInitial
+import hnau.common.kotlin.serialization.MutableStateFlowSerializer
 import hnau.common.logging.tryOrLog
 import hnau.common.mqtt.utils.MqttClient
 import hnau.ktiot.client.model.property.PropertyModel
@@ -25,6 +30,7 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.UseSerializers
 
 private val logger = KotlinLogging.logger { }
 

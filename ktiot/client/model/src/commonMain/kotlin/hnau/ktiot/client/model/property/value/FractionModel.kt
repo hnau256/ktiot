@@ -13,6 +13,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 class FractionModel(
@@ -35,6 +36,7 @@ class FractionModel(
     interface Dependencies
 
     @Serializable
+    @SerialName("fraction")
     /*data*/ class Skeleton : ValueModel.Skeleton
 
     private val overwriteValue: MutableStateFlow<Float?> = MutableStateFlow(null)
