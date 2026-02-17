@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.StateFlow
 
 data class ElementWithChildren<out T: ElementWithChildren.Type>(
     val topic: MqttTopic.Absolute,
+    val title: String,
     val type: T,
 ) {
 

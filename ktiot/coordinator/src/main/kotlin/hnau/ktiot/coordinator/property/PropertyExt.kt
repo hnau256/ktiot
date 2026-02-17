@@ -185,18 +185,20 @@ inline fun <T, P : PropertyType.State<T>> Property<T, P, Property.Direction.In>.
 }
 
 
-val <T, P : PropertyType<T>, D : Property.Direction> Property<T, P, D>.element: ElementWithChildren<ElementWithChildren.Type.Property<T>>
-    get() = ElementWithChildren(
-        topic = topic,
-        type = ElementWithChildren.Type.Property(
-            type = type,
-            mode = when (direction) {
-                is Property.Direction.In -> when (direction.origin) {
-                    InPropertyOrigin.Manual -> PropertyMode.Manual
-                    InPropertyOrigin.Hardware -> PropertyMode.Hardware
-                }
+fun <T, P : PropertyType<T>, D : Property.Direction> Property<T, P, D>.element(
+    title: String = "",
+): ElementWithChildren<ElementWithChildren.Type.Property<T>> = ElementWithChildren(
+    topic = topic,
+    title = title,
+    type = ElementWithChildren.Type.Property(
+        type = type,
+        mode = when (direction) {
+            is Property.Direction.In -> when (direction.origin) {
+                InPropertyOrigin.Manual -> PropertyMode.Manual
+                InPropertyOrigin.Hardware -> PropertyMode.Hardware
+            }
 
-                Property.Direction.Calculated -> PropertyMode.Calculated
-            },
-        ),
-    )
+            Property.Direction.Calculated -> PropertyMode.Calculated
+        },
+    ),
+)

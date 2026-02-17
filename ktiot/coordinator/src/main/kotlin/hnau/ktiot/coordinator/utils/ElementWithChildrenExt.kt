@@ -25,6 +25,7 @@ internal fun ElementWithChildren<*>.toElement(
         topic = topic
             .tryRemovePrefix(parent)
             ?: topic,
+        title = title,
         type = type,
     )
 

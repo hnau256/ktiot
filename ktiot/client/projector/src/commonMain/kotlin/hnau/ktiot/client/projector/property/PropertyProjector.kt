@@ -1,6 +1,5 @@
 package hnau.ktiot.client.projector.property
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -32,7 +31,7 @@ import hnau.ktiot.client.projector.property.value.EditableProjector
 import hnau.ktiot.client.projector.property.value.FlagProjector
 import hnau.ktiot.client.projector.property.value.FractionProjector
 import hnau.ktiot.client.projector.property.value.ValueProjector
-import hnau.ktiot.client.projector.utils.toTitle
+import hnau.ktiot.client.model.property.toTitle
 import hnau.pipe.annotations.Pipe
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
@@ -107,7 +106,7 @@ class PropertyProjector(
                             horizontal = Dimens.separation,
                             vertical = Dimens.smallSeparation,
                         ),
-                    text = model.topic.toTitle(),
+                    text = model.title,
                     style = MaterialTheme.typography.titleMedium,
                 )
                 top()

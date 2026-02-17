@@ -7,6 +7,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Element(
     val topic: MqttTopic,
+    val title: String,
     val type: Type,
 ) {
 

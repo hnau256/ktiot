@@ -7,12 +7,7 @@ import hnau.common.kotlin.coroutines.flow.state.flatMapState
 import hnau.common.kotlin.fold
 import hnau.common.mqtt.utils.MqttClient
 import hnau.ktiot.client.model.property.value.*
-import hnau.ktiot.client.model.property.value.editable.EditModel
-import hnau.ktiot.client.model.property.value.editable.NumberEditModel
-import hnau.ktiot.client.model.property.value.editable.NumberViewModel
-import hnau.ktiot.client.model.property.value.editable.TextEditModel
-import hnau.ktiot.client.model.property.value.editable.TextViewModel
-import hnau.ktiot.client.model.property.value.editable.ViewModel
+import hnau.ktiot.client.model.property.value.editable.*
 import hnau.ktiot.client.model.utils.ChildTopic
 import hnau.ktiot.scheme.Element
 import hnau.ktiot.scheme.PropertyMode
@@ -29,6 +24,7 @@ class PropertyModel(
     private val scope: CoroutineScope,
     private val dependencies: Dependencies,
     private val skeleton: Skeleton,
+    val title: String,
     val topic: ChildTopic,
     private val property: Element.Type.Property<*>,
 ) {
@@ -123,7 +119,7 @@ class PropertyModel(
         noinline extractEditDependencies: EditableModel.Dependencies.() -> ED,
         editFactory: EditModel.Factory<T, P, ED, ES, E>,
         type: P,
-    ): StateFlow<Loadable<Result<EditableModel<T, P, V, VS, VD, E, ES, ED>>>> = hnau.ktiot.client.model.property.value.createEditableModel(
+    ): StateFlow<Loadable<Result<EditableModel<T, P, V, VS, VD, E, ES, ED>>>> = createEditableModel(
         scope = scope,
         dependencies = dependencies,
         skeleton = skeleton,

@@ -11,6 +11,7 @@ import hnau.common.kotlin.coroutines.flow.state.mutable.toMutableStateFlowAsInit
 import hnau.common.logging.tryOrLog
 import hnau.common.mqtt.utils.MqttClient
 import hnau.ktiot.client.model.property.PropertyModel
+import hnau.ktiot.client.model.property.toTitle
 import hnau.ktiot.client.model.utils.ChildTopic
 import hnau.ktiot.client.model.utils.MutableMapSerializer
 import hnau.ktiot.client.model.utils.asChild
@@ -180,10 +181,17 @@ class ScreenModel(
         element: Element,
     ): StateFlow<List<Item>> {
         val topic = element.topic.asChild(parentTopic)
+
+        val title = element
+            .title
+            .takeIf(String::isNotBlank)
+            .ifNull(topic::toTitle)
+
         return when (val type = element.type) {
             is Element.Type.Property<*> -> createPropertyItem(
                 scope = scope,
                 topic = topic,
+                title = title,
                 element = type,
             )
                 .let(::listOf)
@@ -203,7 +211,9 @@ class ScreenModel(
 
                 false -> Item(
                     topic = element.topic.asChild(parentTopic),
-                    model = ScreenItemModel.ChildButton,
+                    model = ScreenItemModel.ChildButton(
+                        title = title,
+                    ),
                 )
                     .let(::listOf)
                     .toMutableStateFlowAsInitial()
@@ -226,6 +236,7 @@ class ScreenModel(
     private fun <T> createPropertyItem(
         scope: CoroutineScope,
         topic: ChildTopic,
+        title: String,
         element: Element.Type.Property<T>,
     ): Item {
         val model = ScreenItemModel.Property(
@@ -241,6 +252,7 @@ class ScreenModel(
                 ).skeleton,
                 dependencies = dependencies.property(),
                 topic = topic,
+                title = title,
                 property = element,
             )
         )

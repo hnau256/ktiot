@@ -15,7 +15,7 @@ import hnau.common.app.projector.uikit.utils.Dimens
 import hnau.common.app.projector.utils.Icon
 import hnau.ktiot.client.model.utils.ChildTopic
 import hnau.ktiot.client.projector.property.PropertyProjector
-import hnau.ktiot.client.projector.utils.toTitle
+import hnau.ktiot.client.model.property.toTitle
 
 @Immutable
 sealed interface ScreenItemProjector {
@@ -48,6 +48,7 @@ sealed interface ScreenItemProjector {
     @Immutable
     data class ChildButton(
         val topic: ChildTopic,
+        val title: String,
         val onClick: () -> Unit,
     ) : ScreenItemProjector {
 
@@ -64,7 +65,7 @@ sealed interface ScreenItemProjector {
                     horizontalArrangement = Arrangement.spacedBy(Dimens.separation),
                 ) {
                     Text(
-                        text = topic.toTitle(),
+                        text = title,
                         style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.weight(1f),
                     )

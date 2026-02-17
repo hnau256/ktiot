@@ -46,17 +46,22 @@ data class NodeWrapper<N>(
     }
 
     fun element(
+        title: String = "",
         included: Boolean = false,
     ): ElementWithChildren<ElementWithChildren.Type.Child> = ElementWithChildren(
         topic = topic,
         type = ElementWithChildren.Type.Child(
             included = included,
             children = children,
-        )
+        ),
+        title = title,
     )
 
-    fun includedElement(): ElementWithChildren<ElementWithChildren.Type.Child> = element(
+    fun includedElement(
+        title: String = "",
+    ): ElementWithChildren<ElementWithChildren.Type.Child> = element(
         included = true,
+        title = title,
     )
 }
 

@@ -21,7 +21,9 @@ sealed interface ScreenItemModel {
             get() = model.goBackHandler
     }
 
-    data object ChildButton: ScreenItemModel {
+    data class ChildButton(
+        val title: String,
+    ): ScreenItemModel {
 
         override val key: Int
             get() = 1

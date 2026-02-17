@@ -127,8 +127,9 @@ class ScreenProjector(
                                             )
                                         )
 
-                                        ScreenItemModel.ChildButton -> ChildButton(
+                                        is ScreenItemModel.ChildButton -> ChildButton(
                                             topic = topic,
+                                            title = itemModel.title,
                                             onClick = { model.openChild(topic) },
                                         )
                                     }
