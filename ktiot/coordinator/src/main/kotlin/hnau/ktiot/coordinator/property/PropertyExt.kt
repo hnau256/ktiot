@@ -46,6 +46,9 @@ fun MqttTopic.Absolute.numberProperty(
     ),
 )
 
+fun MqttTopic.Absolute.textProperty(): PropertyPrototype<String, PropertyType.State.Text> =
+    property(PropertyType.State.Text)
+
 fun MqttTopic.Absolute.ticProperty(): PropertyPrototype<Unit, PropertyType.Events.Tic> =
     property(PropertyType.Events.Tic)
 
