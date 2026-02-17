@@ -1,13 +1,14 @@
 package hnau.ktiot.client.projector.property.value.editable
 
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import hnau.common.app.projector.uikit.TextInput
-import hnau.common.app.projector.uikit.table.TableScope
 import hnau.common.app.projector.uikit.utils.Dimens
 import hnau.ktiot.client.model.property.value.editable.TextEditModel
 import hnau.ktiot.client.model.property.value.editable.TextViewModel
@@ -22,25 +23,23 @@ class TextViewProjector(
     scope: CoroutineScope,
     private val model: TextViewModel,
     dependencies: Dependencies,
-) : ViewProjector {
+) : ContentProjector {
 
     @Immutable
     @Pipe
     interface Dependencies
 
     @Composable
-    override fun TableScope.Top() {
-        Cell { modifier ->
-            Text(
-                modifier = modifier
-                    .padding(Dimens.separation),
-                text = model
-                    .value
-                    .collectAsState()
-                    .value,
-                style = MaterialTheme.typography.titleMedium,
-            )
-        }
+    override fun Content() {
+        Text(
+            modifier = Modifier
+                .padding(Dimens.separation),
+            text = model
+                .value
+                .collectAsState()
+                .value,
+            style = MaterialTheme.typography.titleMedium,
+        )
     }
 }
 
@@ -49,23 +48,25 @@ class TextEditProjector(
     scope: CoroutineScope,
     private val model: TextEditModel,
     dependencies: Dependencies,
-) : EditProjector {
+) : ContentProjector {
 
     @Immutable
     @Pipe
     interface Dependencies
 
     @Composable
-    override fun TableScope.Main() {
-        Cell { modifier ->
-            val focusRequester = remember { FocusRequester() }
-            TextInput(
-                modifier = modifier
-                    .focusRequester(focusRequester),
-                value = model.input,
-                shape = shape,
-            )
-            LaunchedEffect(focusRequester) { focusRequester.requestFocus() }
-        }
+    override fun Content() {
+        val focusRequester = remember { FocusRequester() }
+        TextInput(
+            modifier = Modifier
+                .focusRequester(focusRequester)
+                .fillMaxWidth()
+                .padding(
+                    horizontal = Dimens.separation,
+                    vertical = Dimens.smallSeparation,
+                ),
+            value = model.input,
+        )
+        LaunchedEffect(focusRequester) { focusRequester.requestFocus() }
     }
 }

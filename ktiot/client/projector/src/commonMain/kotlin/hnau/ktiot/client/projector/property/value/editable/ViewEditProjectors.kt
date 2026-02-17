@@ -1,7 +1,9 @@
 package hnau.ktiot.client.projector.property.value.editable
 
-import hnau.ktiot.client.projector.property.value.utils.TopMainProjector
+import androidx.compose.runtime.Composable
 
-sealed interface ViewProjector : TopMainProjector
+sealed interface ContentProjector {
 
-sealed interface EditProjector : TopMainProjector
+    @Composable
+    fun Content()
+}

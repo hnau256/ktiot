@@ -1,31 +1,21 @@
 package hnau.ktiot.client.projector.property.value
 
+import androidx.compose.foundation.layout.Row
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.Button
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import hnau.common.app.projector.uikit.table.TableScope
+import androidx.compose.ui.Alignment
 import hnau.common.app.projector.utils.Icon
 import hnau.common.kotlin.coroutines.flow.state.mapWithScope
 import hnau.ktiot.client.model.property.value.EditableModel
-import hnau.ktiot.client.model.property.value.editable.EditModel
-import hnau.ktiot.client.model.property.value.editable.NumberEditModel
-import hnau.ktiot.client.model.property.value.editable.NumberViewModel
-import hnau.ktiot.client.model.property.value.editable.TextEditModel
-import hnau.ktiot.client.model.property.value.editable.TextViewModel
-import hnau.ktiot.client.model.property.value.editable.ViewModel
-import hnau.ktiot.client.projector.property.value.editable.EditProjector
-import hnau.ktiot.client.projector.property.value.editable.NumberEditProjector
-import hnau.ktiot.client.projector.property.value.editable.NumberViewProjector
-import hnau.ktiot.client.projector.property.value.editable.TextEditProjector
-import hnau.ktiot.client.projector.property.value.editable.TextViewProjector
-import hnau.ktiot.client.projector.property.value.editable.ViewProjector
-import hnau.ktiot.client.projector.property.value.utils.TopMainProjector
+import hnau.ktiot.client.model.property.value.editable.*
+import hnau.ktiot.client.projector.property.value.editable.*
 import hnau.ktiot.client.projector.utils.Button
 import hnau.ktiot.scheme.PropertyType
 import hnau.pipe.annotations.Pipe
@@ -59,15 +49,15 @@ class EditableProjector<
 
     sealed interface State {
 
-        val projector: TopMainProjector
+        val projector: ContentProjector
 
         data class View(
-            override val projector: ViewProjector,
+            override val projector: ContentProjector,
             val edit: (() -> Unit)?,
         ) : State
 
         data class Edit(
-            override val projector: EditProjector,
+            override val projector: ContentProjector,
             val save: StateFlow<StateFlow<(() -> Unit)?>?>,
             val cancel: () -> Unit,
         ) : State
@@ -115,70 +105,59 @@ class EditableProjector<
         }
 
     @Composable
-    override fun TableScope.Top() {
-        val state by state.collectAsState()
-        when (val state = state) {
-            is State.Edit -> EditTopCells(
-                state = state,
-            )
+    override fun Top() {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            val state by state.collectAsState()
+            when (val state = state) {
+                is State.Edit -> EditTop(
+                    state = state,
+                )
 
-            is State.View -> ViewTopCells(
-                state = state,
-            )
+                is State.View -> ViewTop(
+                    state = state,
+                )
+            }
         }
     }
 
     @Composable
-    override fun TableScope.Main() {
+    override fun Main() {
         val state by state.collectAsState()
-        with(state.projector) { Main() }
+        with(state.projector) { Content() }
     }
 
     @Composable
-    private fun TableScope.ViewTopCells(
+    private fun ViewTop(
         state: State.View,
     ) {
         val editOrNull = state.edit
-        with(state.projector) {
-            Top()
-        }
         editOrNull?.let { edit ->
-            Cell { modifier ->
-                Button(
-                    shape = shape,
-                    modifier = modifier,
-                    onClick = edit,
-                ) {
-                    Icon(Icons.Filled.Edit)
-                }
+            TextButton(
+                onClick = edit,
+            ) {
+                Icon(Icons.Filled.Edit)
             }
         }
     }
 
     @Composable
-    private fun TableScope.EditTopCells(
+    private fun EditTop(
         state: State.Edit,
     ) {
-        with(state.projector) {
-            Top()
-        }
-        Cell { modifier ->
-            Button(
-                shape = shape,
-                modifier = modifier,
-                onClick = state.cancel,
-            ) {
-                Icon(Icons.Filled.Cancel)
-            }
+        TextButton(
+            onClick = state.cancel,
+        ) {
+            Icon(Icons.Filled.Cancel)
         }
 
-        Cell { modifier ->
-            val saveOrCancel by state.save.collectAsState()
-            saveOrCancel.Button(
-                shape = shape,
-                modifier = modifier,
-                content = { Icon(Icons.Filled.Done) },
-            )
+        val saveOrCancel by state.save.collectAsState()
+        saveOrCancel.Button { leading, onClick, enabled ->
+            TextButton(
+                onClick = { onClick?.invoke() },
+                enabled = enabled,
+            ) { Icon(Icons.Filled.Done) }
         }
     }
 }

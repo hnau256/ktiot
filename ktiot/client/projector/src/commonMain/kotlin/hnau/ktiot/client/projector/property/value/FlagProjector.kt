@@ -8,8 +8,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
-import hnau.common.app.projector.uikit.table.CellBox
-import hnau.common.app.projector.uikit.table.TableScope
 import hnau.common.app.projector.uikit.utils.Dimens
 import hnau.common.kotlin.foldBoolean
 import hnau.ktiot.client.model.property.value.FlagModel
@@ -32,46 +30,48 @@ class FlagProjector(
     }
 
     @Composable
-    override fun TableScope.Top() {
-        CellBox {
+    override fun Main() {
+    }
 
-            val value = model
-                .value
-                .collectAsState()
-                .value
+    @Composable
+    override fun Top() {
 
-            model
-                .mutable
-                .foldBoolean(
-                    ifFalse = {
-                        Text(
-                            modifier = Modifier.padding(
-                                horizontal = Dimens.separation,
-                                vertical = Dimens.smallSeparation,
-                            ),
-                            text = value.foldBoolean(
-                                ifTrue = { dependencies.localization.yes },
-                                ifFalse = { dependencies.localization.no }
-                            ),
-                            color = value.foldBoolean(
-                                ifTrue = { MaterialTheme.colorScheme.primary },
-                                ifFalse = { MaterialTheme.colorScheme.error }
-                            ),
-                            style = MaterialTheme.typography.titleLarge,
-                        )
-                    },
-                    ifTrue = {
-                        Switch(
-                            modifier = Modifier.padding(
-                                horizontal = Dimens.separation,
-                                vertical = Dimens.smallSeparation,
-                            ),
-                            checked = value,
-                            onCheckedChange = { model.publish.value?.invoke(it) },
-                            enabled = model.publish.collectAsState().value != null,
-                        )
-                    }
-                )
-        }
+        val value = model
+            .value
+            .collectAsState()
+            .value
+
+        model
+            .mutable
+            .foldBoolean(
+                ifFalse = {
+                    Text(
+                        modifier = Modifier.padding(
+                            horizontal = Dimens.separation,
+                            vertical = Dimens.smallSeparation,
+                        ),
+                        text = value.foldBoolean(
+                            ifTrue = { dependencies.localization.yes },
+                            ifFalse = { dependencies.localization.no }
+                        ),
+                        color = value.foldBoolean(
+                            ifTrue = { MaterialTheme.colorScheme.primary },
+                            ifFalse = { MaterialTheme.colorScheme.error }
+                        ),
+                        style = MaterialTheme.typography.titleLarge,
+                    )
+                },
+                ifTrue = {
+                    Switch(
+                        modifier = Modifier.padding(
+                            horizontal = Dimens.separation,
+                            vertical = Dimens.smallSeparation,
+                        ),
+                        checked = value,
+                        onCheckedChange = { model.publish.value?.invoke(it) },
+                        enabled = model.publish.collectAsState().value != null,
+                    )
+                }
+            )
     }
 }

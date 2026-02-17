@@ -1,5 +1,12 @@
 package hnau.ktiot.client.projector.property.value
 
-import hnau.ktiot.client.projector.property.value.utils.TopMainProjector
+import androidx.compose.runtime.Composable
 
-sealed interface ValueProjector: TopMainProjector
+interface ValueProjector {
+
+    @Composable
+    fun Top()
+
+    @Composable
+    fun Main()
+}

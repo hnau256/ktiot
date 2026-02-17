@@ -224,7 +224,7 @@ class ScreenProjector(
             ),
             contentPadding = contentPadding + PaddingValues(Dimens.separation),
             modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(Dimens.separation),
+            verticalArrangement = Arrangement.spacedBy(Dimens.smallSeparation),
             horizontalArrangement = Arrangement.spacedBy(Dimens.separation),
         ) {
             items(

@@ -1,9 +1,12 @@
 package hnau.ktiot.client.projector.property
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Error
+import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -11,9 +14,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import hnau.common.app.projector.uikit.table.*
 import hnau.common.app.projector.uikit.utils.Dimens
 import hnau.common.app.projector.utils.Icon
 import hnau.common.kotlin.Loadable
@@ -88,23 +91,25 @@ class PropertyProjector(
     @Composable
     private fun Content(
         modifier: Modifier,
-        top: @Composable TableScope.() -> Unit,
-        main: @Composable TableScope.() -> Unit = {},
+        top: @Composable () -> Unit,
+        main: @Composable () -> Unit = {},
     ) {
-        Table(
+        Card(
             modifier = modifier,
-            orientation = TableOrientation.Vertical,
         ) {
-            Subtable {
-                CellBox(
-                    configModifier = { it.weight(1f) },
-                ) {
-                    Text(
-                        modifier = Modifier.weight(1f),
-                        text = model.topic.toTitle(),
-                        style = MaterialTheme.typography.titleMedium,
-                    )
-                }
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Text(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(
+                            horizontal = Dimens.separation,
+                            vertical = Dimens.smallSeparation,
+                        ),
+                    text = model.topic.toTitle(),
+                    style = MaterialTheme.typography.titleMedium,
+                )
                 top()
             }
             main()

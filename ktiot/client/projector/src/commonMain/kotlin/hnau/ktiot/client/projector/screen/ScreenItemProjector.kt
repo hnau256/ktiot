@@ -1,7 +1,7 @@
 package hnau.ktiot.client.projector.screen
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material3.Button
@@ -9,11 +9,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import hnau.common.app.projector.uikit.ItemsRow
-import hnau.common.app.projector.uikit.table.Table
-import hnau.common.app.projector.uikit.table.TableOrientation
+import hnau.common.app.projector.uikit.utils.Dimens
 import hnau.common.app.projector.utils.Icon
 import hnau.ktiot.client.model.utils.ChildTopic
 import hnau.ktiot.client.projector.property.PropertyProjector
@@ -57,24 +55,20 @@ sealed interface ScreenItemProjector {
         override fun Content(
             modifier: Modifier,
         ) {
-            Table(
+            Button(
                 modifier = modifier,
-                orientation = TableOrientation.Horizontal,
+                onClick = onClick,
             ) {
-                Cell { modifier ->
-                    Button(
-                        modifier = modifier.weight(1f),
-                        shape = shape,
-                        onClick = onClick,
-                    ) {
-                        ItemsRow {
-                            Text(
-                                text = topic.toTitle(),
-                                style = MaterialTheme.typography.titleMedium,
-                            )
-                            Icon(Icons.Filled.ChevronRight)
-                        }
-                    }
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(Dimens.separation),
+                ) {
+                    Text(
+                        text = topic.toTitle(),
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.weight(1f),
+                    )
+                    Icon(Icons.Filled.ChevronRight)
                 }
             }
         }

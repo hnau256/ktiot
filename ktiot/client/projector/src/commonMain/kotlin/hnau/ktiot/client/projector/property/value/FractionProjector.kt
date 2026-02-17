@@ -1,6 +1,5 @@
 package hnau.ktiot.client.projector.property.value
 
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -13,15 +12,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastCoerceIn
-import hnau.common.app.projector.uikit.table.CellBox
-import hnau.common.app.projector.uikit.table.TableScope
 import hnau.common.app.projector.uikit.utils.Dimens
 import hnau.common.kotlin.foldBoolean
 import hnau.ktiot.client.model.property.value.FractionModel
 import hnau.pipe.annotations.Pipe
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 
 @Immutable
 class FractionProjector(
@@ -35,59 +30,60 @@ class FractionProjector(
     interface Dependencies
 
     @Composable
-    override fun TableScope.Main() {
+    override fun Top() {
+    }
 
-        CellBox {
+    @Composable
+    override fun Main() {
 
-            val range = model.type.range
+        val range = model.type.range
 
-            val value = model
-                .value
-                .collectAsState()
-                .value
+        val value = model
+            .value
+            .collectAsState()
+            .value
 
-            model
-                .mutable
-                .foldBoolean(
-                    ifTrue = {
-                        Slider(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(
-                                    horizontal = Dimens.separation,
-                                    vertical = Dimens.smallSeparation,
-                                ),
-                            value = value,
-                            valueRange = model.type.range,
-                            onValueChange = model::update,
-                            onValueChangeFinished = model::publish,
-                            enabled = model
-                                .isPublishing
-                                .collectAsState()
-                                .value
-                                .not(),
-                        )
-                    },
-                    ifFalse = {
-                        val normalizedValue = remember(value, range) {
-                            range
-                                .takeIf { !it.isEmpty() }
-                                ?.let { nonEmptyRange ->
-                                    (value - nonEmptyRange.start) /
-                                            (nonEmptyRange.endInclusive - nonEmptyRange.start)
-                                }
-                                ?.fastCoerceIn(0f, 1f)
-                                ?: 0f
-                        }
-                        LinearProgressIndicator(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(Dimens.separation)
-                                .height(12.dp),
-                            progress = { normalizedValue },
-                        )
+        model
+            .mutable
+            .foldBoolean(
+                ifTrue = {
+                    Slider(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(
+                                horizontal = Dimens.separation,
+                                vertical = Dimens.smallSeparation,
+                            ),
+                        value = value,
+                        valueRange = model.type.range,
+                        onValueChange = model::update,
+                        onValueChangeFinished = model::publish,
+                        enabled = model
+                            .isPublishing
+                            .collectAsState()
+                            .value
+                            .not(),
+                    )
+                },
+                ifFalse = {
+                    val normalizedValue = remember(value, range) {
+                        range
+                            .takeIf { !it.isEmpty() }
+                            ?.let { nonEmptyRange ->
+                                (value - nonEmptyRange.start) /
+                                        (nonEmptyRange.endInclusive - nonEmptyRange.start)
+                            }
+                            ?.fastCoerceIn(0f, 1f)
+                            ?: 0f
                     }
-                )
-        }
+                    LinearProgressIndicator(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(Dimens.separation)
+                            .height(12.dp),
+                        progress = { normalizedValue },
+                    )
+                }
+            )
     }
 }
