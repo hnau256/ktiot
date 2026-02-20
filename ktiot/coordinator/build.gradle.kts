@@ -25,6 +25,7 @@ dependencies {
     implementation(libs.logging)
     implementation(libs.coroutines)
     implementation(libs.kotlin.datetime)
+    implementation(libs.kotlin.serialization.core)
     implementation(libs.kotlin.serialization.json)
     implementation(libs.hnau.kotlin)
     implementation(libs.hnau.model)
@@ -48,7 +49,7 @@ tasks.jar {
 }
 
 group = "com.github.hnau256"
-version = "1.3.0"
+version = "1.4.0"
 
 fun String.isLocalGroup() = startsWith("KtIoT")
 
