@@ -1,9 +1,13 @@
 plugins {
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.ksp)
     kotlin("jvm")
     id("java-library")
     id("maven-publish")
 }
+
+group = "com.github.hnau256"
+version = "1.5.0"
 
 java {
     val javaVersion = JavaVersion.valueOf(libs.versions.java.get())
@@ -29,6 +33,15 @@ dependencies {
     implementation(libs.kotlin.serialization.json)
     implementation(libs.hnau.kotlin)
     implementation(libs.hnau.model)
+
+    implementation(libs.pipe.annotations)
+    implementation(libs.sealup.annotations)
+    implementation(libs.enumvalues.annotations)
+
+    ksp(libs.pipe.processor)
+    ksp(libs.sealup.processor)
+    ksp(libs.enumvalues.processor)
+
     projectDependencies.forEach { implementation(it) }
 }
 
@@ -47,9 +60,6 @@ tasks.jar {
         }
     }
 }
-
-group = "com.github.hnau256"
-version = "1.4.0"
 
 fun String.isLocalGroup() = startsWith("KtIoT")
 

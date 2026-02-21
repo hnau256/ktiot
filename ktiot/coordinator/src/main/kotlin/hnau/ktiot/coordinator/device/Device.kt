@@ -14,7 +14,7 @@ data class Device(
 
         data class Online(
             val battery: Float?,
-            val connectionQuality: Float,
+            val connectionQuality: Float?,
         ): State
     }
 
