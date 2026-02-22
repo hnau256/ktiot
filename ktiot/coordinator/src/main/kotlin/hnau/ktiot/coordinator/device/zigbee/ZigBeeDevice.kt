@@ -23,6 +23,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.*
 import kotlin.time.Clock
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.Duration.Companion.seconds
 
@@ -46,12 +47,12 @@ data class ZigBeeDevice(
 
     private val topic: MqttTopic.Absolute = z2mTopic + id.id
 
-    private val stateFields = dependencies
+    private val stateFieldsOrError: StateFlow<Loadable<Result<JsonObject>>> = dependencies
         .client
         .subscribe(
             topic = topic.raw,
         )
-        .transformLatest { message ->
+        .map { message ->
             val json = message
                 .payload
                 .decodeToString()
@@ -61,14 +62,23 @@ data class ZigBeeDevice(
                 ) {
                     Json.parseToJsonElement(json).castOrThrow<JsonObject>()
                 }
-                .map(::Ready)
-                .onSuccess { state -> emit(state) }
+                .let(::Ready)
         }
         .stateIn(
             scope = scope,
             started = SharingStarted.Eagerly,
             initialValue = Loading,
         )
+
+    private val stateFields: StateFlow<Loadable<JsonObject>> =
+        stateFieldsOrError.mapState(scope) { stateFieldsOrLoading ->
+            stateFieldsOrLoading.flatMap { stateFieldsOrError ->
+                stateFieldsOrError.fold(
+                    onSuccess = ::Ready,
+                    onFailure = { Loading },
+                )
+            }
+        }
 
     val isOnline: StateFlow<Loadable<Boolean>> = dependencies
         .client
@@ -88,6 +98,25 @@ data class ZigBeeDevice(
         }
 
     init {
+
+        scope.launch {
+            stateFieldsOrError.collectLatest { fieldsOrLoading ->
+                fieldsOrLoading.fold(
+                    ifLoading = {},
+                    ifReady = { fieldsOrError ->
+                        fieldsOrError.fold(
+                            onSuccess = {},
+                            onFailure = { error ->
+                                dependencies
+                                    .alertRegistry
+                                    .registerAlert("Unable read fields from device:${id.id}. Error: ${error.message}")
+                            }
+                        )
+                    }
+                )
+            }
+        }
+
         scope.launch {
             dependencies
                 .deviceRegistry
@@ -122,7 +151,7 @@ data class ZigBeeDevice(
             subscribe(field).mapState(scope) { valueOrLoading ->
                 valueOrLoading.map { value ->
                     Timestamped(
-                        value = value.jsonPrimitive.toString(),
+                        value = value,
                         timestamp = Clock.System.now(),
                     )
                 }
@@ -159,13 +188,18 @@ data class ZigBeeDevice(
                         if (!targetIsNewer) {
                             delay(actualIsChangedDebounce)
                         }
-                        dependencies
-                            .client
-                            .publish(
-                                topic = (topic + "set" + field).raw,
-                                retained = false,
-                                payload = target.toByteArray(Charsets.UTF_8)
-                            )
+                        var retryDelay = publishRetryInitialDelay
+                        while (true) {
+                            dependencies
+                                .client
+                                .publish(
+                                    topic = (topic + "set" + field).raw,
+                                    retained = false,
+                                    payload = target.toByteArray(Charsets.UTF_8)
+                                )
+                            delay(retryDelay)
+                            retryDelay = minOf(retryDelay * 2, publishRetryMaxDelay)
+                        }
                     }
                 )
             }
@@ -199,11 +233,11 @@ data class ZigBeeDevice(
 
     fun subscribe(
         field: String,
-    ): StateFlow<Loadable<JsonElement>> = stateFields.mapState(scope) { stateFieldsOrLoading ->
+    ): StateFlow<Loadable<String>> = stateFields.mapState(scope) { stateFieldsOrLoading ->
         stateFieldsOrLoading.flatMap { stateFields ->
             stateFields[field].foldNullable(
                 ifNull = { Loading },
-                ifNotNull = ::Ready
+                ifNotNull = { it.jsonPrimitive.toString().let(::Ready) }
             )
         }
     }
@@ -213,6 +247,10 @@ data class ZigBeeDevice(
         private val z2mTopic: MqttTopic.Absolute = MqttTopic.Absolute.root + "zigbee2mqtt"
 
         private val actualIsChangedDebounce: Duration = 1.seconds
+
+        private val publishRetryInitialDelay: Duration = 1.seconds
+
+        private val publishRetryMaxDelay: Duration = 1.hours
 
         private val actualIsIncorrectDebounce: Duration = 3.minutes
     }
