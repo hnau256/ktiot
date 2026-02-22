@@ -248,7 +248,7 @@ data class ZigBeeDevice(
 
         private val actualIsChangedDebounce: Duration = 1.seconds
 
-        private val publishRetryInitialDelay: Duration = 1.seconds
+        private val publishRetryInitialDelay: Duration = 5.seconds
 
         private val publishRetryMaxDelay: Duration = 1.hours
 
