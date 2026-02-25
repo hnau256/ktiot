@@ -7,12 +7,13 @@ plugins {
 }
 
 group = "com.github.hnau256"
-version = "1.5.0"
+version = "1.6.0"
 
 java {
     val javaVersion = JavaVersion.valueOf(libs.versions.java.get())
     sourceCompatibility = javaVersion
     targetCompatibility = javaVersion
+    withSourcesJar()
 }
 
 val projectDependencies =
@@ -61,6 +62,11 @@ tasks.jar {
     }
 }
 
+tasks.named<Jar>("sourcesJar") {
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    from(layout.buildDirectory.dir("generated/ksp/main/kotlin"))
+}
+
 fun String.isLocalGroup() = startsWith("KtIoT")
 
 fun collectExternalDeps(
@@ -83,6 +89,7 @@ publishing {
     publications {
         create<MavenPublication>("mavenJava") {
             artifact(tasks.jar)
+            artifact(tasks.named("sourcesJar"))
 
             pom {
                 withXml {
