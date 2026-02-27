@@ -1,4 +1,4 @@
-package hnau.common.mqtt.utils
+package org.hnau.commons.mqtt.utils
 
 import kotlinx.coroutines.flow.Flow
 

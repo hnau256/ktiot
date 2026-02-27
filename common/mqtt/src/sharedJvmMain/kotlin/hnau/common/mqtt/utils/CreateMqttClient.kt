@@ -1,4 +1,4 @@
-package hnau.common.mqtt.utils
+package org.hnau.commons.mqtt.utils
 
 import kotlinx.coroutines.CoroutineScope
 import org.eclipse.paho.client.mqttv3.MqttAsyncClient

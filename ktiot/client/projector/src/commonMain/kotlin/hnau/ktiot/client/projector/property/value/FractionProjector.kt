@@ -12,10 +12,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastCoerceIn
-import hnau.common.app.projector.uikit.utils.Dimens
-import hnau.common.kotlin.foldBoolean
+import org.hnau.commons.app.projector.uikit.utils.Dimens
+import org.hnau.commons.kotlin.foldBoolean
 import hnau.ktiot.client.model.property.value.FractionModel
-import hnau.pipe.annotations.Pipe
+import org.hnau.commons.gen.pipe.annotations.Pipe
 import kotlinx.coroutines.CoroutineScope
 
 @Immutable

@@ -1,8 +1,8 @@
 package hnau.ktiot.scheme.topic
 
-import hnau.common.kotlin.mapper.Mapper
-import hnau.common.kotlin.mapper.plus
-import hnau.common.kotlin.serialization.MappingKSerializer
+import org.hnau.commons.kotlin.mapper.Mapper
+import org.hnau.commons.kotlin.mapper.plus
+import org.hnau.commons.kotlin.serialization.MappingKSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.serializer
 

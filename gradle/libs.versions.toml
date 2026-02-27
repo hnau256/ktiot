@@ -14,15 +14,12 @@ googleServices = "4.4.4"
 arrow = "2.2.1.1"
 kotlinSerialization = "1.9.0"
 kotlinCoroutines = "1.10.2"
-pipe = "1.3.0"
-sealup = "1.5.0"
-enumvalues = "1.3.0"
-app = "1.13.0"
 ksp = "2.3.4"
 compose-activity = "1.12.2"
 kotlin-date-time = "0.7.1"
 material3 = "1.3.1"
 compose-ui = "1.6.7"
+hnau = "1.0.0"
 
 [plugins]
 android-app = { id = "com.android.application", version.ref = "androidGradlePlugin" }
@@ -70,20 +67,20 @@ arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrow" }
 arrow-coroutines = { module = "io.arrow-kt:arrow-fx-coroutines", version.ref = "arrow" }
 arrow-serialization = { module = "io.arrow-kt:arrow-core-serialization", version.ref = "arrow" }
 #pipe
-pipe-annotations = { module = "com.github.hnau256.common-gen-pipe:annotations", version.ref = "pipe" }
-pipe-processor = { module = "com.github.hnau256.common-gen-pipe:processor", version.ref = "pipe" }
+pipe-annotations = { module = "org.hnau.commons:gen-pipe-annotations", version.ref = "hnau" }
+pipe-processor = { module = "org.hnau.commons:gen-pipe-processor", version.ref = "hnau" }
 #sealup
-sealup-annotations = { module = "com.github.hnau256.common-gen-sealup:annotations", version.ref = "sealup" }
-sealup-processor = { module = "com.github.hnau256.common-gen-sealup:processor", version.ref = "sealup" }
+sealup-annotations = { module = "org.hnau.commons:gen-sealup-annotations", version.ref = "hnau" }
+sealup-processor = { module = "org.hnau.commons:gen-sealup-processor", version.ref = "hnau" }
 #enumvalues
-enumvalues-annotations = { module = "com.github.hnau256.common-gen-enumvalues:annotations", version.ref = "enumvalues" }
-enumvalues-processor = { module = "com.github.hnau256.common-gen-enumvalues:processor", version.ref = "enumvalues" }
+enumvalues-annotations = { module = "org.hnau.commons:gen-enumvalues-annotations", version.ref = "hnau" }
+enumvalues-processor = { module = "org.hnau.commons:gen-enumvalues-processor", version.ref = "hnau" }
 #hnau
-hnau-kotlin = { module = "com.github.hnau256.common-kotlin:common-kotlin", version = "1.10.0" }
-hnau-gen-kt = { module = "com.github.hnau256:common-gen-kt", version = "1.4.0" }
-hnau-dynamiccolor = { module = "com.github.hnau256:common-dynamiccolor", version = "1.1.1" }
-hnau-model = { module = "com.github.hnau256.common-app:model", version.ref = "app" }
-hnau-projector = { module = "com.github.hnau256.common-app:projector", version.ref = "app" }
+hnau-kotlin = { module = "org.hnau.commons:kotlin", version.ref = "hnau" }
+hnau-gen-kt = { module = "org.hnau.commons:gen-kotlin", version.ref = "hnau" }
+hnau-dynamiccolor = { module = "org.hnau.commons:dynamiccolor", version.ref = "hnau" }
+hnau-model = { module = "org.hnau.commons:app-model", version.ref = "hnau" }
+hnau-projector = { module = "org.hnau.commons:app-projector", version.ref = "hnau" }
 #logging
 logging = { module = "io.github.oshai:kotlin-logging", version = "7.0.3" }
 slf4j-simple = { module = "org.slf4j:slf4j-simple", version = "2.0.17" }

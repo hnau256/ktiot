@@ -5,12 +5,12 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
-import hnau.common.app.projector.uikit.FullScreen
-import hnau.common.app.projector.uikit.TopBar
+import org.hnau.commons.app.projector.uikit.FullScreen
+import org.hnau.commons.app.projector.uikit.TopBar
 import hnau.ktiot.client.model.ConnectedModel
 import hnau.ktiot.client.projector.screen.ScreenProjector
 import hnau.ktiot.client.projector.utils.BackButtonWidth
-import hnau.pipe.annotations.Pipe
+import org.hnau.commons.gen.pipe.annotations.Pipe
 import kotlinx.coroutines.CoroutineScope
 
 @Immutable

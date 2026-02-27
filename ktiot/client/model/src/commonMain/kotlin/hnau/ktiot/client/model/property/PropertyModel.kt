@@ -1,18 +1,18 @@
 package hnau.ktiot.client.model.property
 
-import hnau.common.app.model.goback.GoBackHandler
-import hnau.common.app.model.goback.NeverGoBackHandler
-import hnau.common.kotlin.Loadable
-import hnau.common.kotlin.coroutines.flow.state.flatMapState
-import hnau.common.kotlin.fold
-import hnau.common.mqtt.utils.MqttClient
+import org.hnau.commons.app.model.goback.GoBackHandler
+import org.hnau.commons.app.model.goback.NeverGoBackHandler
+import org.hnau.commons.kotlin.Loadable
+import org.hnau.commons.kotlin.coroutines.flow.state.flatMapState
+import org.hnau.commons.kotlin.fold
+import org.hnau.commons.mqtt.utils.MqttClient
 import hnau.ktiot.client.model.property.value.*
 import hnau.ktiot.client.model.property.value.editable.*
 import hnau.ktiot.client.model.utils.ChildTopic
 import hnau.ktiot.scheme.Element
 import hnau.ktiot.scheme.PropertyMode
 import hnau.ktiot.scheme.PropertyType
-import hnau.pipe.annotations.Pipe
+import org.hnau.commons.gen.pipe.annotations.Pipe
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow

@@ -1,7 +1,7 @@
 package hnau.ktiot.scheme.topic
 
-import hnau.common.kotlin.ifTrue
-import hnau.common.mqtt.utils.Topic
+import org.hnau.commons.kotlin.ifTrue
+import org.hnau.commons.mqtt.utils.Topic
 import hnau.ktiot.scheme.SchemeConstants
 
 val MqttTopic.Absolute.ktiotElements: MqttTopic.Absolute

@@ -1,4 +1,4 @@
-package hnau.common.logging
+package org.hnau.commons.logging
 
 import io.github.oshai.kotlinlogging.KLogger
 import kotlinx.coroutines.CancellationException

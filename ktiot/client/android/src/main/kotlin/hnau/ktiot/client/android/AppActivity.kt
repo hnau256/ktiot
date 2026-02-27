@@ -8,7 +8,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
-import hnau.common.app.model.app.AppViewModel
+import org.hnau.commons.app.model.app.AppViewModel
 import hnau.ktiot.client.app.createAppProjector
 import hnau.ktiot.client.app.createPinFinAppSeed
 import hnau.ktiot.client.model.init.InitModel

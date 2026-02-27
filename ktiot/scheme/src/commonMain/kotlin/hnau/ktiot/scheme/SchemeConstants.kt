@@ -1,10 +1,10 @@
 package hnau.ktiot.scheme
 
-import hnau.common.kotlin.Loadable
-import hnau.common.kotlin.mapper.Mapper
-import hnau.common.kotlin.mapper.bytesToString
-import hnau.common.kotlin.mapper.plus
-import hnau.common.kotlin.mapper.toMapper
+import org.hnau.commons.kotlin.Loadable
+import org.hnau.commons.kotlin.mapper.Mapper
+import org.hnau.commons.kotlin.mapper.bytesToString
+import org.hnau.commons.kotlin.mapper.plus
+import org.hnau.commons.kotlin.mapper.toMapper
 import hnau.ktiot.scheme.topic.MqttTopic
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json

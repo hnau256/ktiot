@@ -1,10 +1,10 @@
-package hnau.common.mqtt
+package org.hnau.commons.mqtt
 
-import hnau.common.kotlin.Mutable
-import hnau.common.kotlin.coroutines.createChild
-import hnau.common.mqtt.utils.MqttConfig
-import hnau.common.mqtt.utils.MqttState
-import hnau.common.mqtt.utils.createMqttClient
+import org.hnau.commons.kotlin.Mutable
+import org.hnau.commons.kotlin.coroutines.createChild
+import org.hnau.commons.mqtt.utils.MqttConfig
+import org.hnau.commons.mqtt.utils.MqttState
+import org.hnau.commons.mqtt.utils.createMqttClient
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.async

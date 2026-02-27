@@ -1,11 +1,11 @@
 package hnau.ktiot.coordinator.utils
 
-import hnau.common.kotlin.Loadable
-import hnau.common.kotlin.Loading
-import hnau.common.kotlin.Ready
-import hnau.common.mqtt.utils.MqttClient
-import hnau.common.mqtt.utils.QoS
-import hnau.common.mqtt.utils.Topic
+import org.hnau.commons.kotlin.Loadable
+import org.hnau.commons.kotlin.Loading
+import org.hnau.commons.kotlin.Ready
+import org.hnau.commons.mqtt.utils.MqttClient
+import org.hnau.commons.mqtt.utils.QoS
+import org.hnau.commons.mqtt.utils.Topic
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted

@@ -1,9 +1,9 @@
 package hnau.ktiot.coordinator.device.zigbee
 
-import hnau.common.kotlin.*
-import hnau.common.kotlin.coroutines.flow.state.mapState
-import hnau.common.logging.tryOrLog
-import hnau.common.mqtt.utils.MqttClient
+import org.hnau.commons.kotlin.*
+import org.hnau.commons.kotlin.coroutines.flow.state.mapState
+import org.hnau.commons.logging.tryOrLog
+import org.hnau.commons.mqtt.utils.MqttClient
 import hnau.ktiot.coordinator.AlertRegistry
 import hnau.ktiot.coordinator.device.Device
 import hnau.ktiot.coordinator.device.DeviceRegistry
@@ -12,7 +12,7 @@ import hnau.ktiot.coordinator.utils.Timestamped
 import hnau.ktiot.coordinator.utils.subscribeJson
 import hnau.ktiot.scheme.topic.MqttTopic
 import hnau.ktiot.scheme.topic.raw
-import hnau.pipe.annotations.Pipe
+import org.hnau.commons.gen.pipe.annotations.Pipe
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay

@@ -1,8 +1,8 @@
 package hnau.ktiot.client.model.utils
 
 import arrow.core.identity
-import hnau.common.kotlin.mapper.Mapper
-import hnau.common.kotlin.serialization.MappingKSerializer
+import org.hnau.commons.kotlin.mapper.Mapper
+import org.hnau.commons.kotlin.serialization.MappingKSerializer
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.builtins.MapSerializer
 

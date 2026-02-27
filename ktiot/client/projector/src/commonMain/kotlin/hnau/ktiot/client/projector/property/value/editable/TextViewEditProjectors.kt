@@ -8,11 +8,11 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import hnau.common.app.projector.uikit.TextInput
-import hnau.common.app.projector.uikit.utils.Dimens
+import org.hnau.commons.app.projector.uikit.TextInput
+import org.hnau.commons.app.projector.uikit.utils.Dimens
 import hnau.ktiot.client.model.property.value.editable.TextEditModel
 import hnau.ktiot.client.model.property.value.editable.TextViewModel
-import hnau.pipe.annotations.Pipe
+import org.hnau.commons.gen.pipe.annotations.Pipe
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
 

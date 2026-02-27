@@ -1,7 +1,7 @@
 package hnau.ktiot.client.model.screen
 
-import hnau.common.app.model.goback.GoBackHandler
-import hnau.common.app.model.goback.NeverGoBackHandler
+import org.hnau.commons.app.model.goback.GoBackHandler
+import org.hnau.commons.app.model.goback.NeverGoBackHandler
 import hnau.ktiot.client.model.property.PropertyModel
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

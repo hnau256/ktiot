@@ -4,13 +4,13 @@
 
 package hnau.ktiot.client.model
 
-import hnau.common.kotlin.getOrInit
-import hnau.common.kotlin.serialization.MutableStateFlowSerializer
-import hnau.common.kotlin.toAccessor
-import hnau.common.app.model.goback.GoBackHandler
+import org.hnau.commons.kotlin.getOrInit
+import org.hnau.commons.kotlin.serialization.MutableStateFlowSerializer
+import org.hnau.commons.kotlin.toAccessor
+import org.hnau.commons.app.model.goback.GoBackHandler
 import hnau.ktiot.client.model.screen.ScreenModel
 import hnau.ktiot.scheme.topic.MqttTopic
-import hnau.pipe.annotations.Pipe
+import org.hnau.commons.gen.pipe.annotations.Pipe
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers

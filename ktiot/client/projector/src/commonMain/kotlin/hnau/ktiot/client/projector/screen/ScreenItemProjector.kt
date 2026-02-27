@@ -11,8 +11,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import hnau.common.app.projector.uikit.utils.Dimens
-import hnau.common.app.projector.utils.Icon
+import org.hnau.commons.app.projector.uikit.utils.Dimens
+import org.hnau.commons.app.projector.utils.Icon
 import hnau.ktiot.client.model.utils.ChildTopic
 import hnau.ktiot.client.projector.property.PropertyProjector
 import hnau.ktiot.client.model.property.toTitle

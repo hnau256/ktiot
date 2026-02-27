@@ -1,6 +1,6 @@
 package hnau.ktiot.coordinator.utils
 
-import hnau.common.kotlin.Loadable
+import org.hnau.commons.kotlin.Loadable
 import hnau.ktiot.scheme.PropertyMode
 import hnau.ktiot.scheme.PropertyType
 import hnau.ktiot.scheme.topic.MqttTopic

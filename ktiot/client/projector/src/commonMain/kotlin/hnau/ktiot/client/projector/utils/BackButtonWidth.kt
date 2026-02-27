@@ -1,7 +1,7 @@
 package hnau.ktiot.client.projector.utils
 
 import androidx.compose.ui.unit.Dp
-import hnau.common.app.projector.uikit.backbutton.BackButtonProjector
+import org.hnau.commons.app.projector.uikit.backbutton.BackButtonProjector
 
 interface BackButtonWidth {
 

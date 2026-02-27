@@ -1,7 +1,7 @@
-package hnau.common.mqtt.utils
+package org.hnau.commons.mqtt.utils
 
-import hnau.common.kotlin.ifTrue
-import hnau.common.logging.tryOrLog
+import org.hnau.commons.kotlin.ifTrue
+import org.hnau.commons.logging.tryOrLog
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CompletableDeferred

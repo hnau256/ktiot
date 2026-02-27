@@ -2,10 +2,10 @@ package hnau.ktiot.scheme
 
 import arrow.core.NonEmptyList
 import arrow.core.serialization.NonEmptyListSerializer
-import hnau.common.app.model.color.RGBABytes
-import hnau.common.app.model.color.gradient.Gradient
-import hnau.common.app.model.color.gradient.create
-import hnau.common.kotlin.serialization.ClosedFloatingPointRangeSerializer
+import org.hnau.commons.app.model.color.RGBABytes
+import org.hnau.commons.app.model.color.gradient.Gradient
+import org.hnau.commons.app.model.color.gradient.create
+import org.hnau.commons.kotlin.serialization.ClosedFloatingPointRangeSerializer
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
