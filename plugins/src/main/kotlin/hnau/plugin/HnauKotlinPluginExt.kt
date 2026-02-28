@@ -39,12 +39,12 @@ internal fun Project.config(
     val javaLanguageVersion: JavaLanguageVersion =
         JavaLanguageVersion.of(javaVersionNumberString.toInt())
 
+    plugins.apply("org.jetbrains.kotlin.multiplatform")
+
     when (androidMode) {
         AndroidMode.Lib -> plugins.apply("com.android.kotlin.multiplatform.library")
         null -> Unit
     }
-
-    plugins.apply("org.jetbrains.kotlin.multiplatform")
 
     val hasSerializationPlugin =
         project.plugins.hasPlugin("org.jetbrains.kotlin.plugin.serialization")
@@ -87,9 +87,6 @@ internal fun Project.config(
             languageSettings.enableLanguageFeature("ContextReceivers")
             dependencies {
                 implementation(versions.findLibrary("logging").get().get())
-                implementation(versions.findLibrary("arrow-core").get().get())
-                implementation(versions.findLibrary("arrow-coroutines").get().get())
-                implementation(versions.findLibrary("coroutines").get().get())
                 implementation(versions.findLibrary("hnau-kotlin").get().get())
 
                 if (identitifer != CommonLogginIdentifier) {
@@ -97,7 +94,6 @@ internal fun Project.config(
                 }
 
                 if (hasSerializationPlugin) {
-                    implementation(versions.findLibrary("arrow-serialization").get().get())
                     implementation(versions.findLibrary("kotlin-serialization-core").get().get())
                 }
 

@@ -1,5 +1,3 @@
-import java.util.*
-
 plugins {
     alias(libs.plugins.compose.desktop)
     alias(libs.plugins.composeMultiplatform)

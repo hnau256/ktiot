@@ -26,9 +26,7 @@ val projectDependencies =
 projectDependencies.forEach { depProject -> evaluationDependsOn(depProject.path) }
 
 dependencies {
-    implementation(libs.arrow.core)
     implementation(libs.logging)
-    implementation(libs.coroutines)
     implementation(libs.kotlin.datetime)
     implementation(libs.kotlin.serialization.core)
     implementation(libs.kotlin.serialization.json)

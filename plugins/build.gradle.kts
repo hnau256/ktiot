@@ -9,7 +9,6 @@ dependencies {
     implementation(libs.gradle.plugin.android)
     implementation(libs.gradle.plugin.android.api)
     implementation(libs.gradle.plugin.compose)
-    implementation(libs.arrow.core)
     implementation(libs.kotlin.serialization.json)
     compileOnly(gradleApi())
 }
