@@ -5,7 +5,7 @@ import org.hnau.commons.kotlin.coroutines.flow.state.scopedInState
 import org.hnau.commons.kotlin.fold
 import org.hnau.commons.kotlin.map
 import org.hnau.commons.kotlin.mapSecond
-import org.hnau.commons.mqtt.utils.MqttClient
+import hnau.common.mqtt.utils.MqttClient
 import hnau.ktiot.scheme.Element
 import hnau.ktiot.scheme.SchemeConstants
 import hnau.ktiot.scheme.topic.MqttTopic

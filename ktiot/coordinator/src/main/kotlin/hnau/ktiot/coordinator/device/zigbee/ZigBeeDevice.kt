@@ -3,7 +3,7 @@ package hnau.ktiot.coordinator.device.zigbee
 import org.hnau.commons.kotlin.*
 import org.hnau.commons.kotlin.coroutines.flow.state.mapState
 import org.hnau.commons.logging.tryOrLog
-import org.hnau.commons.mqtt.utils.MqttClient
+import hnau.common.mqtt.utils.MqttClient
 import hnau.ktiot.coordinator.AlertRegistry
 import hnau.ktiot.coordinator.device.Device
 import hnau.ktiot.coordinator.device.DeviceRegistry

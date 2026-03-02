@@ -1,8 +1,8 @@
-package org.hnau.commons.mqtt.utils
+package org.hnau.commons.mqtt
 
 import kotlin.jvm.JvmInline
 
 @JvmInline
 value class Topic(
-    val topic: String,
+    val value: String,
 )

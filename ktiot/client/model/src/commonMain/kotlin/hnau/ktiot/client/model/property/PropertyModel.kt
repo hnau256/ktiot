@@ -5,7 +5,7 @@ import org.hnau.commons.app.model.goback.NeverGoBackHandler
 import org.hnau.commons.kotlin.Loadable
 import org.hnau.commons.kotlin.coroutines.flow.state.flatMapState
 import org.hnau.commons.kotlin.fold
-import org.hnau.commons.mqtt.utils.MqttClient
+import hnau.common.mqtt.utils.MqttClient
 import hnau.ktiot.client.model.property.value.*
 import hnau.ktiot.client.model.property.value.editable.*
 import hnau.ktiot.client.model.utils.ChildTopic
