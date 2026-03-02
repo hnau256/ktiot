@@ -2,9 +2,11 @@ package hnau.common.mqtt
 
 import hnau.common.mqtt.internal.MqttActiveSessionAdapter
 import hnau.common.mqtt.internal.MqttClient
+import hnau.common.mqtt.internal.MultiplexedMqttSession
 import hnau.common.mqtt.internal.createMqttClient
 import hnau.common.mqtt.utils.MqttConfig
 import hnau.common.mqtt.utils.MqttConnectionStatus
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
@@ -22,12 +24,13 @@ suspend fun mqtt(
     val client = createMqttClient(config)
     coroutineScope {
         launch { status.collectLatest { onStatus(it) } }
-        client.runReconnectLoop(config = config, onStatus = { status.value = it })
+        client.runReconnectLoop(config = config, scope = this, onStatus = { status.value = it })
     }
 }
 
 private suspend fun MqttClient.runReconnectLoop(
     config: MqttConfig,
+    scope: CoroutineScope,
     onStatus: (MqttConnectionStatus) -> Unit,
 ): Nothing {
     var attempt = 0
@@ -35,7 +38,13 @@ private suspend fun MqttClient.runReconnectLoop(
         onStatus(MqttConnectionStatus.Connecting)
         connect(config.broker) {
             attempt = 0
-            onStatus(MqttConnectionStatus.Connected(MqttActiveSessionAdapter(this)))
+            val multiplexed =
+                MultiplexedMqttSession(
+                    session = this,
+                    scope = scope,
+                    subscriptionStopDelay = config.subscriptionStopDelay,
+                )
+            onStatus(MqttConnectionStatus.Connected(MqttActiveSessionAdapter(multiplexed)))
             awaitCancellation()
         }
         attempt++
