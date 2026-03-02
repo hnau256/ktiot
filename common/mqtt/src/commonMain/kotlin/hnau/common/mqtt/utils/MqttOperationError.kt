@@ -1,6 +1,6 @@
-package hnau.common.mqtt.internal
+package hnau.common.mqtt.utils
 
-internal data class MqttOperationError(
+data class MqttOperationError(
     val cause: Throwable?,
     val type: Type,
 ) {

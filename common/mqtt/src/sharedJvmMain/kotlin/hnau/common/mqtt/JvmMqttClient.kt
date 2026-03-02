@@ -9,6 +9,8 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence
 import hnau.common.mqtt.internal.MqttClient
 import hnau.common.mqtt.internal.MqttResult
 import hnau.common.mqtt.internal.MqttSession
+import hnau.common.mqtt.utils.MqttBrokerConfig
+import hnau.common.mqtt.utils.MqttConfig
 import hnau.common.mqtt.utils.await
 import hnau.common.mqtt.utils.serverUri
 import hnau.common.mqtt.utils.toConnectOptions

@@ -1,6 +1,6 @@
 package hnau.common.mqtt.internal
 
-import hnau.common.mqtt.MqttBrokerConfig
+import hnau.common.mqtt.utils.MqttBrokerConfig
 
 internal interface MqttClient {
     suspend fun connect(

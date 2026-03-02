@@ -1,4 +1,4 @@
-package hnau.common.mqtt
+package hnau.common.mqtt.utils
 
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds

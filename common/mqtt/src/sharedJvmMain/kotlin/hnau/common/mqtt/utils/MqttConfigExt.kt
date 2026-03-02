@@ -1,7 +1,6 @@
 package hnau.common.mqtt.utils
 
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions
-import hnau.common.mqtt.MqttBrokerConfig
 
 internal val MqttBrokerConfig.serverUri: String
     get() = "${protocol.uriScheme}://$host:$port"
