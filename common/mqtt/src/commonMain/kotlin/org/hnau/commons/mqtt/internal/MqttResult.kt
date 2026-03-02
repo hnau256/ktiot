@@ -1,4 +1,4 @@
-package org.hnau.commons.mqtt.internal
+package hnau.common.mqtt.internal
 
 internal sealed interface MqttResult {
     sealed interface UnableToConnect : MqttResult {

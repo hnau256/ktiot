@@ -1,11 +1,11 @@
-package org.hnau.commons.mqtt.utils
+package hnau.common.mqtt.utils
 
 import arrow.core.Either
 import arrow.core.left
 import arrow.core.right
 import org.eclipse.paho.client.mqttv3.IMqttAsyncClient
 import org.eclipse.paho.client.mqttv3.MqttException
-import org.hnau.commons.mqtt.internal.MqttOperationError
+import hnau.common.mqtt.internal.MqttOperationError
 
 internal data class PahoOperation(
     val type: Type,

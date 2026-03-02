@@ -1,7 +1,7 @@
-package org.hnau.commons.mqtt.utils
+package hnau.common.mqtt.utils
 
 import org.eclipse.paho.client.mqttv3.MqttMessage
-import org.hnau.commons.mqtt.Message
+import hnau.common.mqtt.Message
 
 internal fun MqttMessage.toMessage() =
     Message(

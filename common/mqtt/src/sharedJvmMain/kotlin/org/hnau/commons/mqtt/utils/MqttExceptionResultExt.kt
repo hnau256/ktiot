@@ -1,7 +1,7 @@
-package org.hnau.commons.mqtt.utils
+package hnau.common.mqtt.utils
 
 import org.eclipse.paho.client.mqttv3.MqttException
-import org.hnau.commons.mqtt.internal.MqttResult
+import hnau.common.mqtt.internal.MqttResult
 
 internal fun MqttException.toUnableToConnect(): MqttResult.UnableToConnect =
     when (reasonCode) {

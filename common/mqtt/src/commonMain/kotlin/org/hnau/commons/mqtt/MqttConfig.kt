@@ -1,4 +1,4 @@
-package org.hnau.commons.mqtt
+package hnau.common.mqtt
 
 data class MqttConfig(
     val broker: MqttBrokerConfig,

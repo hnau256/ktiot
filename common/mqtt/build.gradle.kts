@@ -1,4 +1,5 @@
 plugins {
+    alias(libs.plugins.ksp)
     id("hnau.android.lib")
 }
 

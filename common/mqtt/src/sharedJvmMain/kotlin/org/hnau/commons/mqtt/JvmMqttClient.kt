@@ -1,4 +1,4 @@
-package org.hnau.commons.mqtt
+package hnau.common.mqtt
 
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.async
@@ -6,14 +6,14 @@ import kotlinx.coroutines.coroutineScope
 import org.eclipse.paho.client.mqttv3.MqttAsyncClient
 import org.eclipse.paho.client.mqttv3.MqttException
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence
-import org.hnau.commons.mqtt.internal.MqttClient
-import org.hnau.commons.mqtt.internal.MqttResult
-import org.hnau.commons.mqtt.internal.MqttSession
-import org.hnau.commons.mqtt.utils.await
-import org.hnau.commons.mqtt.utils.serverUri
-import org.hnau.commons.mqtt.utils.toConnectOptions
-import org.hnau.commons.mqtt.utils.toDisconnected
-import org.hnau.commons.mqtt.utils.toUnableToConnect
+import hnau.common.mqtt.internal.MqttClient
+import hnau.common.mqtt.internal.MqttResult
+import hnau.common.mqtt.internal.MqttSession
+import hnau.common.mqtt.utils.await
+import hnau.common.mqtt.utils.serverUri
+import hnau.common.mqtt.utils.toConnectOptions
+import hnau.common.mqtt.utils.toDisconnected
+import hnau.common.mqtt.utils.toUnableToConnect
 
 internal class JvmMqttClient(
     private val mqttConfig: MqttConfig,

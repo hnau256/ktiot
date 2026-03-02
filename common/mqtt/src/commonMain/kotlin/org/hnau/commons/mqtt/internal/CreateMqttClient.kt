@@ -1,5 +1,5 @@
-package org.hnau.commons.mqtt.internal
+package hnau.common.mqtt.internal
 
-import org.hnau.commons.mqtt.MqttConfig
+import hnau.common.mqtt.MqttConfig
 
 internal expect fun createMqttClient(config: MqttConfig): MqttClient

@@ -1,4 +1,4 @@
-package org.hnau.commons.mqtt
+package hnau.common.mqtt
 
 import arrow.core.Either
 import kotlinx.coroutines.CancellationException
@@ -21,10 +21,10 @@ import org.eclipse.paho.client.mqttv3.IMqttAsyncClient
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken
 import org.eclipse.paho.client.mqttv3.MqttCallback
 import org.eclipse.paho.client.mqttv3.MqttMessage
-import org.hnau.commons.mqtt.internal.MqttOperationError
-import org.hnau.commons.mqtt.internal.MqttSession
-import org.hnau.commons.mqtt.utils.PahoOperation
-import org.hnau.commons.mqtt.utils.toMessage
+import hnau.common.mqtt.internal.MqttOperationError
+import hnau.common.mqtt.internal.MqttSession
+import hnau.common.mqtt.utils.PahoOperation
+import hnau.common.mqtt.utils.toMessage
 
 internal class JvmMqttSession(
     private val pahoClient: IMqttAsyncClient,

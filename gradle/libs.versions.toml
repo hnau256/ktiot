@@ -18,7 +18,7 @@ ksp = "2.3.6"
 compose-activity = "1.12.4"
 kotlin-date-time = "0.7.1"
 compose-ui = "1.10.4"
-hnau = "1.0.1"
+hnau = "1.2.0"
 
 [plugins]
 android-app = { id = "com.android.application", version.ref = "androidGradlePlugin" }
@@ -68,6 +68,9 @@ sealup-processor = { module = "org.hnau.commons:gen-sealup-processor", version.r
 #enumvalues
 enumvalues-annotations = { module = "org.hnau.commons:gen-enumvalues-annotations", version.ref = "hnau" }
 enumvalues-processor = { module = "org.hnau.commons:gen-enumvalues-processor", version.ref = "hnau" }
+#loggable
+loggable-annotations = { module = "org.hnau.commons:gen-loggable-annotations", version.ref = "hnau" }
+loggable-processor = { module = "org.hnau.commons:gen-loggable-processor", version.ref = "hnau" }
 #hnau
 hnau-kotlin = { module = "org.hnau.commons:kotlin", version.ref = "hnau" }
 hnau-model = { module = "org.hnau.commons:app-model", version.ref = "hnau" }

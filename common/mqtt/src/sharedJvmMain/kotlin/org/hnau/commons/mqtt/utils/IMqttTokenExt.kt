@@ -1,4 +1,4 @@
-package org.hnau.commons.mqtt.utils
+package hnau.common.mqtt.utils
 
 import kotlinx.coroutines.suspendCancellableCoroutine
 import org.eclipse.paho.client.mqttv3.IMqttActionListener

@@ -1,8 +1,10 @@
 package hnau.plugin
 
 import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryExtension
+import com.android.tools.r8.internal.ve
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
+import org.gradle.api.artifacts.MinimalExternalModuleDependency
 import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.api.internal.project.DefaultProject
@@ -104,15 +106,29 @@ internal fun Project.config(
                     implementation(composeDependencies.material3)
                     implementation(composeDependencies.materialIconsExtended)
                 }
+
+                if (hasKspPlugin) {
+                    withKspProcessorLibraries(
+                        versions = versions,
+                        suffix = "annotations",
+                    ) { dependency ->
+                        implementation(dependency)
+                    }
+                }
             }
         }
     }
 
     if (hasKspPlugin) {
-        dependencies.add(
-            "kspCommonMainMetadata",
-            versions.findLibrary("pipe-processor").get().get(),
-        )
+        withKspProcessorLibraries(
+            versions = versions,
+            suffix = "processor",
+        ) { dependency ->
+            dependencies.add(
+                "kspCommonMainMetadata",
+                dependency,
+            )
+        }
     }
 }
 
@@ -123,3 +139,18 @@ private fun VersionCatalog.requireVersion(alias: String): String =
     findVersion(alias)
         .get()
         .requiredVersion
+
+private val kspProcessorsNames: List<String> =
+    listOf("pipe", "enumvalues", "sealup", "loggable")
+
+private fun withKspProcessorLibraries(
+    versions: VersionCatalog,
+    suffix: String,
+    block: (MinimalExternalModuleDependency) -> Unit,
+) {
+    kspProcessorsNames.forEach { prefix ->
+        val name = "$prefix-$suffix"
+        val dependency = versions.findLibrary(name).get().get()
+        block(dependency)
+    }
+}
