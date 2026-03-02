@@ -1,11 +1,5 @@
 package hnau.common.mqtt
 
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
-import org.eclipse.paho.client.mqttv3.MqttAsyncClient
-import org.eclipse.paho.client.mqttv3.MqttException
-import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence
 import hnau.common.mqtt.internal.MqttClient
 import hnau.common.mqtt.internal.MqttResult
 import hnau.common.mqtt.internal.MqttSession
@@ -16,13 +10,19 @@ import hnau.common.mqtt.utils.serverUri
 import hnau.common.mqtt.utils.toConnectOptions
 import hnau.common.mqtt.utils.toDisconnected
 import hnau.common.mqtt.utils.toUnableToConnect
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import org.eclipse.paho.client.mqttv3.MqttAsyncClient
+import org.eclipse.paho.client.mqttv3.MqttException
+import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence
 
 internal class JvmMqttClient(
     private val mqttConfig: MqttConfig,
 ) : MqttClient {
     override suspend fun connect(
         config: MqttBrokerConfig,
-        block: suspend MqttSession.() -> Nothing,
+        block: suspend MqttSession.() -> Unit,
     ): MqttResult {
         val pahoClient =
             MqttAsyncClient(
@@ -54,7 +54,7 @@ internal class JvmMqttClient(
 
     private suspend fun runSession(
         pahoClient: MqttAsyncClient,
-        block: suspend MqttSession.() -> Nothing,
+        block: suspend MqttSession.() -> Unit,
     ): MqttResult.Disconnected {
         val session =
             JvmMqttSession(
@@ -63,6 +63,7 @@ internal class JvmMqttClient(
             )
         return try {
             session.awaitBlock(block)
+            MqttResult.Disconnected.BlockCompleted
         } catch (e: BrokerDisconnectedException) {
             val cause = e.cause
             when {
@@ -74,7 +75,7 @@ internal class JvmMqttClient(
         }
     }
 
-    private suspend fun JvmMqttSession.awaitBlock(block: suspend MqttSession.() -> Nothing): Nothing =
+    private suspend fun JvmMqttSession.awaitBlock(block: suspend MqttSession.() -> Unit) =
         coroutineScope {
             val blockJob = async { block(this@awaitBlock) }
             val disconnectJob =

@@ -12,6 +12,8 @@ internal sealed interface MqttResult {
     }
 
     sealed interface Disconnected : MqttResult {
+        data object BlockCompleted : Disconnected
+
         data class NetworkError(
             val cause: Throwable?,
         ) : Disconnected

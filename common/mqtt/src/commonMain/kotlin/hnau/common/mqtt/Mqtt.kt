@@ -5,7 +5,6 @@ import hnau.common.mqtt.internal.MqttClient
 import hnau.common.mqtt.internal.createMqttClient
 import hnau.common.mqtt.utils.MqttConfig
 import hnau.common.mqtt.utils.MqttConnectionStatus
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
@@ -17,8 +16,8 @@ import kotlin.time.Clock
 
 suspend fun mqtt(
     config: MqttConfig,
-    onStatus: suspend (MqttConnectionStatus) -> Nothing,
-): Nothing {
+    onStatus: suspend (MqttConnectionStatus) -> Unit,
+) {
     val status = MutableStateFlow<MqttConnectionStatus>(MqttConnectionStatus.Connecting)
     val client = createMqttClient(config)
     coroutineScope {
@@ -52,19 +51,17 @@ private suspend fun waitForReconnect(
     config: MqttConfig,
     attempt: Int,
     onStatus: (MqttConnectionStatus) -> Unit,
-) {
-    val reconnectDelay = with(config.reconnect) {
-        (initialDelay * multiplier.pow(attempt)).coerceAtMost(maxDelay)
-    }
-    var delayJob: Job? = null
+) = coroutineScope {
+    val reconnectDelay =
+        with(config.reconnect) {
+            (initialDelay * multiplier.pow(attempt)).coerceAtMost(maxDelay)
+        }
+    val delayJob = launch { delay(reconnectDelay) }
     onStatus(
         MqttConnectionStatus.WaitingForReconnection(
             nextAttemptAt = Clock.System.now() + reconnectDelay,
-            connectNow = { delayJob?.cancel() },
+            connectNow = { delayJob.cancel() },
         ),
     )
-    coroutineScope {
-        delayJob = launch { delay(reconnectDelay) }
-        delayJob.join()
-    }
+    delayJob.join()
 }
