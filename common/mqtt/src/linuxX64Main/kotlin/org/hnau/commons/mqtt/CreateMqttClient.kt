@@ -1,3 +1,5 @@
-package org.hnau.commons.mqtt
+package org.hnau.commons.mqtt.internal
 
-actual fun createMqttClient(config: MqttClientConfig): MqttClient = throw NotImplementedError()
+import org.hnau.commons.mqtt.MqttConfig
+
+internal actual fun createMqttClient(config: MqttConfig): MqttClient = throw NotImplementedError()

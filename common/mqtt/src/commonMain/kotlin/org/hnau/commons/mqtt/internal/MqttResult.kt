@@ -1,6 +1,6 @@
-package org.hnau.commons.mqtt
+package org.hnau.commons.mqtt.internal
 
-sealed interface MqttResult {
+internal sealed interface MqttResult {
     sealed interface UnableToConnect : MqttResult {
         data class NetworkError(
             val cause: Throwable?,

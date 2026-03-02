@@ -6,6 +6,9 @@ import kotlinx.coroutines.coroutineScope
 import org.eclipse.paho.client.mqttv3.MqttAsyncClient
 import org.eclipse.paho.client.mqttv3.MqttException
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence
+import org.hnau.commons.mqtt.internal.MqttClient
+import org.hnau.commons.mqtt.internal.MqttResult
+import org.hnau.commons.mqtt.internal.MqttSession
 import org.hnau.commons.mqtt.utils.await
 import org.hnau.commons.mqtt.utils.serverUri
 import org.hnau.commons.mqtt.utils.toConnectOptions
@@ -13,10 +16,10 @@ import org.hnau.commons.mqtt.utils.toDisconnected
 import org.hnau.commons.mqtt.utils.toUnableToConnect
 
 internal class JvmMqttClient(
-    private val clientConfig: MqttClientConfig,
+    private val mqttConfig: MqttConfig,
 ) : MqttClient {
     override suspend fun connect(
-        config: MqttConfig,
+        config: MqttBrokerConfig,
         block: suspend MqttSession.() -> Nothing,
     ): MqttResult {
         val pahoClient =
@@ -35,7 +38,7 @@ internal class JvmMqttClient(
         }
     }
 
-    private suspend fun MqttAsyncClient.establishConnection(config: MqttConfig): MqttResult.UnableToConnect? =
+    private suspend fun MqttAsyncClient.establishConnection(config: MqttBrokerConfig): MqttResult.UnableToConnect? =
         connect(config.toConnectOptions())
             .await()
             .exceptionOrNull()
@@ -54,7 +57,7 @@ internal class JvmMqttClient(
         val session =
             JvmMqttSession(
                 pahoClient = pahoClient,
-                clientConfig = clientConfig,
+                mqttConfig = mqttConfig,
             )
         return try {
             session.awaitBlock(block)

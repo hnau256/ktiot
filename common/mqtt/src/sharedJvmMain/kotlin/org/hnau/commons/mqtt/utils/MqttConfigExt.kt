@@ -1,19 +1,19 @@
 package org.hnau.commons.mqtt.utils
 
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions
-import org.hnau.commons.mqtt.MqttConfig
+import org.hnau.commons.mqtt.MqttBrokerConfig
 
-internal val MqttConfig.serverUri: String
+internal val MqttBrokerConfig.serverUri: String
     get() = "${protocol.uriScheme}://$host:$port"
 
-private val MqttConfig.Protocol.uriScheme: String
+private val MqttBrokerConfig.Protocol.uriScheme: String
     get() =
         when (this) {
-            MqttConfig.Protocol.TCP -> "tcp"
-            MqttConfig.Protocol.SSL -> "ssl"
+            MqttBrokerConfig.Protocol.TCP -> "tcp"
+            MqttBrokerConfig.Protocol.SSL -> "ssl"
         }
 
-internal fun MqttConfig.toConnectOptions() =
+internal fun MqttBrokerConfig.toConnectOptions() =
     MqttConnectOptions().apply {
         val auth = auth ?: return@apply
         userName = auth.username

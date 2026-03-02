@@ -1,3 +1,6 @@
-package org.hnau.commons.mqtt
+package org.hnau.commons.mqtt.internal
 
-actual fun createMqttClient(config: MqttClientConfig): MqttClient = JvmMqttClient(config)
+import org.hnau.commons.mqtt.JvmMqttClient
+import org.hnau.commons.mqtt.MqttConfig
+
+internal actual fun createMqttClient(config: MqttConfig): MqttClient = JvmMqttClient(mqttConfig = config)

@@ -5,7 +5,7 @@ import arrow.core.left
 import arrow.core.right
 import org.eclipse.paho.client.mqttv3.IMqttAsyncClient
 import org.eclipse.paho.client.mqttv3.MqttException
-import org.hnau.commons.mqtt.MqttOperationError
+import org.hnau.commons.mqtt.internal.MqttOperationError
 
 internal data class PahoOperation(
     val type: Type,

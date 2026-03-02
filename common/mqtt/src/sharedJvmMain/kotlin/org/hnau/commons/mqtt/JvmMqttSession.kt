@@ -21,12 +21,14 @@ import org.eclipse.paho.client.mqttv3.IMqttAsyncClient
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken
 import org.eclipse.paho.client.mqttv3.MqttCallback
 import org.eclipse.paho.client.mqttv3.MqttMessage
+import org.hnau.commons.mqtt.internal.MqttOperationError
+import org.hnau.commons.mqtt.internal.MqttSession
 import org.hnau.commons.mqtt.utils.PahoOperation
 import org.hnau.commons.mqtt.utils.toMessage
 
 internal class JvmMqttSession(
     private val pahoClient: IMqttAsyncClient,
-    clientConfig: MqttClientConfig,
+    mqttConfig: MqttConfig,
 ) : MqttSession {
     private val _disconnectDeferred = CompletableDeferred<Throwable?>()
     val disconnectDeferred: Deferred<Throwable?> get() = _disconnectDeferred
@@ -34,7 +36,7 @@ internal class JvmMqttSession(
 
     private val incomingMessages =
         MutableSharedFlow<Pair<String, MqttMessage>>(
-            extraBufferCapacity = clientConfig.messageBufferSize,
+            extraBufferCapacity = mqttConfig.messageBufferSize,
         )
 
     private val operationChannel = Channel<PahoOperation>(capacity = Channel.UNLIMITED)

@@ -1,9 +1,12 @@
-package org.hnau.commons.mqtt
+package org.hnau.commons.mqtt.internal
 
 import arrow.core.Either
 import kotlinx.coroutines.flow.Flow
+import org.hnau.commons.mqtt.Message
+import org.hnau.commons.mqtt.QoS
+import org.hnau.commons.mqtt.Topic
 
-interface MqttSession {
+internal interface MqttSession {
     suspend fun subscribe(
         topic: Topic,
         qoS: QoS = QoS.Default,
