@@ -18,7 +18,6 @@ java {
 
 val projectDependencies =
     listOf(
-        project(":common:logging"),
         project(":common:mqtt"),
         project(":ktiot:scheme"),
     )

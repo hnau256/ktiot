@@ -1,7 +1,6 @@
 package hnau.plugin
 
 import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryExtension
-import com.android.tools.r8.internal.ve
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.api.artifacts.MinimalExternalModuleDependency
@@ -15,15 +14,11 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 internal enum class AndroidMode { Lib }
 
-private const val CommonLogginIdentifier = ":common:logging"
-
-internal fun Project.config(
-    androidMode: AndroidMode?,
-) {
-
-    val versions: VersionCatalog = extensions
-        .getByType(VersionCatalogsExtension::class.java)
-        .named("libs")
+internal fun Project.config(androidMode: AndroidMode?) {
+    val versions: VersionCatalog =
+        extensions
+            .getByType(VersionCatalogsExtension::class.java)
+            .named("libs")
 
     val javaVersionString =
         versions
@@ -91,10 +86,6 @@ internal fun Project.config(
                 implementation(versions.findLibrary("logging").get().get())
                 implementation(versions.findLibrary("hnau-kotlin").get().get())
 
-                if (identitifer != CommonLogginIdentifier) {
-                    implementation(project(CommonLogginIdentifier))
-                }
-
                 if (hasSerializationPlugin) {
                     implementation(versions.findLibrary("kotlin-serialization-core").get().get())
                 }
@@ -108,6 +99,7 @@ internal fun Project.config(
                 }
 
                 if (hasKspPlugin) {
+                    kotlin.srcDir("build/generated/ksp/metadata/commonMain/kotlin")
                     withKspProcessorLibraries(
                         versions = versions,
                         suffix = "annotations",
@@ -128,6 +120,12 @@ internal fun Project.config(
                 "kspCommonMainMetadata",
                 dependency,
             )
+        }
+
+        tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class.java).configureEach { task ->
+            if (task.name != "kspCommonMainKotlinMetadata") {
+                task.dependsOn("kspCommonMainKotlinMetadata")
+            }
         }
     }
 }
