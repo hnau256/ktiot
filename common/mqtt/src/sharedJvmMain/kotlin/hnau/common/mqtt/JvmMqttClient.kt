@@ -3,8 +3,8 @@ package hnau.common.mqtt
 import co.touchlab.kermit.Logger
 import hnau.common.mqtt.types.BrokerConfig
 import hnau.common.mqtt.platform.MqttClient
-import hnau.common.mqtt.platform.MqttResult
-import hnau.common.mqtt.platform.MqttSession
+import hnau.common.mqtt.types.MqttResult
+import hnau.common.mqtt.platform.MqttSimpleSession
 import hnau.common.mqtt.platform.disconnectFastAndSafe
 import hnau.common.mqtt.platform.doAsync
 import hnau.common.mqtt.platform.serverUri
@@ -23,10 +23,9 @@ internal class JvmMqttClient(
 
     private val logger: Logger = Logger.withTag("JvmMqttClient")
 
-    override suspend fun <T> connect(
-        config: BrokerConfig,
-        block: suspend MqttSession.() -> T,
-    ): MqttResult<T> {
+    override suspend fun connect(
+        block: suspend (session: MqttSimpleSession) -> Nothing,
+    ): MqttResult.Error {
 
         val uri = config.connection.serverUri
         val client = MqttAsyncClient(
@@ -58,26 +57,22 @@ internal class JvmMqttClient(
         }
     }
 
-    private suspend fun <R> runSession(
+    private suspend fun runSession(
         client: MqttAsyncClient,
-        block: suspend MqttSession.() -> R,
-    ): MqttResult<R> = coroutineScope {
+        block: suspend (session: MqttSimpleSession) -> Nothing,
+    ): MqttResult.Error = coroutineScope {
 
         val scope: CoroutineScope = this
 
-        val result: CompletableDeferred<MqttResult<R>> = CompletableDeferred()
+        val result: CompletableDeferred<MqttResult.Error> = CompletableDeferred()
 
-        val session = JvmMqttSession(
+        val session = JvmMqttSimpleSession(
             client = client,
             messagesBufferSize = config.messagesBufferSize,
             onDisconnected = result::complete
         )
 
-        scope.launch {
-            val resultValue = session.block()
-            val mqttResult = MqttResult.Success(resultValue)
-            result.complete(mqttResult)
-        }
+        scope.launch { block(session) }
 
         result.await()
     }

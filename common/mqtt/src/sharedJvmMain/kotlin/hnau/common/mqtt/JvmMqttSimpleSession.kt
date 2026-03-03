@@ -3,8 +3,8 @@ package hnau.common.mqtt
 import hnau.common.mqtt.types.Message
 import hnau.common.mqtt.types.QoS
 import hnau.common.mqtt.types.topic.Topic
-import hnau.common.mqtt.platform.MqttResult
-import hnau.common.mqtt.platform.MqttSession
+import hnau.common.mqtt.types.MqttResult
+import hnau.common.mqtt.platform.MqttSimpleSession
 import hnau.common.mqtt.platform.doAsync
 import hnau.common.mqtt.platform.idMapper
 import hnau.common.mqtt.platform.toMqttError
@@ -18,11 +18,11 @@ import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken
 import org.eclipse.paho.client.mqttv3.MqttCallback
 import org.eclipse.paho.client.mqttv3.MqttMessage
 
-internal class JvmMqttSession(
+internal class JvmMqttSimpleSession(
     private val client: IMqttAsyncClient,
     messagesBufferSize: Int,
     onDisconnected: (MqttResult.Error) -> Unit,
-) : MqttSession {
+) : MqttSimpleSession {
 
     override val messages: MutableSharedFlow<Pair<Topic.Absolute, Message>> = MutableSharedFlow(
         extraBufferCapacity = messagesBufferSize,

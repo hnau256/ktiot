@@ -1,6 +1,7 @@
-package hnau.common.mqtt.platform
+package hnau.common.mqtt.utils
 
 import co.touchlab.kermit.Logger
+import hnau.common.mqtt.types.MqttResult
 
 internal fun Logger.logMqttError(
     action: String,

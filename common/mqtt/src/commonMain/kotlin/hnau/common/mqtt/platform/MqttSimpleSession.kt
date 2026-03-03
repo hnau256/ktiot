@@ -1,11 +1,12 @@
 package hnau.common.mqtt.platform
 
 import hnau.common.mqtt.types.Message
+import hnau.common.mqtt.types.MqttResult
 import hnau.common.mqtt.types.QoS
 import hnau.common.mqtt.types.topic.Topic
 import kotlinx.coroutines.flow.Flow
 
-internal interface MqttSession {
+internal interface MqttSimpleSession {
 
     val messages: Flow<Pair<Topic.Absolute, Message>>
 

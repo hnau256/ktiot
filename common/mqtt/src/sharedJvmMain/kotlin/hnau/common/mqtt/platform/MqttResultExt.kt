@@ -1,5 +1,6 @@
 package hnau.common.mqtt.platform
 
+import hnau.common.mqtt.types.MqttResult
 import org.eclipse.paho.client.mqttv3.MqttException
 import org.hnau.commons.kotlin.foldBoolean
 

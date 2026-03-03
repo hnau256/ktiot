@@ -1,11 +1,10 @@
 package hnau.common.mqtt.platform
 
-import hnau.common.mqtt.types.BrokerConfig
+import hnau.common.mqtt.types.MqttResult
 
 internal interface MqttClient {
 
-    suspend fun <T> connect(
-        config: BrokerConfig,
-        block: suspend MqttSession.() -> T,
-    ): MqttResult<T>
+    suspend fun connect(
+        block: suspend (session: MqttSimpleSession) -> Nothing,
+    ): MqttResult.Error
 }

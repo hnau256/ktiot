@@ -1,6 +1,6 @@
-package hnau.common.mqtt.platform
+package hnau.common.mqtt.types
 
-internal sealed interface MqttResult<out T> {
+sealed interface MqttResult<out T> {
 
     data class Success<out T>(
         val value: T,

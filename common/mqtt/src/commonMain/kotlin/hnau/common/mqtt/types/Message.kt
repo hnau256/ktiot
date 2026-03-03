@@ -21,14 +21,18 @@ data class Message(
         other as Message
 
         if (retained != other.retained) return false
+        if (id != other.id) return false
         if (!payload.contentEquals(other.payload)) return false
+        if (qoS != other.qoS) return false
 
         return true
     }
 
     override fun hashCode(): Int {
         var result = retained.hashCode()
+        result = 31 * result + id.hashCode()
         result = 31 * result + payload.contentHashCode()
+        result = 31 * result + qoS.hashCode()
         return result
     }
 }
