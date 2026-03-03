@@ -1,4 +1,4 @@
-package hnau.common.mqtt.utils
+package hnau.common.mqtt.platform
 
 import hnau.common.mqtt.JvmMqttClient
 import hnau.common.mqtt.types.BrokerConfig

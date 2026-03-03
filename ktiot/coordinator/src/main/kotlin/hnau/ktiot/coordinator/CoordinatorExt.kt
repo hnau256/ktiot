@@ -2,9 +2,9 @@ package hnau.ktiot.coordinator
 
 import org.hnau.commons.kotlin.Loadable
 import hnau.common.mqtt.mqtt
-import hnau.common.mqtt.utils.MqttClient
+import hnau.common.mqtt.platform.MqttClient
 import hnau.common.mqtt.types.MqttConfig
-import hnau.common.mqtt.utils.MqttState
+import hnau.common.mqtt.platform.MqttState
 import hnau.ktiot.coordinator.utils.ElementWithChildren
 import hnau.ktiot.coordinator.utils.publishScheme
 import io.github.oshai.kotlinlogging.KLogger

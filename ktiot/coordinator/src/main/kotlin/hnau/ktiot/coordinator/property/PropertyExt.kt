@@ -6,7 +6,7 @@ import org.hnau.commons.kotlin.Ready
 import org.hnau.commons.kotlin.coroutines.flow.state.mutable.toMutableStateFlowAsInitial
 import org.hnau.commons.kotlin.fold
 import org.hnau.commons.logging.tryOrLog
-import hnau.common.mqtt.utils.MqttClient
+import hnau.common.mqtt.platform.MqttClient
 import hnau.ktiot.coordinator.utils.ElementWithChildren
 import hnau.ktiot.scheme.PropertyMode
 import hnau.ktiot.scheme.PropertyType

@@ -14,7 +14,7 @@ import org.hnau.commons.kotlin.coroutines.flow.state.*
 import org.hnau.commons.kotlin.coroutines.flow.state.mutable.toMutableStateFlowAsInitial
 import org.hnau.commons.kotlin.serialization.MutableStateFlowSerializer
 import org.hnau.commons.logging.tryOrLog
-import hnau.common.mqtt.utils.MqttClient
+import hnau.common.mqtt.platform.MqttClient
 import hnau.ktiot.client.model.property.PropertyModel
 import hnau.ktiot.client.model.property.toTitle
 import hnau.ktiot.client.model.utils.ChildTopic

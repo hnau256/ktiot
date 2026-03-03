@@ -1,4 +1,4 @@
-package hnau.common.mqtt.utils
+package hnau.common.mqtt.platform
 
 import hnau.common.mqtt.types.BrokerConfig
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions

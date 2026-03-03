@@ -1,4 +1,4 @@
-package hnau.common.mqtt.utils
+package hnau.common.mqtt.platform
 
 internal sealed interface MqttResult<out T> {
 
