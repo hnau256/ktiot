@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -15,6 +14,17 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import arrow.core.Either
+import hnau.ktiot.client.model.screen.ScreenItemModel
+import hnau.ktiot.client.model.screen.ScreenModel
+import hnau.ktiot.client.model.utils.ChildTopic
+import hnau.ktiot.client.projector.property.PropertyProjector
+import hnau.ktiot.client.projector.screen.ScreenItemProjector.ChildButton
+import hnau.ktiot.client.projector.screen.ScreenItemProjector.Property
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.StateFlow
 import org.hnau.commons.app.projector.uikit.state.LoadableContent
 import org.hnau.commons.app.projector.uikit.state.StateContent
 import org.hnau.commons.app.projector.uikit.state.TransitionSpec
@@ -22,24 +32,11 @@ import org.hnau.commons.app.projector.uikit.utils.Dimens
 import org.hnau.commons.app.projector.utils.SlideOrientation
 import org.hnau.commons.app.projector.utils.getTransitionSpecForSlide
 import org.hnau.commons.app.projector.utils.plus
+import org.hnau.commons.gen.pipe.annotations.Pipe
 import org.hnau.commons.kotlin.*
 import org.hnau.commons.kotlin.coroutines.createChild
 import org.hnau.commons.kotlin.coroutines.flow.state.runningFoldState
-import hnau.ktiot.client.model.screen.ScreenItemModel
-import hnau.ktiot.client.model.screen.ScreenModel
-import hnau.ktiot.client.model.utils.ChildTopic
-import hnau.ktiot.client.projector.property.PropertyProjector
-import hnau.ktiot.client.projector.screen.ScreenItemProjector.ChildButton
-import hnau.ktiot.client.projector.screen.ScreenItemProjector.Property
-import hnau.common.mqtt.types.topic.raw
-import org.hnau.commons.gen.pipe.annotations.Pipe
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toImmutableList
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.flow.StateFlow
 import kotlin.math.sign
-import kotlin.time.Duration.Companion.seconds
 
 @Immutable
 class ScreenProjector(
@@ -230,7 +227,7 @@ class ScreenProjector(
         ) {
             items(
                 items = items,
-                key = { it.topic.topic.raw.topic },
+                key = { it.topic.topic },
             ) { item ->
                 item.projector.Content(
                     modifier = Modifier.fillMaxWidth(),

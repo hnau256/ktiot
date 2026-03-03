@@ -3,7 +3,7 @@ package hnau.ktiot.coordinator.utils
 import org.hnau.commons.kotlin.Loadable
 import org.hnau.commons.kotlin.Loading
 import org.hnau.commons.kotlin.Ready
-import hnau.common.mqtt.platform.MqttClient
+import hnau.common.mqtt.types.MqttSession
 import hnau.common.mqtt.platform.QoS
 import hnau.common.mqtt.platform.Topic
 import io.github.oshai.kotlinlogging.KotlinLogging
@@ -18,7 +18,7 @@ import kotlinx.serialization.json.Json
 
 private val logger = KotlinLogging.logger { }
 
-fun <T> MqttClient.subscribeJson(
+fun <T> MqttSession.subscribeJson(
     scope: CoroutineScope,
     topic: Topic,
     deserializer: KSerializer<T>,

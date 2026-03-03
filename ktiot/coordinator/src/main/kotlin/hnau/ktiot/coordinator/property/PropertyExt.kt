@@ -5,13 +5,12 @@ import org.hnau.commons.kotlin.Loading
 import org.hnau.commons.kotlin.Ready
 import org.hnau.commons.kotlin.coroutines.flow.state.mutable.toMutableStateFlowAsInitial
 import org.hnau.commons.kotlin.fold
-import org.hnau.commons.logging.tryOrLog
-import hnau.common.mqtt.platform.MqttClient
+import org.hnau.commons.kotlin.logging.tryOrLog
+import hnau.common.mqtt.types.MqttSession
 import hnau.ktiot.coordinator.utils.ElementWithChildren
 import hnau.ktiot.scheme.PropertyMode
 import hnau.ktiot.scheme.PropertyType
 import hnau.common.mqtt.types.topic.Topic
-import hnau.common.mqtt.types.topic.raw
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.TimeoutCancellationException
@@ -54,7 +53,7 @@ fun Topic.Absolute.ticProperty(): PropertyPrototype<Unit, PropertyType.Events.Ti
 
 @PublishedApi
 internal suspend fun <T, P : PropertyType<T>> Property<T, P, *>.publishPrivate(
-    client: MqttClient,
+    client: MqttSession,
     payload: T,
     retained: Boolean,
 ): Boolean {
@@ -72,7 +71,7 @@ internal suspend fun <T, P : PropertyType<T>> Property<T, P, *>.publishPrivate(
         .getOrNull()
         ?: return false
     return client.publish(
-        topic = topic.raw,
+        topic = topic,
         payload = payloadBytes,
         retained = retained,
     )
@@ -80,7 +79,7 @@ internal suspend fun <T, P : PropertyType<T>> Property<T, P, *>.publishPrivate(
 
 @JvmName("publishEvents")
 suspend fun <T, P : PropertyType.Events<T>> Property<T, P, Property.Direction.Calculated>.publish(
-    client: MqttClient,
+    client: MqttSession,
     payload: T,
 ): Boolean = publishPrivate(
     client = client,
@@ -90,7 +89,7 @@ suspend fun <T, P : PropertyType.Events<T>> Property<T, P, Property.Direction.Ca
 
 @JvmName("publishState")
 suspend fun <T, P : PropertyType.State<T>> Property<T, P, Property.Direction.Calculated>.publish(
-    client: MqttClient,
+    client: MqttSession,
     payload: T,
 ): Boolean = publishPrivate(
     client = client,
@@ -100,7 +99,7 @@ suspend fun <T, P : PropertyType.State<T>> Property<T, P, Property.Direction.Cal
 
 fun <T, P : PropertyType.State<T>> Property<T, P, Property.Direction.Calculated>.publish(
     scope: CoroutineScope,
-    client: MqttClient,
+    client: MqttSession,
     payload: StateFlow<Loadable<T>>,
 ) {
     scope.launch {
@@ -120,10 +119,10 @@ fun <T, P : PropertyType.State<T>> Property<T, P, Property.Direction.Calculated>
 
 @PublishedApi
 internal fun <T, P : PropertyType<T>> Property<T, P, Property.Direction.In>.subscribePrivate(
-    client: MqttClient,
+    client: MqttSession,
 ): Flow<T> = client
     .subscribe(
-        topic = topic.raw,
+        topic = topic,
     )
     .transformLatest { payload ->
         logger
@@ -139,7 +138,7 @@ internal fun <T, P : PropertyType<T>> Property<T, P, Property.Direction.In>.subs
     }
 
 fun <T, P : PropertyType.Events<T>> Property<T, P, Property.Direction.In>.subscribe(
-    client: MqttClient,
+    client: MqttSession,
 ): Flow<T> = subscribePrivate(
     client = client,
 )
@@ -148,7 +147,7 @@ val PropertyFallbackDelay: Duration = 3.seconds
 
 inline fun <T, P : PropertyType.State<T>> Property<T, P, Property.Direction.In>.subscribe(
     scope: CoroutineScope,
-    client: MqttClient,
+    client: MqttSession,
     fallbackDelay: Duration = PropertyFallbackDelay,
     crossinline getFallbackValue: suspend () -> T,
 ): MutableStateFlow<Loadable<T>> {

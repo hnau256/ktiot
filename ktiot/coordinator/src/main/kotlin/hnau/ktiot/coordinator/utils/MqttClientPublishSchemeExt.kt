@@ -5,18 +5,17 @@ import org.hnau.commons.kotlin.coroutines.flow.state.scopedInState
 import org.hnau.commons.kotlin.fold
 import org.hnau.commons.kotlin.map
 import org.hnau.commons.kotlin.mapSecond
-import hnau.common.mqtt.platform.MqttClient
+import hnau.common.mqtt.types.MqttSession
 import hnau.ktiot.scheme.Element
 import hnau.ktiot.scheme.SchemeConstants
 import hnau.common.mqtt.types.topic.Topic
 import hnau.common.mqtt.types.topic.ktiotElements
-import hnau.common.mqtt.types.topic.raw
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-internal fun MqttClient.publishScheme(
+internal fun MqttSession.publishScheme(
     scope: CoroutineScope,
     rootElements: StateFlow<Loadable<List<ElementWithChildren<*>>>>,
 ) {
@@ -27,7 +26,7 @@ internal fun MqttClient.publishScheme(
     )
 }
 
-private fun MqttClient.publishElements(
+private fun MqttSession.publishElements(
     scope: CoroutineScope,
     topic: Topic.Absolute,
     elements: StateFlow<Loadable<List<ElementWithChildren<*>>>>,
@@ -68,7 +67,7 @@ private fun MqttClient.publishElements(
                 )
 
                 publish(
-                    topic = topic.ktiotElements.raw,
+                    topic = topic.ktiotElements,
                     retained = true,
                     payload = SchemeConstants.mapper.reverse(
                         elementsWithChildrenOrLoading.map { elementsWithChildren ->

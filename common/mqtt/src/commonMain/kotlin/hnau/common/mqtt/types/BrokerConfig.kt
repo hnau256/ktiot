@@ -7,17 +7,22 @@ data class BrokerConfig(
 
     data class Connection(
         val host: String,
-        val port: Int = 1883,
+        val port: Int = defaultPort,
         val clientId: String,
         val auth: Auth? = null,
         val protocol: Protocol = Protocol.TCP,
     ) {
 
         data class Auth(
-            val username: String,
+            val user: String,
             val password: String,
         )
 
         enum class Protocol { TCP, SSL }
+
+        companion object {
+
+            val defaultPort: Int = 1883
+        }
     }
 }

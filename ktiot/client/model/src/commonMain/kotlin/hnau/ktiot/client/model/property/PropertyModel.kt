@@ -5,7 +5,7 @@ import org.hnau.commons.app.model.goback.NeverGoBackHandler
 import org.hnau.commons.kotlin.Loadable
 import org.hnau.commons.kotlin.coroutines.flow.state.flatMapState
 import org.hnau.commons.kotlin.fold
-import hnau.common.mqtt.platform.MqttClient
+import hnau.common.mqtt.types.MqttSession
 import hnau.ktiot.client.model.property.value.*
 import hnau.ktiot.client.model.property.value.editable.*
 import hnau.ktiot.client.model.utils.ChildTopic
@@ -32,7 +32,7 @@ class PropertyModel(
     @Pipe
     interface Dependencies {
 
-        val mqttClient: MqttClient
+        val mqttClient: MqttSession
 
         fun flag(): FlagModel.Dependencies
 

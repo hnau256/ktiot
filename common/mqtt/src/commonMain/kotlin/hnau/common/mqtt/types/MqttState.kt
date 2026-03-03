@@ -2,11 +2,9 @@ package hnau.common.mqtt.types
 
 import kotlin.time.Instant
 
-interface MqttState {
+sealed interface MqttState {
 
-    data class Connecting(
-        val started: Instant,
-    ): MqttState
+    data object Connecting: MqttState
 
     data class Connected(
         val session: MqttSession,

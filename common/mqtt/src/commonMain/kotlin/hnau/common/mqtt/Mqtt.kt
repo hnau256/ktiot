@@ -5,49 +5,35 @@ import hnau.common.mqtt.platform.createMqttClient
 import hnau.common.mqtt.types.MqttConfig
 import hnau.common.mqtt.types.MqttState
 import hnau.common.mqtt.utils.MqttSessionImpl
-import kotlinx.atomicfu.locks.SynchronizedObject
-import kotlinx.atomicfu.locks.synchronized
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import org.hnau.commons.kotlin.coroutines.flow.state.mutable.toMutableStateFlowAsInitial
 import kotlin.math.pow
 import kotlin.time.Clock
 import kotlin.time.Instant
 
-suspend fun mqtt(
+fun mqtt(
+    scope: CoroutineScope,
     config: MqttConfig,
-    block: suspend MqttState.() -> Unit,
-) {
+): StateFlow<MqttState> {
     val client: MqttClient = createMqttClient(
         config = config.broker,
     )
 
-    coroutineScope {
+    val result: MutableStateFlow<MqttState> = MqttState.Connecting.toMutableStateFlowAsInitial()
 
-        val scope: CoroutineScope = this
-
-        var currentStateBlockJob: Job? = null
-
-        val updateStateSyncObject = SynchronizedObject()
-        val updateState: (MqttState) -> Unit = { state ->
-            synchronized(updateStateSyncObject) {
-                currentStateBlockJob?.cancel()
-                currentStateBlockJob = scope.launch { state.block() }
-            }
-        }
-
+    scope.launch {
         var attempt = 0
         while (true) {
             attempt++
 
-            updateState(
-                MqttState.Connecting(
-                    started = now(),
-                )
-            )
+            result.value = MqttState.Connecting
 
             val connectError = client.connect { simpleSession ->
                 attempt = 0
@@ -58,10 +44,8 @@ suspend fun mqtt(
                         simple = simpleSession,
                         unsubscribeDelay = config.unsubscribeDelay,
                     )
-                    updateState(
-                        MqttState.Connected(
-                            session = mqttSession,
-                        )
+                    result.value = MqttState.Connected(
+                        session = mqttSession,
                     )
                     awaitCancellation()
                 }
@@ -73,17 +57,17 @@ suspend fun mqtt(
                 }
 
                 val waitingForReconnectJob: Job = scope.launch { delay(attemptDelay) }
-                updateState(
-                    MqttState.WaitingForReconnect(
-                        disconnectedError = connectError,
-                        nextAttemptAt = now() + attemptDelay,
-                        connectNow = { waitingForReconnectJob.cancel() }
-                    )
+                result.value = MqttState.WaitingForReconnect(
+                    disconnectedError = connectError,
+                    nextAttemptAt = now() + attemptDelay,
+                    connectNow = { waitingForReconnectJob.cancel() }
                 )
                 waitingForReconnectJob.join()
             }
         }
     }
+
+    return result
 }
 
 private fun now(): Instant = Clock.System.now()

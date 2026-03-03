@@ -14,9 +14,10 @@ import org.hnau.commons.kotlin.serialization.MutableStateFlowSerializer
 import org.hnau.commons.kotlin.toAccessor
 import org.hnau.commons.app.model.goback.GoBackHandler
 import hnau.common.mqtt.mqtt
-import hnau.common.mqtt.platform.MqttClient
+import hnau.common.mqtt.types.BrokerConfig
+import hnau.common.mqtt.types.MqttSession
 import hnau.common.mqtt.types.MqttConfig
-import hnau.common.mqtt.platform.MqttState
+import hnau.common.mqtt.types.MqttState
 import hnau.ktiot.client.model.init.DoLogout
 import hnau.ktiot.client.model.init.LoginInfo
 import org.hnau.commons.gen.pipe.annotations.Pipe
@@ -25,6 +26,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlin.time.Instant
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
+import org.hnau.commons.kotlin.castOrThrow
 
 class LoggedModel(
     scope: CoroutineScope,
@@ -38,7 +40,7 @@ class LoggedModel(
         val doLogout: DoLogout
 
         fun connected(
-            mqttClient: MqttClient,
+            mqttClient: MqttSession,
         ): ConnectedModel.Dependencies
     }
 
@@ -73,15 +75,19 @@ class LoggedModel(
     val state: StateFlow<State> = mqtt(
         scope = scope,
         config = MqttConfig(
-            address = skeleton.loginInfo.address,
-            port = skeleton.loginInfo.port,
-            clientId = skeleton.loginInfo.clientId,
-            auth = skeleton.loginInfo.auth?.let { auth ->
-                MqttConfig.Auth(
-                    user = auth.user,
-                    password = auth.password,
+            broker = BrokerConfig(
+                connection = BrokerConfig.Connection(
+                    host = skeleton.loginInfo.address,
+                    port = skeleton.loginInfo.port,
+                    clientId = skeleton.loginInfo.clientId,
+                    auth = skeleton.loginInfo.auth?.let { auth ->
+                        BrokerConfig.Connection.Auth(
+                            user = auth.user,
+                            password = auth.password,
+                        )
+                    }
                 )
-            }
+            ),
         ),
     )
         .mapWithScope(scope) { stateScope, mqttState ->
@@ -90,7 +96,7 @@ class LoggedModel(
                     model = ConnectedModel(
                         scope = stateScope,
                         dependencies = dependencies.connected(
-                            mqttClient = mqttState.client,
+                            mqttClient = mqttState.session,
                         ),
                         skeleton = skeleton::connected
                             .toAccessor()
@@ -102,11 +108,11 @@ class LoggedModel(
                     logout = logout,
                 )
 
-                is MqttState.WaitingForReconnection -> State.WaitingForReconnection(
-                    cause = mqttState.cause,
-                    reconnectionAt = mqttState.reconnectionAt,
+                is MqttState.WaitingForReconnect -> State.WaitingForReconnection(
+                    cause = mqttState.disconnectedError.cause, //TODO use full MqttResult.Error
+                    reconnectionAt = mqttState.nextAttemptAt,
                     logout = logout,
-                    reconnectNow = mqttState.reconnectNow,
+                    reconnectNow = mqttState.connectNow,
                 )
             }
         }

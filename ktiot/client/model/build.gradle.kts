@@ -17,7 +17,6 @@ kotlin {
                 implementation(libs.kotlin.datetime)
                 implementation(libs.kotlin.io)
                 implementation(libs.kotlin.serialization.json)
-                implementation(libs.pipe.annotations)
             }
         }
         androidMain

@@ -3,6 +3,7 @@ package hnau.ktiot.client.model.property.value
 import arrow.core.None
 import arrow.core.right
 import arrow.core.toOption
+import co.touchlab.kermit.Logger
 import org.hnau.commons.kotlin.Loadable
 import org.hnau.commons.kotlin.Loading
 import org.hnau.commons.kotlin.Ready
@@ -18,7 +19,6 @@ import org.hnau.commons.kotlin.fold
 import org.hnau.commons.kotlin.getOrInit
 import org.hnau.commons.kotlin.shrinkType
 import org.hnau.commons.kotlin.toAccessor
-import org.hnau.commons.logging.tryOrLog
 import hnau.ktiot.client.model.property.PropertyModel
 import hnau.ktiot.client.model.property.value.editable.EditModel
 import hnau.ktiot.client.model.property.value.editable.ViewModel
@@ -26,7 +26,6 @@ import hnau.ktiot.client.model.utils.Timestamped
 import hnau.ktiot.scheme.PropertyMode
 import hnau.ktiot.scheme.PropertyType
 import hnau.ktiot.client.model.utils.ChildTopic
-import hnau.common.mqtt.types.topic.raw
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -37,9 +36,10 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlin.time.Clock
 import kotlinx.serialization.json.Json
+import org.hnau.commons.kotlin.logging.tryOrLog
 import kotlin.time.Duration.Companion.seconds
 
-val logger = KotlinLogging.logger { }
+val logger = Logger.withTag("CreateValueModelExt")
 
 inline fun <
         reified T, P : PropertyType.State<T>,
@@ -96,7 +96,7 @@ inline fun <reified T, P : PropertyType.State<T>, D, reified S : ValueModel.Skel
     .let { client ->
         client
             .subscribe(
-                topic = topic.topic.raw,
+                topic = topic.topic,
             )
             .map { message ->
                 logger.tryOrLog(
@@ -196,7 +196,7 @@ inline fun <reified T, P : PropertyType.State<T>, D, reified S : ValueModel.Skel
                                                     Timestamped.now(valueToSend)
 
                                                 client.publish(
-                                                    topic = topic.topic.raw,
+                                                    topic = topic.topic,
                                                     payload = payload,
                                                     retained = true,
                                                 ) //TODO(error bubble) if false

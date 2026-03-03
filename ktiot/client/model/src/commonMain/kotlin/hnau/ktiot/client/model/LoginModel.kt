@@ -8,6 +8,7 @@ package hnau.ktiot.client.model
 
 import arrow.core.Option
 import arrow.core.toOption
+import hnau.common.mqtt.types.BrokerConfig
 import org.hnau.commons.kotlin.coroutines.actionOrNullIfExecuting
 import org.hnau.commons.kotlin.coroutines.flow.state.flatMapState
 import org.hnau.commons.kotlin.coroutines.flow.state.mapState
@@ -69,7 +70,7 @@ class LoginModel(
 
             port = cachedLoginInfo
                 ?.port
-                .ifNull { MqttConfig.DefaultPort }
+                .ifNull { BrokerConfig.Connection.defaultPort }
                 .toString()
                 .toEditingString()
                 .toMutableStateFlowAsInitial(),

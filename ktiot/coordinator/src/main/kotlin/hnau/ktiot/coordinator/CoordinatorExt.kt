@@ -2,9 +2,9 @@ package hnau.ktiot.coordinator
 
 import org.hnau.commons.kotlin.Loadable
 import hnau.common.mqtt.mqtt
-import hnau.common.mqtt.platform.MqttClient
+import hnau.common.mqtt.types.MqttSession
 import hnau.common.mqtt.types.MqttConfig
-import hnau.common.mqtt.platform.MqttState
+import hnau.common.mqtt.types.MqttState
 import hnau.ktiot.coordinator.utils.ElementWithChildren
 import hnau.ktiot.coordinator.utils.publishScheme
 import io.github.oshai.kotlinlogging.KLogger
@@ -18,7 +18,7 @@ private val logger: KLogger = KotlinLogging.logger { }
 
 suspend fun coordinator(
     config: MqttConfig,
-    createRootElements: (CoroutineScope, MqttClient) -> StateFlow<Loadable<List<ElementWithChildren<*>>>>,
+    createRootElements: (CoroutineScope, MqttSession) -> StateFlow<Loadable<List<ElementWithChildren<*>>>>,
 ) {
     mqtt(
         config = config,

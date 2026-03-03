@@ -81,10 +81,10 @@ internal class TopicSubscriptionHolder(
         val unsubscribed = when (result) {
             is MqttResult.Error -> {
                 val topic = Topic.Absolute.stringMapper.reverse(topic)
-                logger.logMqttError(
+                /*logger.logMqttError(
                     action = "unsubscribing from topic '$topic'",
                     error = result,
-                )
+                )*/TODO("Uncomment")
                 false
             }
 
@@ -111,10 +111,10 @@ internal class TopicSubscriptionHolder(
             isSubscribed = when (result) {
                 is MqttResult.Error -> {
                     val topic = Topic.Absolute.stringMapper.reverse(topic)
-                    logger.logMqttError(
+                    /*logger.logMqttError(
                         action = "subscribing to topic '$topic'",
                         error = result,
-                    )
+                    )*/TODO("Uncomment")
                     false
                 }
 

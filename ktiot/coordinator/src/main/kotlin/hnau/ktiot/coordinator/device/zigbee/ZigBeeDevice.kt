@@ -2,8 +2,8 @@ package hnau.ktiot.coordinator.device.zigbee
 
 import org.hnau.commons.kotlin.*
 import org.hnau.commons.kotlin.coroutines.flow.state.mapState
-import org.hnau.commons.logging.tryOrLog
-import hnau.common.mqtt.platform.MqttClient
+import org.hnau.commons.kotlin.logging.tryOrLog
+import hnau.common.mqtt.types.MqttSession
 import hnau.ktiot.coordinator.AlertRegistry
 import hnau.ktiot.coordinator.device.Device
 import hnau.ktiot.coordinator.device.DeviceRegistry
@@ -11,7 +11,6 @@ import hnau.ktiot.coordinator.ext.combineLoadableStateWith
 import hnau.ktiot.coordinator.utils.Timestamped
 import hnau.ktiot.coordinator.utils.subscribeJson
 import hnau.common.mqtt.types.topic.Topic
-import hnau.common.mqtt.types.topic.raw
 import org.hnau.commons.gen.pipe.annotations.Pipe
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
@@ -38,7 +37,7 @@ data class ZigBeeDevice(
     @Pipe
     interface Dependencies {
 
-        val client: MqttClient
+        val client: MqttSession
 
         val alertRegistry: AlertRegistry
 
@@ -50,7 +49,7 @@ data class ZigBeeDevice(
     private val stateFieldsOrError: StateFlow<Loadable<Result<JsonObject>>> = dependencies
         .client
         .subscribe(
-            topic = topic.raw,
+            topic = topic,
         )
         .map { message ->
             val json = message
@@ -84,7 +83,7 @@ data class ZigBeeDevice(
         .client
         .subscribeJson(
             scope = scope,
-            topic = (topic + "availability").raw,
+            topic = (topic + "availability"),
             deserializer = Availability.serializer(),
             typeDescription = "Zigbee device availability",
         )
@@ -193,7 +192,7 @@ data class ZigBeeDevice(
                             dependencies
                                 .client
                                 .publish(
-                                    topic = (topic + "set" + field).raw,
+                                    topic = (topic + "set" + field),
                                     retained = false,
                                     payload = target.toByteArray(Charsets.UTF_8)
                                 )

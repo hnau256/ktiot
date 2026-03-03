@@ -13,8 +13,8 @@ import org.hnau.commons.kotlin.*
 import org.hnau.commons.kotlin.coroutines.flow.state.*
 import org.hnau.commons.kotlin.coroutines.flow.state.mutable.toMutableStateFlowAsInitial
 import org.hnau.commons.kotlin.serialization.MutableStateFlowSerializer
-import org.hnau.commons.logging.tryOrLog
-import hnau.common.mqtt.platform.MqttClient
+import org.hnau.commons.kotlin.logging.tryOrLog
+import hnau.common.mqtt.types.MqttSession
 import hnau.ktiot.client.model.property.PropertyModel
 import hnau.ktiot.client.model.property.toTitle
 import hnau.ktiot.client.model.utils.ChildTopic
@@ -23,17 +23,16 @@ import hnau.ktiot.client.model.utils.asChild
 import hnau.ktiot.scheme.Element
 import hnau.ktiot.scheme.SchemeConstants
 import hnau.common.mqtt.types.topic.Topic
-import hnau.common.mqtt.types.topic.ktiotElements
-import hnau.common.mqtt.types.topic.raw
+import hnau.ktiot.scheme.ktiotElements
 import org.hnau.commons.gen.pipe.annotations.Pipe
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.*
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
+import org.hnau.commons.gen.loggable.annotations.Loggable
 
-private val logger = KotlinLogging.logger { }
-
+@Loggable
 class ScreenModel(
     scope: CoroutineScope,
     private val dependencies: Dependencies,
@@ -44,7 +43,7 @@ class ScreenModel(
     @Pipe
     interface Dependencies {
 
-        val mqttClient: MqttClient
+        val mqttClient: MqttSession
 
         fun property(): PropertyModel.Dependencies
     }
@@ -111,7 +110,7 @@ class ScreenModel(
         topic: Topic.Absolute,
     ): StateFlow<Loadable<List<Item>>> = topic
         .ktiotElements
-        .raw
+        
         .let { ktIoTTopic ->
             dependencies
                 .mqttClient

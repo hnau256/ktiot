@@ -15,7 +15,7 @@ private val BrokerConfig.Connection.Protocol.uriScheme: String
 internal fun BrokerConfig.Connection.toConnectOptions(): MqttConnectOptions =
     MqttConnectOptions().apply {
         auth?.let { auth ->
-            userName = auth.username
+            userName = auth.user
             password = auth.password.toCharArray()
         }
     }
