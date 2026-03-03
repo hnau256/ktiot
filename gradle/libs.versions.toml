@@ -2,13 +2,12 @@
 #tools
 kotlin = "2.3.10"
 #kotest = "5.8.0"
-java = "VERSION_21"
+java = "VERSION_17"
 androidGradlePlugin = "9.0.1"
 androidCompileSdk = "36"
 androidMinSdk = "23"
 androidBuildTools = "35.0.0"
 composeDesktop = "1.10.1"
-composeBom = "2026.02.00"
 googleServices = "4.4.4"
 #libs
 arrow = "2.2.1.1"
@@ -17,7 +16,6 @@ kotlinCoroutines = "1.10.2"
 ksp = "2.3.6"
 compose-activity = "1.12.4"
 kotlin-date-time = "0.7.1"
-compose-ui = "1.10.4"
 hnau = "1.2.0"
 atomicfu = "0.31.0"
 
@@ -53,14 +51,9 @@ immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", ve
 android-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "compose-activity" }
 android-appcompat = { module = "androidx.appcompat:appcompat", version = "1.7.1" }
 #compose
-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "composeBom" }
-compose-ui = { module = "androidx.compose.ui:ui", version.ref = "compose-ui" }
+compose-ui = { module = "androidx.compose.ui:ui" }
 compose-ui-graphics = { module = "androidx.compose.ui:ui-graphics" }
-compose-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
-compose-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
-compose-ui-test-junit4 = { module = "androidx.compose.ui:ui-test-junit4" }
-compose-material3 = { module = "androidx.compose.material3:material3", version = "1.4.0" }
+compose-material3 = { module = "org.jetbrains.compose.material3:material3", version = "1.10.0-alpha05" }
 #pipe
 pipe-annotations = { module = "org.hnau.commons:gen-pipe-annotations", version.ref = "hnau" }
 pipe-processor = { module = "org.hnau.commons:gen-pipe-processor", version.ref = "hnau" }

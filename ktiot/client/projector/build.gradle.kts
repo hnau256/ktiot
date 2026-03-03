@@ -7,10 +7,6 @@ plugins {
     id("hnau.android.lib")
 }
 
-compose.resources {
-    packageOfResClass = "hnau.ktiot.client.projector"
-}
-
 kotlin {
     sourceSets {
         commonMain {

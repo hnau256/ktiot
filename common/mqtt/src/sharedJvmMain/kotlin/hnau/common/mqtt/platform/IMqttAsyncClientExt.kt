@@ -7,7 +7,7 @@ import org.eclipse.paho.client.mqttv3.IMqttToken
 
 internal suspend fun IMqttAsyncClient.doAsync(
     block: IMqttAsyncClient.() -> IMqttToken,
-): Result<Unit> {
+): Result<Unit>  {
     val token = try {
         block()
     } catch (ex: CancellationException) {
