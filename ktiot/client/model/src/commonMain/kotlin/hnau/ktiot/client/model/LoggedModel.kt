@@ -15,7 +15,7 @@ import org.hnau.commons.kotlin.toAccessor
 import org.hnau.commons.app.model.goback.GoBackHandler
 import hnau.common.mqtt.mqtt
 import hnau.common.mqtt.utils.MqttClient
-import hnau.common.mqtt.utils.MqttConfig
+import hnau.common.mqtt.types.MqttConfig
 import hnau.common.mqtt.utils.MqttState
 import hnau.ktiot.client.model.init.DoLogout
 import hnau.ktiot.client.model.init.LoginInfo

@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.ksp)
+    alias(libs.plugins.kotlin.serialization)
     id("hnau.android.lib")
 }
 
@@ -10,6 +11,7 @@ kotlin {
             dependencies {
                 implementation(libs.kotlin.datetime)
                 implementation(libs.hnau.model)
+                implementation(libs.kotlinx.atomicfu)
             }
         }
 

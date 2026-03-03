@@ -1,101 +1,84 @@
 package hnau.common.mqtt
 
-import hnau.common.mqtt.internal.MqttClient
-import hnau.common.mqtt.internal.MqttResult
-import hnau.common.mqtt.internal.MqttSession
-import hnau.common.mqtt.utils.MqttBrokerConfig
-import hnau.common.mqtt.utils.MqttConfig
-import hnau.common.mqtt.utils.await
+import co.touchlab.kermit.Logger
+import hnau.common.mqtt.types.BrokerConfig
+import hnau.common.mqtt.utils.MqttClient
+import hnau.common.mqtt.utils.MqttResult
+import hnau.common.mqtt.utils.MqttSession
+import hnau.common.mqtt.utils.disconnectFastAndSafe
+import hnau.common.mqtt.utils.doAsync
 import hnau.common.mqtt.utils.serverUri
 import hnau.common.mqtt.utils.toConnectOptions
-import hnau.common.mqtt.utils.toDisconnected
-import hnau.common.mqtt.utils.toUnableToConnect
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.async
+import hnau.common.mqtt.utils.toMqttResult
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import org.eclipse.paho.client.mqttv3.MqttAsyncClient
-import org.eclipse.paho.client.mqttv3.MqttException
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence
 
 internal class JvmMqttClient(
-    private val mqttConfig: MqttConfig,
+    private val config: BrokerConfig,
 ) : MqttClient {
-    override suspend fun connect(
-        config: MqttBrokerConfig,
-        block: suspend MqttSession.() -> Unit,
-    ): MqttResult {
-        val pahoClient =
-            MqttAsyncClient(
-                config.serverUri,
-                config.clientId,
-                MemoryPersistence(),
-            )
-        val connectionError = pahoClient.establishConnection(config)
-        if (connectionError != null) return connectionError
+
+    private val logger: Logger = Logger.withTag("JvmMqttClient")
+
+    override suspend fun <T> connect(
+        config: BrokerConfig,
+        block: suspend MqttSession.() -> T,
+    ): MqttResult<T> {
+
+        val uri = config.connection.serverUri
+        val client = MqttAsyncClient(
+            uri,
+            config.connection.clientId,
+            MemoryPersistence(),
+        )
+
+        val connectionResult = client
+            .doAsync {
+                connect(config.connection.toConnectOptions())
+            }
+            .toMqttResult()
+
+        when (connectionResult) {
+            is MqttResult.Error -> return connectionResult
+            is MqttResult.Success -> Unit
+        }
 
         return try {
-            runSession(pahoClient, block)
+            runSession(
+                client = client,
+                block = block,
+            )
         } finally {
-            pahoClient.disconnect().await()
-        }
-    }
-
-    private suspend fun MqttAsyncClient.establishConnection(config: MqttBrokerConfig): MqttResult.UnableToConnect? =
-        connect(config.toConnectOptions())
-            .await()
-            .exceptionOrNull()
-            ?.let { e ->
-                if (e is MqttException) {
-                    e.toUnableToConnect()
-                } else {
-                    MqttResult.UnableToConnect.NetworkError(cause = e)
-                }
-            }
-
-    private suspend fun runSession(
-        pahoClient: MqttAsyncClient,
-        block: suspend MqttSession.() -> Unit,
-    ): MqttResult.Disconnected {
-        val session =
-            JvmMqttSession(
-                pahoClient = pahoClient,
-                mqttConfig = mqttConfig,
+            client.disconnectFastAndSafe(
+                logger = logger,
             )
-        return try {
-            session.awaitBlock(block)
-            MqttResult.Disconnected.BlockCompleted
-        } catch (e: BrokerDisconnectedException) {
-            val cause = e.cause
-            when {
-                cause is MqttException -> cause.toDisconnected()
-                else -> MqttResult.Disconnected.BrokerDisconnected(cause = cause)
-            }
-        } catch (e: MqttException) {
-            e.toDisconnected()
         }
     }
 
-    private suspend fun JvmMqttSession.awaitBlock(block: suspend MqttSession.() -> Unit) =
-        coroutineScope {
-            val blockJob = async { block(this@awaitBlock) }
-            val disconnectJob =
-                async {
-                    val cause = disconnectDeferred.await()
-                    blockJob.cancel(BrokerDisconnectedException(cause))
-                }
-            try {
-                blockJob.await()
-            } finally {
-                disconnectJob.cancel()
-                close()
-            }
-        }
-}
+    private suspend fun <R> runSession(
+        client: MqttAsyncClient,
+        block: suspend MqttSession.() -> R,
+    ): MqttResult<R> = coroutineScope {
 
-private class BrokerDisconnectedException(
-    cause: Throwable?,
-) : CancellationException(cause?.message) {
-    init {
-        initCause(cause)
+        val scope: CoroutineScope = this
+
+        val result: CompletableDeferred<MqttResult<R>> = CompletableDeferred()
+
+        val session = JvmMqttSession(
+            client = client,
+            messagesBufferSize = config.messagesBufferSize,
+            onDisconnected = result::complete
+        )
+
+        scope.launch {
+            val resultValue = session.block()
+            val mqttResult = MqttResult.Success(resultValue)
+            result.complete(mqttResult)
+        }
+
+        result.await()
     }
 }

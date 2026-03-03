@@ -21,7 +21,7 @@ import org.hnau.commons.app.model.EditingString
 import org.hnau.commons.app.model.goback.GoBackHandler
 import org.hnau.commons.app.model.goback.NeverGoBackHandler
 import org.hnau.commons.app.model.toEditingString
-import hnau.common.mqtt.utils.MqttConfig
+import hnau.common.mqtt.types.MqttConfig
 import hnau.ktiot.client.model.init.DoLogin
 import hnau.ktiot.client.model.init.LoginInfo
 import org.hnau.commons.gen.pipe.annotations.Pipe

@@ -1,136 +1,107 @@
 package hnau.common.mqtt
 
-import arrow.core.Either
-import hnau.common.mqtt.internal.MqttSession
-import hnau.common.mqtt.utils.Message
-import hnau.common.mqtt.utils.MqttConfig
-import hnau.common.mqtt.utils.MqttOperationError
-import hnau.common.mqtt.utils.PahoOperation
-import hnau.common.mqtt.utils.QoS
-import hnau.common.mqtt.utils.Topic
-import hnau.common.mqtt.utils.toMessage
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CompletableDeferred
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.Flow
+import hnau.common.mqtt.types.Message
+import hnau.common.mqtt.types.QoS
+import hnau.common.mqtt.types.topic.Topic
+import hnau.common.mqtt.utils.MqttResult
+import hnau.common.mqtt.utils.MqttSession
+import hnau.common.mqtt.utils.doAsync
+import hnau.common.mqtt.utils.idMapper
+import hnau.common.mqtt.utils.toMqttError
+import hnau.common.mqtt.utils.toMqttResult
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.buffer
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import org.eclipse.paho.client.mqttv3.IMqttAsyncClient
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken
 import org.eclipse.paho.client.mqttv3.MqttCallback
 import org.eclipse.paho.client.mqttv3.MqttMessage
 
 internal class JvmMqttSession(
-    private val pahoClient: IMqttAsyncClient,
-    mqttConfig: MqttConfig,
+    private val client: IMqttAsyncClient,
+    messagesBufferSize: Int,
+    onDisconnected: (MqttResult.Error) -> Unit,
 ) : MqttSession {
-    private val _disconnectDeferred = CompletableDeferred<Throwable?>()
-    val disconnectDeferred: Deferred<Throwable?> get() = _disconnectDeferred
-    private val scope = CoroutineScope(Dispatchers.IO + Job())
 
-    private val incomingMessages =
-        MutableSharedFlow<Pair<String, MqttMessage>>(
-            extraBufferCapacity = mqttConfig.messageBufferSize,
-        )
-
-    private val operationChannel = Channel<PahoOperation>(capacity = Channel.UNLIMITED)
+    override val messages: MutableSharedFlow<Pair<Topic.Absolute, Message>> = MutableSharedFlow(
+        extraBufferCapacity = messagesBufferSize,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST,
+    )
 
     init {
-        pahoClient.setCallback(
+        client.setCallback(
             object : MqttCallback {
-                override fun connectionLost(cause: Throwable?) {
-                    _disconnectDeferred.complete(cause)
+
+                override fun connectionLost(cause: Throwable) {
+                    onDisconnected(cause.toMqttError())
                 }
 
                 override fun messageArrived(
                     topic: String,
                     message: MqttMessage,
                 ) {
-                    incomingMessages.tryEmit(topic to message)
+                    val typedTopic = Topic.Absolute.stringMapper.direct(topic)
+                    val message = Message(
+                        id = Message.Id(message.id),
+                        payload = message.payload,
+                        retained = message.isRetained,
+                        qoS = QoS.idMapper.direct(message.qos),
+                    )
+                    messages.tryEmit(typedTopic to message)
                 }
 
                 override fun deliveryComplete(token: IMqttDeliveryToken?) = Unit
             },
         )
-
-        scope.launch {
-            for (operation in operationChannel) {
-                operation.result.complete(operation.type.execute(pahoClient))
-            }
-        }
     }
 
     override suspend fun subscribe(
-        topic: Topic,
+        topic: Topic.Absolute,
         qoS: QoS,
-    ): Either<MqttOperationError, Flow<Message>> {
-        val deferred = CompletableDeferred<Either<MqttOperationError, Unit>>()
-        operationChannel.send(
-            PahoOperation(
-                type = PahoOperation.Type.Subscribe(topic = topic.value, qoS = qoS.mqttCode),
-                result = deferred,
-            ),
-        )
-        return deferred.await().map {
-            callbackFlow {
-                incomingMessages
-                    .filter { (t, _) -> t == topic.value }
-                    .map { (_, msg) -> msg.toMessage() }
-                    .collect { send(it) }
+    ): MqttResult<Unit> = doMqttOperation {
+        doAsync {
+            subscribe(
+                /* topicFilter = */ topic.raw,
+                /* qos = */ QoS.idMapper.reverse(qoS),
+            )
+        }.toMqttResult()
+    }
 
-                awaitClose {
-                    scope.launch {
-                        operationChannel.send(
-                            PahoOperation(
-                                type = PahoOperation.Type.Unsubscribe(topic = topic.value),
-                                result = CompletableDeferred(),
-                            ),
-                        )
-                    }
-                }
-            }.buffer(capacity = Channel.UNLIMITED)
-        }
+    override suspend fun unsubscribe(
+        topic: Topic.Absolute,
+    ): MqttResult<Unit> = doMqttOperation {
+        doAsync {
+            unsubscribe(
+                /* topicFilter = */ topic.raw,
+            )
+        }.toMqttResult()
     }
 
     override suspend fun publish(
-        topic: Topic,
+        topic: Topic.Absolute,
         payload: ByteArray,
-        qoS: QoS,
         retained: Boolean,
-    ): Either<MqttOperationError, Unit> {
-        val deferred = CompletableDeferred<Either<MqttOperationError, Unit>>()
-        operationChannel.send(
-            PahoOperation(
-                type =
-                    PahoOperation.Type.Publish(
-                        topic = topic.value,
-                        payload = payload,
-                        qoS = qoS.mqttCode,
-                        retained = retained,
-                    ),
-                result = deferred,
-            ),
-        )
-        return deferred.await()
+        qoS: QoS,
+    ): MqttResult<Unit> = doMqttOperation {
+        doAsync {
+            publish(
+                /* topic = */ topic.raw,
+                /* payload = */ payload,
+                /* qos = */ QoS.idMapper.reverse(qoS),
+                /* retained = */ retained,
+            )
+        }.toMqttResult()
     }
 
-    fun close() {
-        val sessionClosed = CancellationException("Session closed")
-        operationChannel.close(sessionClosed)
-        while (true) {
-            val operation = operationChannel.tryReceive().getOrNull() ?: break
-            operation.result.completeExceptionally(sessionClosed)
-        }
-        scope.cancel()
+    private val mqttOperationMutex = Mutex()
+
+    private suspend fun <R> doMqttOperation(
+        block: suspend IMqttAsyncClient.() -> R,
+    ): R = mqttOperationMutex.withLock {
+        client.block()
     }
+
+    private val Topic.Absolute.raw: String
+        get() = Topic.Absolute.stringMapper.reverse(this)
 }

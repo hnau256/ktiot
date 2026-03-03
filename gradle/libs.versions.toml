@@ -19,6 +19,7 @@ compose-activity = "1.12.4"
 kotlin-date-time = "0.7.1"
 compose-ui = "1.10.4"
 hnau = "1.2.0"
+atomicfu = "0.31.0"
 
 [plugins]
 android-app = { id = "com.android.application", version.ref = "androidGradlePlugin" }
@@ -46,6 +47,7 @@ kotlin-io = { module = "org.jetbrains.kotlinx:kotlinx-io-core", version = "0.9.0
 #kotest-junit-runner = { module = "io.kotest:kotest-runner-junit5-jvm", version.ref = "kotest" }
 #kotest-framework-engine = { module = "io.kotest:kotest-framework-engine", version.ref = "kotest" }
 kotlin-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlin-date-time" }
+kotlinx-atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "atomicfu" }
 immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version = "0.4.0" }
 #android
 android-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "compose-activity" }

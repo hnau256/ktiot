@@ -1,8 +1,0 @@
-package hnau.common.mqtt.utils
-
-import kotlin.jvm.JvmInline
-
-@JvmInline
-value class Topic(
-    val value: String,
-)

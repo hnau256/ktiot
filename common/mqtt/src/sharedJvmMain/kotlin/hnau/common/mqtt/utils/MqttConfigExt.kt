@@ -1,20 +1,22 @@
 package hnau.common.mqtt.utils
 
+import hnau.common.mqtt.types.BrokerConfig
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions
 
-internal val MqttBrokerConfig.serverUri: String
+internal val BrokerConfig.Connection.serverUri: String
     get() = "${protocol.uriScheme}://$host:$port"
 
-private val MqttBrokerConfig.Protocol.uriScheme: String
-    get() =
-        when (this) {
-            MqttBrokerConfig.Protocol.TCP -> "tcp"
-            MqttBrokerConfig.Protocol.SSL -> "ssl"
-        }
-
-internal fun MqttBrokerConfig.toConnectOptions() =
-    MqttConnectOptions().apply {
-        val auth = auth ?: return@apply
-        userName = auth.username
-        password = auth.password.toCharArray()
+private val BrokerConfig.Connection.Protocol.uriScheme: String
+    get() = when (this) {
+        BrokerConfig.Connection.Protocol.TCP -> "tcp"
+        BrokerConfig.Connection.Protocol.SSL -> "ssl"
     }
+
+internal fun BrokerConfig.Connection.toConnectOptions(): MqttConnectOptions =
+    MqttConnectOptions().apply {
+        auth?.let { auth ->
+            userName = auth.username
+            password = auth.password.toCharArray()
+        }
+    }
+
