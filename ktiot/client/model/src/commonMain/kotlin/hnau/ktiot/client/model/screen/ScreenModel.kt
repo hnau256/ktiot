@@ -22,9 +22,9 @@ import hnau.ktiot.client.model.utils.MutableMapSerializer
 import hnau.ktiot.client.model.utils.asChild
 import hnau.ktiot.scheme.Element
 import hnau.ktiot.scheme.SchemeConstants
-import hnau.ktiot.scheme.topic.MqttTopic
-import hnau.ktiot.scheme.topic.ktiotElements
-import hnau.ktiot.scheme.topic.raw
+import hnau.common.mqtt.types.topic.Topic
+import hnau.common.mqtt.types.topic.ktiotElements
+import hnau.common.mqtt.types.topic.raw
 import org.hnau.commons.gen.pipe.annotations.Pipe
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
@@ -38,7 +38,7 @@ class ScreenModel(
     scope: CoroutineScope,
     private val dependencies: Dependencies,
     private val skeleton: Skeleton,
-    topic: MqttTopic.Absolute,
+    topic: Topic.Absolute,
 ) {
 
     @Pipe
@@ -51,11 +51,11 @@ class ScreenModel(
 
     @Serializable
     data class Skeleton(
-        val selectedChild: MutableStateFlow<Pair<MqttTopic.Absolute, Skeleton>?> =
+        val selectedChild: MutableStateFlow<Pair<Topic.Absolute, Skeleton>?> =
             null.toMutableStateFlowAsInitial(),
 
         @Serializable(MutableMapSerializer::class)
-        val items: MutableMap<MqttTopic, ScreenItemModel.Skeleton> = HashMap(),
+        val items: MutableMap<Topic, ScreenItemModel.Skeleton> = HashMap(),
     )
 
     fun openChild(
@@ -108,7 +108,7 @@ class ScreenModel(
 
     private fun createItemsForTopic(
         scope: CoroutineScope,
-        topic: MqttTopic.Absolute,
+        topic: Topic.Absolute,
     ): StateFlow<Loadable<List<Item>>> = topic
         .ktiotElements
         .raw
@@ -182,7 +182,7 @@ class ScreenModel(
         }
 
     private fun createItems(
-        parentTopic: MqttTopic.Absolute,
+        parentTopic: Topic.Absolute,
         scope: CoroutineScope,
         element: Element,
     ): StateFlow<List<Item>> {

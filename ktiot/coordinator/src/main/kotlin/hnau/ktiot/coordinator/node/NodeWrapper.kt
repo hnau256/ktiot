@@ -5,18 +5,18 @@ import org.hnau.commons.kotlin.Ready
 import org.hnau.commons.kotlin.coroutines.flow.state.mapState
 import org.hnau.commons.kotlin.coroutines.flow.state.mutable.toMutableStateFlowAsInitial
 import hnau.ktiot.coordinator.utils.ElementWithChildren
-import hnau.ktiot.scheme.topic.MqttTopic
+import hnau.common.mqtt.types.topic.Topic
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
 
 data class NodeWrapper<N>(
-    val topic: MqttTopic.Absolute,
+    val topic: Topic.Absolute,
     val node: N,
     val children: StateFlow<Loadable<List<ElementWithChildren<*>>>>,
 ) {
 
     data class Prototype<N>(
-        val topic: MqttTopic.Absolute,
+        val topic: Topic.Absolute,
         val node: N,
     ) {
 
@@ -65,8 +65,8 @@ data class NodeWrapper<N>(
     )
 }
 
-inline fun <N> MqttTopic.Absolute.node(
-    createChild: (MqttTopic.Absolute) -> N,
+inline fun <N> Topic.Absolute.node(
+    createChild: (Topic.Absolute) -> N,
 ): NodeWrapper.Prototype<N> = NodeWrapper.Prototype(
     topic = this,
     node = createChild(this),

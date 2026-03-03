@@ -1,12 +1,12 @@
 package hnau.ktiot.scheme
 
-import hnau.ktiot.scheme.topic.MqttTopic
+import hnau.common.mqtt.types.topic.Topic
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class Element(
-    val topic: MqttTopic,
+    val topic: Topic,
     val title: String,
     val type: Type,
 ) {

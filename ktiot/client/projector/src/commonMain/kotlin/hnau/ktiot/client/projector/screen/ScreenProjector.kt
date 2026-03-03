@@ -31,7 +31,7 @@ import hnau.ktiot.client.model.utils.ChildTopic
 import hnau.ktiot.client.projector.property.PropertyProjector
 import hnau.ktiot.client.projector.screen.ScreenItemProjector.ChildButton
 import hnau.ktiot.client.projector.screen.ScreenItemProjector.Property
-import hnau.ktiot.scheme.topic.raw
+import hnau.common.mqtt.types.topic.raw
 import org.hnau.commons.gen.pipe.annotations.Pipe
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList

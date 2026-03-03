@@ -10,8 +10,8 @@ import hnau.common.mqtt.platform.MqttClient
 import hnau.ktiot.coordinator.utils.ElementWithChildren
 import hnau.ktiot.scheme.PropertyMode
 import hnau.ktiot.scheme.PropertyType
-import hnau.ktiot.scheme.topic.MqttTopic
-import hnau.ktiot.scheme.topic.raw
+import hnau.common.mqtt.types.topic.Topic
+import hnau.common.mqtt.types.topic.raw
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.TimeoutCancellationException
@@ -24,17 +24,17 @@ import kotlin.time.Duration.Companion.seconds
 
 private val logger = KotlinLogging.logger { }
 
-fun <T, P : PropertyType<T>> MqttTopic.Absolute.property(
+fun <T, P : PropertyType<T>> Topic.Absolute.property(
     type: P,
 ): PropertyPrototype<T, P> = PropertyPrototype(
     topic = this,
     type = type,
 )
 
-fun MqttTopic.Absolute.flagProperty(): PropertyPrototype<Boolean, PropertyType.State.Flag> =
+fun Topic.Absolute.flagProperty(): PropertyPrototype<Boolean, PropertyType.State.Flag> =
     property(PropertyType.State.Flag)
 
-fun MqttTopic.Absolute.numberProperty(
+fun Topic.Absolute.numberProperty(
     suffix: String = "",
     limitMin: Float? = null,
     limitMax: Float? = null,
@@ -46,10 +46,10 @@ fun MqttTopic.Absolute.numberProperty(
     ),
 )
 
-fun MqttTopic.Absolute.textProperty(): PropertyPrototype<String, PropertyType.State.Text> =
+fun Topic.Absolute.textProperty(): PropertyPrototype<String, PropertyType.State.Text> =
     property(PropertyType.State.Text)
 
-fun MqttTopic.Absolute.ticProperty(): PropertyPrototype<Unit, PropertyType.Events.Tic> =
+fun Topic.Absolute.ticProperty(): PropertyPrototype<Unit, PropertyType.Events.Tic> =
     property(PropertyType.Events.Tic)
 
 @PublishedApi

@@ -2,12 +2,12 @@ package hnau.ktiot.coordinator.utils
 
 import org.hnau.commons.kotlin.Loadable
 import hnau.ktiot.scheme.Element
-import hnau.ktiot.scheme.topic.MqttTopic
-import hnau.ktiot.scheme.topic.tryRemovePrefix
+import hnau.common.mqtt.types.topic.Topic
+import hnau.common.mqtt.types.topic.tryRemovePrefix
 import kotlinx.coroutines.flow.StateFlow
 
 internal fun ElementWithChildren<*>.toElement(
-    parent: MqttTopic.Absolute,
+    parent: Topic.Absolute,
 ): Pair<Element, StateFlow<Loadable<List<ElementWithChildren<*>>>>?> {
 
     val (type, childrenOrNull) = when (type) {

@@ -1,16 +1,16 @@
 package hnau.ktiot.client.model.utils
 
-import hnau.ktiot.scheme.topic.MqttTopic
+import hnau.common.mqtt.types.topic.Topic
 
 
-internal fun MqttTopic.asChild(
-    parent: MqttTopic.Absolute,
+internal fun Topic.asChild(
+    parent: Topic.Absolute,
 ): ChildTopic = when (this) {
-    is MqttTopic.Absolute -> ChildTopic.Absolute(
+    is Topic.Absolute -> ChildTopic.Absolute(
         topic = this,
     )
 
-    is MqttTopic.Relative -> ChildTopic.Relative(
+    is Topic.Relative -> ChildTopic.Relative(
         parent = parent,
         child = this,
     )

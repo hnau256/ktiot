@@ -1,29 +1,29 @@
 package hnau.ktiot.client.model.property
 
 import hnau.ktiot.client.model.utils.ChildTopic
-import hnau.ktiot.scheme.topic.MqttTopic
-import hnau.ktiot.scheme.topic.MqttTopicParts
+import hnau.common.mqtt.types.topic.Topic
+import hnau.common.mqtt.types.topic.TopicParts
 
 fun ChildTopic.toTitle(): String = when (this) {
-    is ChildTopic.Absolute -> MqttTopicParts.Companion.Separator + topic.parts.toTitle()
+    is ChildTopic.Absolute -> TopicParts.Companion.Separator + topic.parts.toTitle()
     is ChildTopic.Relative -> child.parts.toTitle()
 }
 
 @Deprecated("Use ChildTopic.toTitle")
-fun MqttTopic.Relative.toTitle(): String =
+fun Topic.Relative.toTitle(): String =
     parts.toTitle()
 
 @Deprecated("Use ChildTopic.toTitle")
-fun MqttTopic.Absolute.toTitle(): String =
-    MqttTopicParts.Companion.Separator + parts.toTitle()
+fun Topic.Absolute.toTitle(): String =
+    TopicParts.Companion.Separator + parts.toTitle()
 
 @Deprecated("Use ChildTopic.toTitle")
-fun MqttTopic.toTitle(): String = when (this) {
-    is MqttTopic.Absolute -> toTitle()
-    is MqttTopic.Relative -> toTitle()
+fun Topic.toTitle(): String = when (this) {
+    is Topic.Absolute -> toTitle()
+    is Topic.Relative -> toTitle()
 }
 
-fun MqttTopicParts.toTitle(): String = parts
+fun TopicParts.toTitle(): String = parts
     .map {
         it
             .fold(
@@ -46,7 +46,7 @@ fun MqttTopicParts.toTitle(): String = parts
             .trimEnd()
     }
     .joinToString(
-        separator = MqttTopicParts.Companion.Separator.toString(),
+        separator = TopicParts.Companion.Separator.toString(),
     )
 
 private val toTitleDelimiters: Set<Char> = setOf('_', '-')

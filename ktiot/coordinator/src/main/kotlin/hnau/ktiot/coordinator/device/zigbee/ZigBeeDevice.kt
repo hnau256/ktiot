@@ -10,8 +10,8 @@ import hnau.ktiot.coordinator.device.DeviceRegistry
 import hnau.ktiot.coordinator.ext.combineLoadableStateWith
 import hnau.ktiot.coordinator.utils.Timestamped
 import hnau.ktiot.coordinator.utils.subscribeJson
-import hnau.ktiot.scheme.topic.MqttTopic
-import hnau.ktiot.scheme.topic.raw
+import hnau.common.mqtt.types.topic.Topic
+import hnau.common.mqtt.types.topic.raw
 import org.hnau.commons.gen.pipe.annotations.Pipe
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
@@ -45,7 +45,7 @@ data class ZigBeeDevice(
         val deviceRegistry: DeviceRegistry
     }
 
-    private val topic: MqttTopic.Absolute = z2mTopic + id.id
+    private val topic: Topic.Absolute = z2mTopic + id.id
 
     private val stateFieldsOrError: StateFlow<Loadable<Result<JsonObject>>> = dependencies
         .client
@@ -244,7 +244,7 @@ data class ZigBeeDevice(
 
     companion object {
 
-        private val z2mTopic: MqttTopic.Absolute = MqttTopic.Absolute.root + "zigbee2mqtt"
+        private val z2mTopic: Topic.Absolute = Topic.Absolute.root + "zigbee2mqtt"
 
         private val actualIsChangedDebounce: Duration = 1.seconds
 

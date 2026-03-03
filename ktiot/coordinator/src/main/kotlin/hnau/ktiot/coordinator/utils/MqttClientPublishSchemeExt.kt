@@ -8,9 +8,9 @@ import org.hnau.commons.kotlin.mapSecond
 import hnau.common.mqtt.platform.MqttClient
 import hnau.ktiot.scheme.Element
 import hnau.ktiot.scheme.SchemeConstants
-import hnau.ktiot.scheme.topic.MqttTopic
-import hnau.ktiot.scheme.topic.ktiotElements
-import hnau.ktiot.scheme.topic.raw
+import hnau.common.mqtt.types.topic.Topic
+import hnau.common.mqtt.types.topic.ktiotElements
+import hnau.common.mqtt.types.topic.raw
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -23,13 +23,13 @@ internal fun MqttClient.publishScheme(
     publishElements(
         scope = scope,
         elements = rootElements,
-        topic = MqttTopic.Absolute.root,
+        topic = Topic.Absolute.root,
     )
 }
 
 private fun MqttClient.publishElements(
     scope: CoroutineScope,
-    topic: MqttTopic.Absolute,
+    topic: Topic.Absolute,
     elements: StateFlow<Loadable<List<ElementWithChildren<*>>>>,
 ) {
     scope.launch {

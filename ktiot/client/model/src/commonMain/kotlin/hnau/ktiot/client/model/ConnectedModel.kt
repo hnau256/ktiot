@@ -9,7 +9,7 @@ import org.hnau.commons.kotlin.serialization.MutableStateFlowSerializer
 import org.hnau.commons.kotlin.toAccessor
 import org.hnau.commons.app.model.goback.GoBackHandler
 import hnau.ktiot.client.model.screen.ScreenModel
-import hnau.ktiot.scheme.topic.MqttTopic
+import hnau.common.mqtt.types.topic.Topic
 import org.hnau.commons.gen.pipe.annotations.Pipe
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.serialization.Serializable
@@ -34,7 +34,7 @@ class ConnectedModel(
 
     val rootScreen = ScreenModel(
         scope = scope,
-        topic = MqttTopic.Absolute.root,
+        topic = Topic.Absolute.root,
         dependencies = dependencies.screen(
         ),
         skeleton = skeleton::rootScreen

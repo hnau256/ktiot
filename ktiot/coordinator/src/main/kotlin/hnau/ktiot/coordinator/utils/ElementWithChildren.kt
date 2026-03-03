@@ -3,11 +3,11 @@ package hnau.ktiot.coordinator.utils
 import org.hnau.commons.kotlin.Loadable
 import hnau.ktiot.scheme.PropertyMode
 import hnau.ktiot.scheme.PropertyType
-import hnau.ktiot.scheme.topic.MqttTopic
+import hnau.common.mqtt.types.topic.Topic
 import kotlinx.coroutines.flow.StateFlow
 
 data class ElementWithChildren<out T: ElementWithChildren.Type>(
-    val topic: MqttTopic.Absolute,
+    val topic: Topic.Absolute,
     val title: String,
     val type: T,
 ) {

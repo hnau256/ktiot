@@ -26,7 +26,7 @@ import hnau.ktiot.client.model.utils.Timestamped
 import hnau.ktiot.scheme.PropertyMode
 import hnau.ktiot.scheme.PropertyType
 import hnau.ktiot.client.model.utils.ChildTopic
-import hnau.ktiot.scheme.topic.raw
+import hnau.common.mqtt.types.topic.raw
 import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
