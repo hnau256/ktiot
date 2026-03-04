@@ -1,5 +1,6 @@
 package hnau.common.mqtt.utils
 
+import hnau.common.mqtt.logMqttError
 import hnau.common.mqtt.platform.MqttSimpleSession
 import hnau.common.mqtt.types.Message
 import hnau.common.mqtt.types.MqttResult

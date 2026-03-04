@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.*
+import org.hnau.commons.gen.loggable.annotations.Loggable
 import org.hnau.commons.gen.pipe.annotations.Pipe
 import org.hnau.commons.kotlin.*
 import org.hnau.commons.kotlin.coroutines.flow.state.mapState
@@ -33,6 +34,7 @@ import kotlin.time.Duration.Companion.seconds
 import kotlin.toString
 
 
+@Loggable
 data class ZigBeeDevice(
     private val id: ZigBeeDeviceId,
     private val scope: CoroutineScope,

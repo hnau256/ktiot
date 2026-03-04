@@ -1,7 +1,8 @@
 package hnau.ktiot.coordinator.utils
 
-import hnau.common.mqtt.platform.QoS
-import hnau.common.mqtt.platform.Topic
+import co.touchlab.kermit.Logger
+import hnau.common.mqtt.types.QoS
+import hnau.common.mqtt.types.topic.Topic
 import hnau.common.mqtt.types.MqttSession
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
@@ -15,10 +16,12 @@ import org.hnau.commons.kotlin.Loadable
 import org.hnau.commons.kotlin.Loading
 import org.hnau.commons.kotlin.Ready
 
+private val logger = Logger.withTag("MqttClientExt")
+
 
 fun <T> MqttSession.subscribeJson(
     scope: CoroutineScope,
-    topic: Topic,
+    topic: Topic.Absolute,
     deserializer: KSerializer<T>,
     typeDescription: String,
     qoS: QoS = QoS.default,
@@ -38,7 +41,7 @@ fun <T> MqttSession.subscribeJson(
                     )
                     emit(value)
                 } catch (th: Throwable) {
-                    logger.warn(th) { "Unable parse $typeDescription from JSON" }
+                    logger.w(th) { "Unable parse $typeDescription from JSON" }
                 }
             }
     }

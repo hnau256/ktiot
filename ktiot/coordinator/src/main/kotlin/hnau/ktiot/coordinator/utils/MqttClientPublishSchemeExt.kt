@@ -2,9 +2,9 @@ package hnau.ktiot.coordinator.utils
 
 import hnau.common.mqtt.types.MqttSession
 import hnau.common.mqtt.types.topic.Topic
-import hnau.common.mqtt.types.topic.ktiotElements
 import hnau.ktiot.scheme.Element
 import hnau.ktiot.scheme.SchemeConstants
+import hnau.ktiot.scheme.ktiotElements
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collectLatest

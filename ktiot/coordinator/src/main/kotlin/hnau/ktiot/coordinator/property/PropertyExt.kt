@@ -1,5 +1,8 @@
 package hnau.ktiot.coordinator.property
 
+import co.touchlab.kermit.Logger
+import hnau.common.mqtt.logMqttError
+import hnau.common.mqtt.types.MqttResult
 import hnau.common.mqtt.types.MqttSession
 import hnau.common.mqtt.types.topic.Topic
 import hnau.ktiot.coordinator.utils.ElementWithChildren
@@ -19,6 +22,8 @@ import org.hnau.commons.kotlin.fold
 import org.hnau.commons.kotlin.logging.tryOrLog
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
+
+private val logger = Logger.withTag("PropertyExt")
 
 
 fun <T, P : PropertyType<T>> Topic.Absolute.property(
@@ -68,11 +73,22 @@ internal suspend fun <T, P : PropertyType<T>> Property<T, P, *>.publishPrivate(
         }
         .getOrNull()
         ?: return false
-    return client.publish(
+    val result = client.publish(
         topic = topic,
         payload = payloadBytes,
         retained = retained,
     )
+    return when (result) {
+        is MqttResult.Error -> {
+            logger.logMqttError(
+                action = "publishing property value",
+                error = result
+            )
+            false
+        }
+
+        is MqttResult.Success<*> -> true
+    }
 }
 
 @JvmName("publishEvents")

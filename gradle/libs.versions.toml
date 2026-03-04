@@ -2,7 +2,7 @@
 #tools
 kotlin = "2.3.10"
 #kotest = "5.8.0"
-java = "VERSION_17"
+java = "VERSION_21"
 androidGradlePlugin = "9.0.1"
 androidCompileSdk = "36"
 androidMinSdk = "23"

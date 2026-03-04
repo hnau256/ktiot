@@ -33,10 +33,12 @@ dependencies {
     implementation(libs.pipe.annotations)
     implementation(libs.sealup.annotations)
     implementation(libs.enumvalues.annotations)
+    implementation(libs.loggable.annotations)
 
     ksp(libs.pipe.processor)
     ksp(libs.sealup.processor)
     ksp(libs.enumvalues.processor)
+    ksp(libs.loggable.processor)
 
     projectDependencies.forEach { implementation(it) }
 }
