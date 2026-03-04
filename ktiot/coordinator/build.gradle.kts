@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "com.github.hnau256"
-version = "1.6.0"
+version = "1.7.0"
 
 java {
     val javaVersion = JavaVersion.valueOf(libs.versions.java.get())
