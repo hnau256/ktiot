@@ -84,7 +84,7 @@ internal class TopicSubscriptionHolder(
                 /*logger.logMqttError(
                     action = "unsubscribing from topic '$topic'",
                     error = result,
-                )*/TODO("Uncomment")
+                )*/ //TODO("Uncomment")
                 false
             }
 
@@ -114,7 +114,7 @@ internal class TopicSubscriptionHolder(
                     /*logger.logMqttError(
                         action = "subscribing to topic '$topic'",
                         error = result,
-                    )*/TODO("Uncomment")
+                    )*/ //TODO("Uncomment")
                     false
                 }
 

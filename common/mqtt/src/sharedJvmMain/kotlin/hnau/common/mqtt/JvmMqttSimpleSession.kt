@@ -9,6 +9,8 @@ import hnau.common.mqtt.platform.doAsync
 import hnau.common.mqtt.platform.idMapper
 import hnau.common.mqtt.platform.toMqttError
 import hnau.common.mqtt.platform.toMqttResult
+import hnau.common.mqtt.utils.raw
+import hnau.common.mqtt.utils.rawMapper
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.sync.Mutex
@@ -41,7 +43,7 @@ internal class JvmMqttSimpleSession(
                     topic: String,
                     message: MqttMessage,
                 ) {
-                    val typedTopic = Topic.Absolute.stringMapper.direct(topic)
+                    val typedTopic = Topic.Absolute.rawMapper.direct(topic)
                     val message = Message(
                         id = Message.Id(message.id),
                         payload = message.payload,
@@ -101,7 +103,4 @@ internal class JvmMqttSimpleSession(
     ): R = mqttOperationMutex.withLock {
         client.block()
     }
-
-    private val Topic.Absolute.raw: String
-        get() = Topic.Absolute.stringMapper.reverse(this)
 }

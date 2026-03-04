@@ -32,6 +32,9 @@ sealed interface Topic {
             parts = parts + part,
         )
 
+        override fun toString(): String =
+            stringMapper.reverse(this)
+
         object Serializer : MappingKSerializer<String, Absolute>(
             base = String.serializer(),
             mapper = stringMapper,
@@ -74,6 +77,9 @@ sealed interface Topic {
         ): Relative = copy(
             parts = parts + part,
         )
+
+        override fun toString(): String =
+            stringMapper.reverse(this)
 
         object Serializer : MappingKSerializer<String, Relative>(
             base = String.serializer(),

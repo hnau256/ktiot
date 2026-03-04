@@ -227,7 +227,7 @@ class ScreenProjector(
         ) {
             items(
                 items = items,
-                key = { it.topic.topic },
+                key = { it.topic.topic.toString() },
             ) { item ->
                 item.projector.Content(
                     modifier = Modifier.fillMaxWidth(),
