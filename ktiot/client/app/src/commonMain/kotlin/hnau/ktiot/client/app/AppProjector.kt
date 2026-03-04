@@ -1,12 +1,12 @@
 package hnau.ktiot.client.app
 
-import org.hnau.commons.app.model.app.AppModel
-import org.hnau.commons.app.projector.app.AppProjector
 import hnau.ktiot.client.model.init.InitModel
 import hnau.ktiot.client.projector.init.InitProjector
 import hnau.ktiot.client.projector.init.impl
 import hnau.ktiot.client.projector.utils.Localization
 import kotlinx.coroutines.CoroutineScope
+import org.hnau.commons.app.model.app.AppModel
+import org.hnau.commons.app.projector.app.AppProjector
 
 fun createAppProjector(
     scope: CoroutineScope,

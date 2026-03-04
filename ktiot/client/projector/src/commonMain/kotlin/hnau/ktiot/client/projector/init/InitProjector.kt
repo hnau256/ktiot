@@ -5,24 +5,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
-import org.hnau.commons.app.projector.uikit.backbutton.BackButtonProjector
-import org.hnau.commons.kotlin.Loadable
-import org.hnau.commons.kotlin.coroutines.flow.state.mapWithScope
-import org.hnau.commons.kotlin.map
-import org.hnau.commons.app.projector.uikit.state.LoadableContent
-import org.hnau.commons.app.projector.uikit.state.StateContent
-import org.hnau.commons.app.projector.uikit.state.TransitionSpec
 import hnau.ktiot.client.model.init.InitModel
 import hnau.ktiot.client.model.init.InitStateModel
 import hnau.ktiot.client.projector.LoggedProjector
 import hnau.ktiot.client.projector.LoginProjector
 import hnau.ktiot.client.projector.utils.BackButtonWidth
-import org.hnau.commons.gen.pipe.annotations.Pipe
-import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
+import org.hnau.commons.app.projector.uikit.backbutton.BackButtonProjector
+import org.hnau.commons.app.projector.uikit.state.LoadableContent
+import org.hnau.commons.app.projector.uikit.state.StateContent
+import org.hnau.commons.app.projector.uikit.state.TransitionSpec
+import org.hnau.commons.gen.pipe.annotations.Pipe
+import org.hnau.commons.kotlin.Loadable
+import org.hnau.commons.kotlin.coroutines.flow.state.mapWithScope
+import org.hnau.commons.kotlin.map
 
-private val logger = KotlinLogging.logger {  }
 
 @Immutable
 class InitProjector(

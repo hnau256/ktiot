@@ -1,11 +1,11 @@
 package hnau.ktiot.client.model.property.value.editable
 
 import arrow.core.Option
-import org.hnau.commons.app.model.goback.GoBackHandler
 import hnau.ktiot.scheme.PropertyType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.serialization.Serializable
+import org.hnau.commons.app.model.goback.GoBackHandler
 
 sealed interface ViewModel {
 

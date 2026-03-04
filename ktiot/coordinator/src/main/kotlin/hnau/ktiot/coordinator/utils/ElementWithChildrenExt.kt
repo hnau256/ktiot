@@ -1,10 +1,10 @@
 package hnau.ktiot.coordinator.utils
 
-import org.hnau.commons.kotlin.Loadable
-import hnau.ktiot.scheme.Element
 import hnau.common.mqtt.types.topic.Topic
 import hnau.common.mqtt.types.topic.tryRemovePrefix
+import hnau.ktiot.scheme.Element
 import kotlinx.coroutines.flow.StateFlow
+import org.hnau.commons.kotlin.Loadable
 
 internal fun ElementWithChildren<*>.toElement(
     parent: Topic.Absolute,

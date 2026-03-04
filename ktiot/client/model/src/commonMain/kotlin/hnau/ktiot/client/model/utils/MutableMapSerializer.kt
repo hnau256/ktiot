@@ -1,10 +1,10 @@
 package hnau.ktiot.client.model.utils
 
 import arrow.core.identity
-import org.hnau.commons.kotlin.mapper.Mapper
-import org.hnau.commons.kotlin.serialization.MappingKSerializer
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.builtins.MapSerializer
+import org.hnau.commons.kotlin.mapper.Mapper
+import org.hnau.commons.kotlin.serialization.MappingKSerializer
 
 class MutableMapSerializer<K, V>(
     keySerializer: KSerializer<K>,

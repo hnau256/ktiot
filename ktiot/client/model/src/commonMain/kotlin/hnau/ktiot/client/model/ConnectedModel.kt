@@ -4,16 +4,16 @@
 
 package hnau.ktiot.client.model
 
-import org.hnau.commons.kotlin.getOrInit
-import org.hnau.commons.kotlin.serialization.MutableStateFlowSerializer
-import org.hnau.commons.kotlin.toAccessor
-import org.hnau.commons.app.model.goback.GoBackHandler
-import hnau.ktiot.client.model.screen.ScreenModel
 import hnau.common.mqtt.types.topic.Topic
-import org.hnau.commons.gen.pipe.annotations.Pipe
+import hnau.ktiot.client.model.screen.ScreenModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
+import org.hnau.commons.app.model.goback.GoBackHandler
+import org.hnau.commons.gen.pipe.annotations.Pipe
+import org.hnau.commons.kotlin.getOrInit
+import org.hnau.commons.kotlin.serialization.MutableStateFlowSerializer
+import org.hnau.commons.kotlin.toAccessor
 
 class ConnectedModel(
     scope: CoroutineScope,

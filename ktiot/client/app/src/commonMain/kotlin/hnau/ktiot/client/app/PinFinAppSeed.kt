@@ -1,12 +1,12 @@
 package hnau.ktiot.client.app
 
+import hnau.ktiot.client.model.init.InitModel
+import hnau.ktiot.client.model.init.impl
 import org.hnau.commons.app.model.app.AppSeed
 import org.hnau.commons.app.model.file.plus
 import org.hnau.commons.app.model.preferences.impl.FileBasedPreferences
 import org.hnau.commons.app.model.theme.ThemeBrightness
 import org.hnau.commons.app.model.utils.Hue
-import hnau.ktiot.client.model.init.InitModel
-import hnau.ktiot.client.model.init.impl
 
 fun createPinFinAppSeed(
     defaultBrightness: ThemeBrightness? = null,

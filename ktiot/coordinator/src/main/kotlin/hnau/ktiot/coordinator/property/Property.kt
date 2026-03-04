@@ -1,7 +1,7 @@
 package hnau.ktiot.coordinator.property
 
-import hnau.ktiot.scheme.PropertyType
 import hnau.common.mqtt.types.topic.Topic
+import hnau.ktiot.scheme.PropertyType
 
 data class Property<T, P : PropertyType<T>, D : Property.Direction>(
     val topic: Topic.Absolute,

@@ -17,7 +17,6 @@ import hnau.ktiot.client.model.utils.ChildTopic
 import hnau.ktiot.scheme.Element
 import hnau.ktiot.scheme.PropertyMode
 import hnau.ktiot.scheme.PropertyType
-import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.serialization.Serializable
@@ -28,7 +27,6 @@ import org.hnau.commons.kotlin.Loadable
 import org.hnau.commons.kotlin.coroutines.flow.state.flatMapState
 import org.hnau.commons.kotlin.fold
 
-private val logger = KotlinLogging.logger { }
 
 class PropertyModel(
     private val scope: CoroutineScope,

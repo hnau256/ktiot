@@ -16,13 +16,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import org.hnau.commons.app.projector.uikit.utils.Dimens
-import org.hnau.commons.app.projector.utils.Icon
-import org.hnau.commons.kotlin.Loadable
-import org.hnau.commons.kotlin.coroutines.flow.state.mapState
-import org.hnau.commons.kotlin.coroutines.flow.state.scopedInState
-import org.hnau.commons.kotlin.fold
-import org.hnau.commons.kotlin.map
 import hnau.ktiot.client.model.property.PropertyModel
 import hnau.ktiot.client.model.property.value.EditableModel
 import hnau.ktiot.client.model.property.value.FlagModel
@@ -31,10 +24,16 @@ import hnau.ktiot.client.projector.property.value.EditableProjector
 import hnau.ktiot.client.projector.property.value.FlagProjector
 import hnau.ktiot.client.projector.property.value.FractionProjector
 import hnau.ktiot.client.projector.property.value.ValueProjector
-import hnau.ktiot.client.model.property.toTitle
-import org.hnau.commons.gen.pipe.annotations.Pipe
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
+import org.hnau.commons.app.projector.uikit.utils.Dimens
+import org.hnau.commons.app.projector.utils.Icon
+import org.hnau.commons.gen.pipe.annotations.Pipe
+import org.hnau.commons.kotlin.Loadable
+import org.hnau.commons.kotlin.coroutines.flow.state.mapState
+import org.hnau.commons.kotlin.coroutines.flow.state.scopedInState
+import org.hnau.commons.kotlin.fold
+import org.hnau.commons.kotlin.map
 
 @Immutable
 class PropertyProjector(

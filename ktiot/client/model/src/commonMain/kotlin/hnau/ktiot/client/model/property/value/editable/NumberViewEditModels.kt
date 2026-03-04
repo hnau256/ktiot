@@ -6,22 +6,22 @@ package hnau.ktiot.client.model.property.value.editable
 
 import arrow.core.Option
 import arrow.core.toOption
-import org.hnau.commons.app.model.EditingString
-import org.hnau.commons.app.model.goback.GoBackHandler
-import org.hnau.commons.app.model.goback.NeverGoBackHandler
-import org.hnau.commons.app.model.toEditingString
-import org.hnau.commons.kotlin.coroutines.flow.state.mapState
-import org.hnau.commons.kotlin.coroutines.flow.state.mutable.toMutableStateFlowAsInitial
-import org.hnau.commons.kotlin.ifNull
-import org.hnau.commons.kotlin.serialization.MutableStateFlowSerializer
 import hnau.ktiot.scheme.PropertyType
-import org.hnau.commons.gen.pipe.annotations.Pipe
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
+import org.hnau.commons.app.model.EditingString
+import org.hnau.commons.app.model.goback.GoBackHandler
+import org.hnau.commons.app.model.goback.NeverGoBackHandler
+import org.hnau.commons.app.model.toEditingString
+import org.hnau.commons.gen.pipe.annotations.Pipe
+import org.hnau.commons.kotlin.coroutines.flow.state.mapState
+import org.hnau.commons.kotlin.coroutines.flow.state.mutable.toMutableStateFlowAsInitial
+import org.hnau.commons.kotlin.ifNull
+import org.hnau.commons.kotlin.serialization.MutableStateFlowSerializer
 
 class NumberViewModel(
     scope: CoroutineScope,

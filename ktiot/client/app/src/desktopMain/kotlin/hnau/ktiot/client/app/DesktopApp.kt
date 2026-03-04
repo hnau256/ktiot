@@ -14,14 +14,12 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
-import org.hnau.commons.app.model.app.DesktopApp
-import org.hnau.commons.app.model.theme.ThemeBrightness
-import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
+import org.hnau.commons.app.model.app.DesktopApp
+import org.hnau.commons.app.model.theme.ThemeBrightness
 import org.slf4j.simple.SimpleLogger
 
-private val logger = KotlinLogging.logger { }
 
 @OptIn(InternalComposeApi::class)
 fun main() {

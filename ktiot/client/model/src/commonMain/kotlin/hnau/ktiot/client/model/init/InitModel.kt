@@ -1,5 +1,17 @@
 package hnau.ktiot.client.model.init
 
+import hnau.ktiot.client.model.LoggedModel
+import hnau.ktiot.client.model.LoginModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
+import org.hnau.commons.app.model.goback.GoBackHandler
+import org.hnau.commons.app.model.goback.NeverGoBackHandler
+import org.hnau.commons.app.model.preferences.Preferences
+import org.hnau.commons.app.model.preferences.map
+import org.hnau.commons.app.model.preferences.withDefault
+import org.hnau.commons.gen.pipe.annotations.Pipe
 import org.hnau.commons.kotlin.Loadable
 import org.hnau.commons.kotlin.LoadableStateFlow
 import org.hnau.commons.kotlin.Loading
@@ -7,28 +19,14 @@ import org.hnau.commons.kotlin.Ready
 import org.hnau.commons.kotlin.coroutines.flow.state.flatMapState
 import org.hnau.commons.kotlin.coroutines.flow.state.mapState
 import org.hnau.commons.kotlin.coroutines.flow.state.mapWithScope
-import org.hnau.commons.kotlin.coroutines.flow.state.scopedInState
 import org.hnau.commons.kotlin.coroutines.flow.state.mutable.toMutableStateFlowAsInitial
+import org.hnau.commons.kotlin.coroutines.flow.state.scopedInState
 import org.hnau.commons.kotlin.fold
 import org.hnau.commons.kotlin.getOrInit
 import org.hnau.commons.kotlin.mapper.toMapper
 import org.hnau.commons.kotlin.shrinkType
 import org.hnau.commons.kotlin.toAccessor
-import org.hnau.commons.app.model.goback.GoBackHandler
-import org.hnau.commons.app.model.goback.NeverGoBackHandler
-import org.hnau.commons.app.model.preferences.Preferences
-import org.hnau.commons.app.model.preferences.map
-import org.hnau.commons.app.model.preferences.withDefault
-import hnau.ktiot.client.model.LoggedModel
-import hnau.ktiot.client.model.LoginModel
-import org.hnau.commons.gen.pipe.annotations.Pipe
-import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
 
-private val logger = KotlinLogging.logger {  }
 
 class InitModel(
     scope: CoroutineScope,

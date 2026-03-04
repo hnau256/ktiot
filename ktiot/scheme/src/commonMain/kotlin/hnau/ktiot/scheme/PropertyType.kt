@@ -2,15 +2,15 @@ package hnau.ktiot.scheme
 
 import arrow.core.NonEmptyList
 import arrow.core.serialization.NonEmptyListSerializer
-import org.hnau.commons.app.model.color.RGBABytes
-import org.hnau.commons.app.model.color.gradient.Gradient
-import org.hnau.commons.app.model.color.gradient.create
-import org.hnau.commons.kotlin.serialization.ClosedFloatingPointRangeSerializer
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import kotlinx.serialization.builtins.serializer
+import org.hnau.commons.app.model.color.RGBABytes
+import org.hnau.commons.app.model.color.gradient.Gradient
+import org.hnau.commons.app.model.color.gradient.create
+import org.hnau.commons.kotlin.serialization.ClosedFloatingPointRangeSerializer
 
 @Serializable
 sealed interface PropertyType<T> {

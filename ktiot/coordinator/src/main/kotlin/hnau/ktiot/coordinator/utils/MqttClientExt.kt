@@ -1,12 +1,8 @@
 package hnau.ktiot.coordinator.utils
 
-import org.hnau.commons.kotlin.Loadable
-import org.hnau.commons.kotlin.Loading
-import org.hnau.commons.kotlin.Ready
-import hnau.common.mqtt.types.MqttSession
 import hnau.common.mqtt.platform.QoS
 import hnau.common.mqtt.platform.Topic
-import io.github.oshai.kotlinlogging.KotlinLogging
+import hnau.common.mqtt.types.MqttSession
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -15,8 +11,10 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.transform
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
+import org.hnau.commons.kotlin.Loadable
+import org.hnau.commons.kotlin.Loading
+import org.hnau.commons.kotlin.Ready
 
-private val logger = KotlinLogging.logger { }
 
 fun <T> MqttSession.subscribeJson(
     scope: CoroutineScope,

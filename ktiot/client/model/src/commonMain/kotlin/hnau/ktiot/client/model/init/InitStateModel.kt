@@ -1,10 +1,10 @@
 package hnau.ktiot.client.model.init
 
-import org.hnau.commons.app.model.goback.GoBackHandler
 import hnau.ktiot.client.model.LoggedModel
 import hnau.ktiot.client.model.LoginModel
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import org.hnau.commons.app.model.goback.GoBackHandler
 
 sealed interface InitStateModel {
 

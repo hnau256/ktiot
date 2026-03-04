@@ -1,10 +1,10 @@
 package hnau.common.mqtt.types.topic
 
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.builtins.serializer
 import org.hnau.commons.kotlin.mapper.Mapper
 import org.hnau.commons.kotlin.mapper.plus
 import org.hnau.commons.kotlin.serialization.MappingKSerializer
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.builtins.serializer
 
 @Serializable(Topic.Serializer::class)
 sealed interface Topic {

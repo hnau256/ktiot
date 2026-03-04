@@ -1,27 +1,25 @@
 package hnau.ktiot.coordinator.property
 
-import org.hnau.commons.kotlin.Loadable
-import org.hnau.commons.kotlin.Loading
-import org.hnau.commons.kotlin.Ready
-import org.hnau.commons.kotlin.coroutines.flow.state.mutable.toMutableStateFlowAsInitial
-import org.hnau.commons.kotlin.fold
-import org.hnau.commons.kotlin.logging.tryOrLog
 import hnau.common.mqtt.types.MqttSession
+import hnau.common.mqtt.types.topic.Topic
 import hnau.ktiot.coordinator.utils.ElementWithChildren
 import hnau.ktiot.scheme.PropertyMode
 import hnau.ktiot.scheme.PropertyType
-import hnau.common.mqtt.types.topic.Topic
-import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeout
 import kotlinx.serialization.json.Json
+import org.hnau.commons.kotlin.Loadable
+import org.hnau.commons.kotlin.Loading
+import org.hnau.commons.kotlin.Ready
+import org.hnau.commons.kotlin.coroutines.flow.state.mutable.toMutableStateFlowAsInitial
+import org.hnau.commons.kotlin.fold
+import org.hnau.commons.kotlin.logging.tryOrLog
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.seconds
 
-private val logger = KotlinLogging.logger { }
 
 fun <T, P : PropertyType<T>> Topic.Absolute.property(
     type: P,

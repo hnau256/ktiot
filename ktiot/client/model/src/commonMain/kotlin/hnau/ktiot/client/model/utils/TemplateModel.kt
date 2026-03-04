@@ -4,15 +4,12 @@
 
 package hnau.ktiot.client.model.utils
 
-import org.hnau.commons.kotlin.serialization.MutableStateFlowSerializer
-import org.hnau.commons.app.model.goback.GoBackHandler
-import org.hnau.commons.gen.pipe.annotations.Pipe
-import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.UseSerializers
-
-private val logger = KotlinLogging.logger {  }
+import org.hnau.commons.app.model.goback.GoBackHandler
+import org.hnau.commons.gen.pipe.annotations.Pipe
+import org.hnau.commons.kotlin.serialization.MutableStateFlowSerializer
 
 class TemplateModel(
     scope: CoroutineScope,

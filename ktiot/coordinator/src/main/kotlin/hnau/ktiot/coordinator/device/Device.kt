@@ -1,7 +1,7 @@
 package hnau.ktiot.coordinator.device
 
-import org.hnau.commons.kotlin.Loadable
 import kotlinx.coroutines.flow.StateFlow
+import org.hnau.commons.kotlin.Loadable
 
 data class Device(
     val name: String,

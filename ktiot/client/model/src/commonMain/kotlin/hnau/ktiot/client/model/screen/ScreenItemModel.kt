@@ -1,10 +1,10 @@
 package hnau.ktiot.client.model.screen
 
-import org.hnau.commons.app.model.goback.GoBackHandler
-import org.hnau.commons.app.model.goback.NeverGoBackHandler
 import hnau.ktiot.client.model.property.PropertyModel
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import org.hnau.commons.app.model.goback.GoBackHandler
+import org.hnau.commons.app.model.goback.NeverGoBackHandler
 
 sealed interface ScreenItemModel {
 

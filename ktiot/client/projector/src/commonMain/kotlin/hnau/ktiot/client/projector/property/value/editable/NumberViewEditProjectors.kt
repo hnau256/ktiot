@@ -4,19 +4,20 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import org.hnau.commons.app.projector.uikit.TextInput
-import org.hnau.commons.app.projector.uikit.utils.Dimens
 import hnau.ktiot.client.model.property.value.editable.NumberEditModel
 import hnau.ktiot.client.model.property.value.editable.NumberViewModel
-import org.hnau.commons.gen.pipe.annotations.Pipe
-import io.github.oshai.kotlinlogging.KotlinLogging
 import kotlinx.coroutines.CoroutineScope
-
-private val logger = KotlinLogging.logger { }
+import org.hnau.commons.app.projector.uikit.TextInput
+import org.hnau.commons.app.projector.uikit.utils.Dimens
+import org.hnau.commons.gen.pipe.annotations.Pipe
 
 @Immutable
 class NumberViewProjector(

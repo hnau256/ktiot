@@ -1,8 +1,8 @@
 package hnau.ktiot.client.model.property
 
-import hnau.ktiot.client.model.utils.ChildTopic
 import hnau.common.mqtt.types.topic.Topic
 import hnau.common.mqtt.types.topic.TopicParts
+import hnau.ktiot.client.model.utils.ChildTopic
 
 fun ChildTopic.toTitle(): String = when (this) {
     is ChildTopic.Absolute -> TopicParts.Companion.Separator + topic.parts.toTitle()

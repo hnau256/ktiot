@@ -77,7 +77,6 @@ dependencies {
     implementation(libs.kotlin.serialization.core)
     implementation(libs.android.activity.compose)
     implementation(libs.android.appcompat)
-    implementation(libs.slf4j.android)
 
     implementation(libs.compose.ui)
     implementation(libs.compose.ui.graphics)

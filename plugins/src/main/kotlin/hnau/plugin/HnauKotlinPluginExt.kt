@@ -83,7 +83,6 @@ internal fun Project.config(androidMode: AndroidMode?) {
         extension.sourceSets.getByName("commonMain").apply {
             languageSettings.enableLanguageFeature("ContextReceivers")
             dependencies {
-                implementation(versions.findLibrary("logging").get().get())
                 implementation(versions.findLibrary("hnau-kotlin").get().get())
 
                 if (hasSerializationPlugin) {

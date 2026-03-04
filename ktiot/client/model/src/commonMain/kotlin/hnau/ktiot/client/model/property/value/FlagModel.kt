@@ -1,13 +1,13 @@
 package hnau.ktiot.client.model.property.value
 
-import org.hnau.commons.app.model.goback.GoBackHandler
-import org.hnau.commons.app.model.goback.NeverGoBackHandler
 import hnau.ktiot.scheme.PropertyType
-import org.hnau.commons.gen.pipe.annotations.Pipe
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import org.hnau.commons.app.model.goback.GoBackHandler
+import org.hnau.commons.app.model.goback.NeverGoBackHandler
+import org.hnau.commons.gen.pipe.annotations.Pipe
 
 class FlagModel(
     private val scope: CoroutineScope,

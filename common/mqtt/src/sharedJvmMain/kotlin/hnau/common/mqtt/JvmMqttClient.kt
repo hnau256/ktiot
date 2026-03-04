@@ -1,15 +1,15 @@
 package hnau.common.mqtt
 
 import co.touchlab.kermit.Logger
-import hnau.common.mqtt.types.BrokerConfig
 import hnau.common.mqtt.platform.MqttClient
-import hnau.common.mqtt.types.MqttResult
 import hnau.common.mqtt.platform.MqttSimpleSession
 import hnau.common.mqtt.platform.disconnectFastAndSafe
 import hnau.common.mqtt.platform.doAsync
 import hnau.common.mqtt.platform.serverUri
 import hnau.common.mqtt.platform.toConnectOptions
 import hnau.common.mqtt.platform.toMqttResult
+import hnau.common.mqtt.types.BrokerConfig
+import hnau.common.mqtt.types.MqttResult
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.coroutineScope
