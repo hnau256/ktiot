@@ -26,13 +26,3 @@ kotlin {
         desktopMain
     }
 }
-
-dependencies {
-    add("kspCommonMainMetadata", libs.pipe.processor)
-}
-
-tasks.withType<KotlinCompile>().configureEach {
-    if (name != "kspCommonMainKotlinMetadata") {
-        dependsOn("kspCommonMainKotlinMetadata")
-    }
-}
