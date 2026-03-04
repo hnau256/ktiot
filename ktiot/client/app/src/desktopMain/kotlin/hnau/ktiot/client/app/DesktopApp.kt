@@ -14,16 +14,17 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import co.touchlab.kermit.Logger
+import co.touchlab.kermit.platformLogWriter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import org.hnau.commons.app.model.app.DesktopApp
 import org.hnau.commons.app.model.theme.ThemeBrightness
-import org.slf4j.simple.SimpleLogger
 
 
 @OptIn(InternalComposeApi::class)
 fun main() {
-    System.setProperty(SimpleLogger.DEFAULT_LOG_LEVEL_KEY, "TRACE")
+    Logger.setLogWriters(platformLogWriter())
 
     val appScope = CoroutineScope(SupervisorJob())
     val app = DesktopApp(

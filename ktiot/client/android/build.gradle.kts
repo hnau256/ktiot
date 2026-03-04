@@ -1,8 +1,6 @@
 import java.util.Properties
 
 plugins {
-    alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.ksp)
     alias(libs.plugins.android.app)
     alias(libs.plugins.compose.desktop)
 }
@@ -68,6 +66,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.hnau.kotlin)
     implementation(libs.hnau.projector)
     implementation(libs.hnau.model)
     implementation(project(":ktiot:client:model"))
