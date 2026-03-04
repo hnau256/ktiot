@@ -16,7 +16,7 @@ kotlinCoroutines = "1.10.2"
 ksp = "2.3.6"
 compose-activity = "1.12.4"
 kotlin-date-time = "0.7.1"
-hnau = "1.2.0"
+hnau = "1.2.1"
 atomicfu = "0.31.0"
 
 [plugins]

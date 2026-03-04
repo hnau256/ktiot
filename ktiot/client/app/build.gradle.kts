@@ -87,4 +87,3 @@ compose.desktop {
         mainClass = "hnau.ktiot.client.app.DesktopAppKt"
     }
 }
-
