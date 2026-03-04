@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.shareIn
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.hnau.commons.gen.loggable.annotations.Loggable
@@ -24,7 +25,7 @@ import kotlin.time.Duration
 
 @Loggable
 internal class TopicSubscriptionHolder(
-    scope: CoroutineScope,
+    private val scope: CoroutineScope,
     private val topic: Topic.Absolute,
     private val qoS: QoS,
     private val simpleSession: MqttSimpleSession,
@@ -41,13 +42,15 @@ internal class TopicSubscriptionHolder(
     val messages: Flow<Message> = simpleSession
         .messages
         .mapNotNull { (messageTopic, message) ->
+            println("Received message from topic $messageTopic (target topic: $topic)")
             (messageTopic == topic).ifTrue { message }
         }
         .onCompletion {
-            val unsubscribed = unsubscribeIfSubscribed()
-            if (unsubscribed) {
-                cachedRetainedMessage.value = null
-            }
+            unsubscribeIfSubscribed(
+                onUnsubscribed = {
+                    cachedRetainedMessage.value = null
+                }
+            )
         }
         .onEach { message ->
             message
@@ -68,10 +71,20 @@ internal class TopicSubscriptionHolder(
             subscribeIfNotSubscribed()
         }
 
-    private suspend fun unsubscribeIfSubscribed(): Boolean = subscribeUnsubscribeMutex.withLock {
+    private fun unsubscribeIfSubscribed(
+        onUnsubscribed: () -> Unit,
+    ) {
+        doSubscribeUnsubscribeOperation {
+            val unsubscribed = unsubscribeIfSubscribedAsync()
+            if (unsubscribed) {
+                onUnsubscribed()
+            }
+        }
+    }
 
+    private suspend fun unsubscribeIfSubscribedAsync(): Boolean {
         if (!isSubscribed) {
-            return@withLock true
+            return true
         }
 
         val result = simpleSession.unsubscribe(
@@ -82,9 +95,9 @@ internal class TopicSubscriptionHolder(
             is MqttResult.Error -> {
                 val topic = Topic.Absolute.stringMapper.reverse(topic)
                 /*logger.logMqttError(
-                    action = "unsubscribing from topic '$topic'",
-                    error = result,
-                )*/ //TODO("Uncomment")
+                action = "unsubscribing from topic '$topic'",
+                error = result,
+            )*/ //TODO("Uncomment")
                 false
             }
 
@@ -93,14 +106,14 @@ internal class TopicSubscriptionHolder(
 
         isSubscribed = !unsubscribed
 
-        unsubscribed
+        return unsubscribed
     }
 
-    private suspend fun subscribeIfNotSubscribed() {
-        subscribeUnsubscribeMutex.withLock {
+    private fun subscribeIfNotSubscribed() {
+        doSubscribeUnsubscribeOperation {
 
             if (isSubscribed) {
-                return@withLock
+                return@doSubscribeUnsubscribeOperation
             }
 
             val result = simpleSession.subscribe(
@@ -119,6 +132,16 @@ internal class TopicSubscriptionHolder(
                 }
 
                 is MqttResult.Success<*> -> true
+            }
+        }
+    }
+
+    private fun doSubscribeUnsubscribeOperation(
+        operation: suspend () -> Unit,
+    ) {
+        scope.launch {
+            subscribeUnsubscribeMutex.withLock {
+                operation()
             }
         }
     }
