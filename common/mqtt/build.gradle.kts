@@ -9,7 +9,6 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                implementation(libs.kotlin.datetime)
                 implementation(libs.hnau.model)
                 implementation(libs.kotlinx.atomicfu)
             }

@@ -68,7 +68,6 @@ kotlin {
                 implementation(project(":ktiot:client:model"))
                 implementation(project(":ktiot:client:projector"))
                 implementation(compose.components.resources)
-                implementation(libs.kotlin.datetime)
                 implementation(libs.kotlin.serialization.core)
             }
         }

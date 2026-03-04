@@ -14,7 +14,6 @@ kotlin {
                 implementation(libs.hnau.model)
                 implementation(project(":ktiot:scheme"))
                 implementation(project(":common:mqtt"))
-                implementation(libs.kotlin.datetime)
                 implementation(libs.kotlin.io)
                 implementation(libs.kotlin.serialization.json)
             }

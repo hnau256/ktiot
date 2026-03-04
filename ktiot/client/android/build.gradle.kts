@@ -72,7 +72,6 @@ dependencies {
     implementation(project(":ktiot:client:model"))
     implementation(project(":ktiot:client:projector"))
     implementation(project(":ktiot:client:app"))
-    implementation(libs.kotlin.datetime)
     implementation(libs.kotlin.serialization.core)
     implementation(libs.android.activity.compose)
     implementation(libs.android.appcompat)

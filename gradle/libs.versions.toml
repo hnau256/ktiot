@@ -10,12 +10,9 @@ androidBuildTools = "35.0.0"
 composeDesktop = "1.10.1"
 googleServices = "4.4.4"
 #libs
-arrow = "2.2.1.1"
 kotlinSerialization = "1.10.0"
-kotlinCoroutines = "1.10.2"
 ksp = "2.3.6"
 compose-activity = "1.12.4"
-kotlin-date-time = "0.7.1"
 hnau = "1.2.1"
 atomicfu = "0.31.0"
 
@@ -40,11 +37,6 @@ gradle-plugin-compose = { module = "org.jetbrains.compose:compose-gradle-plugin"
 kotlin-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinSerialization" }
 kotlin-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinSerialization" }
 kotlin-io = { module = "org.jetbrains.kotlinx:kotlinx-io-core", version = "0.9.0" }
-#kotest-framework-multiplatform-plugin = { module = "io.kotest:kotest-framework-multiplatform-plugin-gradle", version.ref = "kotest" }
-#kotest-assertions = { module = "io.kotest:kotest-assertions-core", version.ref = "kotest" }
-#kotest-junit-runner = { module = "io.kotest:kotest-runner-junit5-jvm", version.ref = "kotest" }
-#kotest-framework-engine = { module = "io.kotest:kotest-framework-engine", version.ref = "kotest" }
-kotlin-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlin-date-time" }
 kotlinx-atomicfu = { module = "org.jetbrains.kotlinx:atomicfu", version.ref = "atomicfu" }
 immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version = "0.4.0" }
 #android

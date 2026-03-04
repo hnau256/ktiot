@@ -17,7 +17,6 @@ kotlin {
                 implementation(project(":ktiot:scheme"))
                 implementation(project(":common:mqtt"))
                 implementation(project(":ktiot:client:model"))
-                implementation(libs.kotlin.datetime)
                 implementation(libs.immutable)
                 implementation(libs.pipe.annotations)
             }
