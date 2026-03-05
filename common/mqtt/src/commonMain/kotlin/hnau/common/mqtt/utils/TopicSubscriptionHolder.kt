@@ -43,7 +43,6 @@ internal class TopicSubscriptionHolder(
     val messages: Flow<Message> = simpleSession
         .messages
         .mapNotNull { (messageTopic, message) ->
-            println("Received message from topic $messageTopic (target topic: $topic)")
             (messageTopic == topic).ifTrue { message }
         }
         .onCompletion {
