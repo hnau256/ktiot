@@ -13,7 +13,7 @@ googleServices = "4.4.4"
 kotlinSerialization = "1.10.0"
 ksp = "2.3.6"
 compose-activity = "1.12.4"
-hnau = "1.2.1"
+hnau = "1.2.4"
 atomicfu = "0.31.0"
 
 [plugins]
