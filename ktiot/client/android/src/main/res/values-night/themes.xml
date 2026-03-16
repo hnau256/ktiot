@@ -1,8 +1,0 @@
-<resources>
-
-    <style name="Theme.KtIoT.NightBase" parent="Theme.KtIoT.Base">
-        <item name="android:windowBackground">@color/background_night</item>
-    </style>
-
-    <style name="Theme.KtIoT" parent="Theme.KtIoT.NightBase" />
-</resources>
