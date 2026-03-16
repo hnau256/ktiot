@@ -7,7 +7,7 @@ kotlin {
     sourceSets {
         commonMain {
             dependencies {
-                implementation(project(":mqtt"))
+                api(project(":mqtt"))
                 implementation(hnau.commons.app.model)
             }
         }

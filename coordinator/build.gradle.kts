@@ -6,6 +6,5 @@ plugins {
 
 dependencies {
     implementation(hnau.commons.app.model)
-    implementation(project(":mqtt"))
-    implementation(project(":scheme"))
+    api(project(":scheme"))
 }
