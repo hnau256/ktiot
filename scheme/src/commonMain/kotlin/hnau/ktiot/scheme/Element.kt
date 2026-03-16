@@ -1,6 +1,6 @@
-package hnau.ktiot.scheme
+package org.hnau.ktiot.scheme
 
-import hnau.common.mqtt.types.topic.Topic
+import org.hnau.ktiot.mqtt.types.topic.Topic
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

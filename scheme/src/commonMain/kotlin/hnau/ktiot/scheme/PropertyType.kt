@@ -1,4 +1,4 @@
-package hnau.ktiot.scheme
+package org.hnau.ktiot.scheme
 
 import arrow.core.NonEmptyList
 import arrow.core.serialization.NonEmptyListSerializer

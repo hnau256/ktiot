@@ -1,0 +1,10 @@
+package org.hnau.ktiot.mqtt.types
+
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
+
+data class MqttConfig(
+    val broker: BrokerConfig,
+    val reconnect: ReconnectPolicy = ReconnectPolicy(),
+    val unsubscribeDelay: Duration = 5.seconds,
+)

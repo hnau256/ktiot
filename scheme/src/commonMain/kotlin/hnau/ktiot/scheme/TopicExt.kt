@@ -1,6 +1,6 @@
-package hnau.ktiot.scheme
+package org.hnau.ktiot.scheme
 
-import hnau.common.mqtt.types.topic.Topic
+import org.hnau.ktiot.mqtt.types.topic.Topic
 
 val Topic.Absolute.ktiotElements: Topic.Absolute
     get() = plus(SchemeConstants.schemeTopic)
