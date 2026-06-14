@@ -6,5 +6,6 @@ plugins {
 
 dependencies {
     implementation(hnau.commons.app.model)
+    implementation(hnau.kotlinx.serialization.json)
     api(project(":scheme"))
 }

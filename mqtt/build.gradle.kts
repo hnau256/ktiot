@@ -5,25 +5,16 @@ plugins {
 
 kotlin {
     sourceSets {
-        val commonMain by getting {
+        commonMain {
             dependencies {
                 implementation(libs.paho)
             }
-        }
-
-        val sharedJvmMain by creating {
-            dependsOn(commonMain)
-            dependencies {
-                implementation(libs.paho)
-            }
-        }
-
-        androidMain {
-            dependsOn(sharedJvmMain)
         }
 
         jvmMain {
-            dependsOn(sharedJvmMain)
+            dependencies {
+                implementation(libs.paho)
+            }
         }
     }
 }

@@ -9,6 +9,7 @@ kotlin {
             dependencies {
                 api(project(":mqtt"))
                 implementation(hnau.commons.app.model)
+                implementation(hnau.kotlinx.serialization.json)
             }
         }
     }
