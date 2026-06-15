@@ -21,7 +21,15 @@ data class BrokerConfig(
         )
 
         @Fold
-        enum class Protocol { TCP, SSL }
+        enum class Protocol {
+            TCP, SSL;
+
+            companion object {
+
+                val default: Protocol
+                    get() = TCP
+            }
+        }
 
         companion object {
 
