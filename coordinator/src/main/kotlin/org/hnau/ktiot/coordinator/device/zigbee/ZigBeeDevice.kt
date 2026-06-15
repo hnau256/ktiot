@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.*
+import org.hnau.commons.gen.fold.annotations.Fold
 import org.hnau.commons.gen.loggable.annotations.Loggable
 import org.hnau.commons.gen.pipe.annotations.Pipe
 import org.hnau.commons.kotlin.*

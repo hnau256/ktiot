@@ -1,5 +1,7 @@
 [versions]
 paho = "1.2.5"
+ktor = "3.4.1"
 
 [libraries]
 paho = { module = "org.eclipse.paho:org.eclipse.paho.client.mqttv3", version.ref = "paho" }
+ktor-http = { module = "io.ktor:ktor-http", version.ref = "ktor" }

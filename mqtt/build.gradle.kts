@@ -8,6 +8,7 @@ kotlin {
         commonMain {
             dependencies {
                 implementation(libs.paho)
+                implementation(libs.ktor.http)
             }
         }
 

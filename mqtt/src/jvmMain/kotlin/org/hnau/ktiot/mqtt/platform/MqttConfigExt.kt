@@ -2,15 +2,16 @@ package org.hnau.ktiot.mqtt.platform
 
 import org.hnau.ktiot.mqtt.types.BrokerConfig
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions
+import org.hnau.ktiot.mqtt.types.fold
 
 internal val BrokerConfig.Connection.serverUri: String
-    get() = "${protocol.uriScheme}://$host:$port"
+    get() = "${protocol.uriScheme}://${host.host}:$port"
 
 private val BrokerConfig.Connection.Protocol.uriScheme: String
-    get() = when (this) {
-        BrokerConfig.Connection.Protocol.TCP -> "tcp"
-        BrokerConfig.Connection.Protocol.SSL -> "ssl"
-    }
+    get() = fold(
+        ifTCP = { "tcp" },
+        ifSSL = { "ssl" },
+    )
 
 internal fun BrokerConfig.Connection.toConnectOptions(): MqttConnectOptions =
     MqttConnectOptions().apply {

@@ -1,12 +1,14 @@
 package org.hnau.ktiot.mqtt.types
 
+import org.hnau.commons.gen.fold.annotations.Fold
+
 data class BrokerConfig(
     val connection: Connection,
     val messagesBufferSize: Int = 256,
 ) {
 
     data class Connection(
-        val host: String,
+        val host: ServerHost,
         val port: Int = defaultPort,
         val clientId: String,
         val auth: Auth? = null,
@@ -18,6 +20,7 @@ data class BrokerConfig(
             val password: String,
         )
 
+        @Fold
         enum class Protocol { TCP, SSL }
 
         companion object {
