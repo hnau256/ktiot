@@ -15,7 +15,7 @@ plugins {
 
 hnau {
     publish {
-        version = "1.9.0"
+        version = "1.10.0"
         gitUrl = "https://github.com/hnau256/ktiot-commons"
     }
 }
