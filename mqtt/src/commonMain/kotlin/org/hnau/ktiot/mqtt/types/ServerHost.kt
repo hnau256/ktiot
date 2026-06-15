@@ -13,6 +13,9 @@ value class ServerHost private constructor(
 
     companion object {
 
+        val default: ServerHost
+            get() = ServerHost("127.0.0.1")
+
         fun createOrNull(
             input: String,
         ): ServerHost? = input
